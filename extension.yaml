@@ -1,0 +1,95 @@
+name: firebase-typesense-search-extension
+version: 0.1.0
+specVersion: v1beta  # Firebase Extensions specification version (do not edit)
+
+displayName: Search Firestore with Typesense
+description: Indexes data from Firestore into Typesense for full-text search
+
+license: Apache-2.0  # The license you want for the extension
+
+author:
+  authorName: Typesense
+  url: https://typesense.org
+
+sourceUrl: https://github.com/typesense/firebase-typesense-search-extension
+
+billingRequired: false
+
+resources:
+  - name: indexToTypesenseOnFirestoreWrite
+    description: A function that indexes data into Typesense when it's triggered by Firestore changes
+    type: firebaseextensions.v1beta.function
+    properties:
+      runtime: nodejs14
+      sourceDirectory: functions
+      timeout: 120s
+      location: ${LOCATION}
+      eventTrigger:
+        eventType: providers/cloud.firestore/eventTypes/document.write
+        resource: projects/${PROJECT_ID}/databases/(default)/documents/${FIRESTORE_COLLECTION_PATH}/{documentID}
+
+params:
+  - param: FIRESTORE_COLLECTION_PATH
+    label: Firestore Collection Path
+    description: >-
+      The Firestore collection that needs to be indexed into Typesense.
+    example: path/to/firestore_collection
+    validationRegex: "^[^/]+(/[^/]+/[^/]+)*$"
+    validationErrorMessage: Firestore collection paths must be an odd number of segments separated by slashes, e.g. "path/to/firestore_collection".
+    required: true
+    immutable: true
+  - param: FIRESTORE_COLLECTION_FIELDS
+    label: Firestore Collection Fields
+    description: >-
+      A comma separated list of fields that need to be indexed from each Firestore document. Leave blank to index all fields.
+    example: field1,field2,field3
+    default: ''
+    required: false
+  - param: TYPESENSE_HOSTS
+    label: Typesense Hosts
+    description: >-
+      A comma-separated list of Typesense Hosts.
+      For single node clusters, a single hostname is sufficient. For multi-node Highly Available or SDN Clusters,
+      please be sure to mention all hostnames.
+    example: xyz-1.a1.typesense.net,xyz-2.a1.typesense.net,xyz-3.a1.typesense.net
+    required: true
+  - param: TYPESENSE_API_KEY
+    label: Typesense API Key
+    description: >-
+      An Typesense API key with admin permissions.
+      Click on "Generate API Key" in cluster dashboard in Typesense Cloud
+    example: ''
+    required: true
+  - param: TYPESENSE_COLLECTION_NAME
+    label: Typesense Collection Name
+    description: >-
+      Typesense collection name to index data into
+    required: true
+  - param: LOCATION
+    label: Cloud Functions location
+    description: >-
+      Where do you want to deploy the functions created for this extension?
+      You usually want a location close to your database. For help selecting a
+      location, refer to the [location selection
+      guide](https://firebase.google.com/docs/functions/locations).
+    type: select
+    options:
+      - label: Iowa (us-central1)
+        value: us-central1
+      - label: South Carolina (us-east1)
+        value: us-east1
+      - label: Northern Virginia (us-east4)
+        value: us-east4
+      - label: Belgium (europe-west1)
+        value: europe-west1
+      - label: London (europe-west2)
+        value: europe-west2
+      - label: Frankfurt (europe-west3)
+        value: europe-west3
+      - label: Hong Kong (asia-east2)
+        value: asia-east2
+      - label: Tokyo (asia-northeast1)
+        value: asia-northeast1
+    default: us-central1
+    required: true
+    immutable: true

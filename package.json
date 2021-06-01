@@ -1,0 +1,17 @@
+{
+  "name": "firebase-typesense-search-extension",
+  "description": "Firebase extension that indexes Firestore documents into Typesense",
+  "scripts": {
+    "serve": "firebase ext:dev:emulators:start --test-params=test-params.env"
+  },
+  "engines": {
+    "node": "14"
+  },
+  "main": "src/index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^7.27.0",
+    "eslint-config-google": "^0.14.0"
+  },
+  "private": true
+}
