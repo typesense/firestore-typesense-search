@@ -1,7 +1,7 @@
 # Firebase Typesense Search Extension
 
 ```shell
-npm run serve
+npm run emulator
 ```
 
-UI will be accessible at http://localhost:4000
+Emulator UI will be accessible at http://localhost:4000

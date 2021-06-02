@@ -28,6 +28,25 @@ resources:
         eventType: providers/cloud.firestore/eventTypes/document.write
         resource: projects/${param:PROJECT_ID}/databases/(default)/documents/${param:FIRESTORE_COLLECTION_PATH}/{documentID}
 
+  - name: backfillToTypesenseFromFirestore
+    description: >-
+      A function that backfills data from a Firestore collection into Typesense,
+      triggered when a Firestore document with the path `typesense_sync/trigger` has the contents of `backfill: true`.
+      The `backfill` key is deleted by the function, once the backfill is complete.
+    type: firebaseextensions.v1beta.function
+    properties:
+      runtime: nodejs14
+      sourceDirectory: functions
+      timeout: 540s
+      location: ${LOCATION}
+      eventTrigger:
+        eventType: providers/cloud.firestore/eventTypes/document.write
+        resource: projects/${param:PROJECT_ID}/databases/(default)/documents/typesense_sync/backfill
+
+roles:
+  - role: datastore.user
+    reason: Required to backfill data from your Firestore collection into Typesense
+
 params:
   - param: FIRESTORE_COLLECTION_PATH
     label: Firestore Collection Path

@@ -2,7 +2,8 @@
   "name": "firebase-typesense-search-extension",
   "description": "Firebase extension that indexes Firestore documents into Typesense",
   "scripts": {
-    "serve": "firebase ext:dev:emulators:start --test-params=test-params.env"
+    "emulator": "firebase ext:dev:emulators:start --test-params=test-params.env --import=emulator_data",
+    "export": "firebase emulators:export emulator_data"
   },
   "engines": {
     "node": "14"
