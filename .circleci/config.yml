@@ -21,6 +21,13 @@ jobs:
           paths:
             - ./node_modules
       - run:
+          name: npm install inside functions
+          command: cd functions && npm install
+      - save_cache:
+          key: dependency-cache-v1-functions-{{ checksum "package-lock.json" }}
+          paths:
+            - ./functions/node_modules
+      - run:
           name: npm run test:ci
           command: npm run test:ci
           environment:
