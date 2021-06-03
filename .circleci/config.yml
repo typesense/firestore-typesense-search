@@ -10,6 +10,12 @@ jobs:
       - run:
           name: npm install
           command: npm install
+      - run:
+          name: npm install -g firebase-tools
+          command: npm install -g firebase-tools
+      - run:
+          name: Enable extension dev
+          command: firebase --open-sesame extdev
       - save_cache:
           key: dependency-cache-v1-{{ checksum "package-lock.json" }}
           paths:
