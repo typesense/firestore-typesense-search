@@ -13,7 +13,7 @@ author:
 
 sourceUrl: https://github.com/typesense/firebase-typesense-search-extension
 
-billingRequired: false
+billingRequired: true
 
 resources:
   - name: indexToTypesenseOnFirestoreWrite
