@@ -1,5 +1,7 @@
 # Search Firestore with Typesense
 
+[![CircleCI](https://circleci.com/gh/typesense/firebase-typesense-search-extension.svg?style=shield)](https://circleci.com/gh/typesense/firebase-typesense-search-extension)
+
 **Author**: Typesense (**[https://typesense.org](https://typesense.org)**)
 
 **Description**: Indexes data from Firestore into Typesense for full-text search
