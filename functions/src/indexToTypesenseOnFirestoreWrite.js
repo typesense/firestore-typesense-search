@@ -27,7 +27,7 @@ module.exports = functions.handler.firestore.document
         functions.logger.debug(`Updating document ${JSON.stringify(typesenseDocument)}`);
         return typesense
             .collections(config.typesenseCollectionName)
-            .documents(typesenseDocument.id)
-            .update(typesenseDocument);
+            .documents()
+            .upsert(typesenseDocument);
       }
     });
