@@ -26,3 +26,9 @@ pulled from extension.yaml file and PREINSTALL.md file:
 ```shell
 firebase ext:info ./ --markdown > README.md
 ```
+
+## Publish extension
+
+```shell
+firebase ext:dev:publish typesense/firestore-search-extension
+```
