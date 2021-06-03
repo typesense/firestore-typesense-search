@@ -17,6 +17,7 @@
     "eslint": "^7.27.0",
     "eslint-config-google": "^0.14.0",
     "firebase-admin": "^9.9.0",
+    "firebase-functions-test": "^0.2.3",
     "jest": "^27.0.3",
     "jest-dev-server": "^4.4.0",
     "jest-junit": "^12.1.0",

@@ -2,14 +2,22 @@ const config = require("./config");
 
 /**
  * @param {DocumentSnapshot} firestoreDocumentSnapshot
+ * @param {Array} fieldsToExtract
  * @return {Object} typesenseDocument
  */
-exports.typesenseDocumentFromSnapshot = (firestoreDocumentSnapshot) => {
-  const document = Object.fromEntries(
+exports.typesenseDocumentFromSnapshot = (firestoreDocumentSnapshot, fieldsToExtract = config.firestoreCollectionFields) => {
+  if (fieldsToExtract.length === 0) {
+    return Object.assign(
+        {id: firestoreDocumentSnapshot.id},
+        firestoreDocumentSnapshot.data(),
+    );
+  }
+
+  const typesenseDocument = Object.fromEntries(
       Object.entries(firestoreDocumentSnapshot.data())
-          .filter(([key]) => config.firestoreCollectionFields.includes(key),
+          .filter(([key]) => fieldsToExtract.includes(key),
           ),
   );
-  document.id = firestoreDocumentSnapshot.id;
-  return document;
+  typesenseDocument.id = firestoreDocumentSnapshot.id;
+  return typesenseDocument;
 };
