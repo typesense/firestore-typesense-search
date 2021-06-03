@@ -1,7 +1,7 @@
 module.exports = {
   firestoreCollectionPath: process.env.FIRESTORE_COLLECTION_PATH,
   firestoreCollectionFields:
-    process.env.FIRESTORE_COLLECTION_FIELDS.split(",").map((e) => e.trim()),
+    (process.env.FIRESTORE_COLLECTION_FIELDS || "").split(",").map((e) => e.trim()),
   typesenseHosts:
     process.env.TYPESENSE_HOSTS.split(",").map((e) => e.trim()),
   typesensePort: process.env.TYPESENSE_PORT || 443,
