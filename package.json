@@ -3,16 +3,23 @@
   "description": "Firebase extension that indexes Firestore documents into Typesense",
   "scripts": {
     "emulator": "firebase ext:dev:emulators:start --test-params=test-params.env --import=emulator_data",
-    "export": "firebase emulators:export emulator_data"
+    "export": "firebase emulators:export emulator_data",
+    "test": "DOTENV_CONFIG=test-params.local.env firebase ext:dev:emulators:exec --test-params=test-params.local.env jest",
+    "typesenseServer": "rm -rf ~/typesense-server-data && mkdir ~/typesense-server-data && docker run -i -p 8108:8108 -v/tmp/typesense-server-data/:/data typesense/typesense:0.20.0 --data-dir /data --api-key=xyz --listen-port 8108 --enable-cors"
   },
   "engines": {
     "node": "14"
   },
   "main": "src/index.js",
-  "dependencies": {},
   "devDependencies": {
+    "dotenv": "^10.0.0",
     "eslint": "^7.27.0",
-    "eslint-config-google": "^0.14.0"
+    "eslint-config-google": "^0.14.0",
+    "firebase-admin": "^9.9.0",
+    "jest": "^27.0.3",
+    "jest-dev-server": "^4.4.0",
+    "jest-junit": "^12.1.0",
+    "typesense": "^0.13.0-2"
   },
   "private": true
 }

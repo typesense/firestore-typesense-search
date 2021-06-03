@@ -3,7 +3,11 @@ const Typesense = require("typesense");
 
 module.exports = new Typesense.Client({
   nodes: config.typesenseHosts.map((h) => {
-    return {host: h, port: 443, protocol: "https"};
+    return {
+      host: h,
+      port: config.typesensePort,
+      protocol: config.typesenseProtocol,
+    };
   } ),
   apiKey: config.typesenseAPIKey,
 });

@@ -7,7 +7,8 @@
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "test": "mocha --exit test/*.spec.js"
   },
   "engines": {
     "node": "14"
@@ -21,8 +22,7 @@
   },
   "devDependencies": {
     "eslint": "^7.27.0",
-    "eslint-config-google": "^0.14.0",
-    "firebase-functions-test": "^0.2.3"
+    "eslint-config-google": "^0.14.0"
   },
   "private": true
 }
