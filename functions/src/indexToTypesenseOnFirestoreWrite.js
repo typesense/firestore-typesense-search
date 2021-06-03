@@ -24,7 +24,7 @@ module.exports = functions.handler.firestore.document
       } else {
         // Update
         const typesenseDocument = utils.typesenseDocumentFromSnapshot(snapshot.after);
-        functions.logger.debug(`Updating document ${JSON.stringify(typesenseDocument)}`);
+        functions.logger.debug(`Upserting document ${JSON.stringify(typesenseDocument)}`);
         return typesense
             .collections(config.typesenseCollectionName)
             .documents()
