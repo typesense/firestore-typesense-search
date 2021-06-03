@@ -5,6 +5,7 @@
     "emulator": "firebase ext:dev:emulators:start --test-params=test-params.env --import=emulator_data",
     "export": "firebase emulators:export emulator_data",
     "test": "DOTENV_CONFIG=test-params.local.env firebase ext:dev:emulators:exec --test-params=test-params.local.env jest",
+    "test:ci": "DOTENV_CONFIG=test-params.local.env firebase ext:dev:emulators:exec --test-params=test-params.local.env 'jest --ci --reporters=default --reporters=jest-junit'",
     "typesenseServer": "rm -rf ~/typesense-server-data && mkdir ~/typesense-server-data && docker run -i -p 8108:8108 -v/tmp/typesense-server-data/:/data typesense/typesense:0.20.0 --data-dir /data --api-key=xyz --listen-port 8108 --enable-cors",
     "lint": "eslint . --fix"
   },
