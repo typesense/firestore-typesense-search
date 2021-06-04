@@ -38,6 +38,7 @@ resources:
       runtime: nodejs14
       sourceDirectory: functions
       timeout: 540s
+      maxInstances: 1
       location: ${LOCATION}
       eventTrigger:
         eventType: providers/cloud.firestore/eventTypes/document.write
