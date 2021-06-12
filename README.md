@@ -1,6 +1,6 @@
 # Search Firestore with Typesense
 
-[![CircleCI](https://circleci.com/gh/typesense/firebase-typesense-search-extension.svg?style=shield)](https://circleci.com/gh/typesense/firebase-typesense-search-extension)
+[![CircleCI](https://circleci.com/gh/typesense/firestore-typesense-search.svg?style=shield)](https://circleci.com/gh/typesense/firestore-typesense-search)
 
 **Author**: Typesense (**[https://typesense.org](https://typesense.org)**)
 
