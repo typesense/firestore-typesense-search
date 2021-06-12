@@ -29,6 +29,9 @@ firebase ext:info ./ --markdown > README.md
 
 ## Publish extension
 
-```shell
-firebase ext:dev:publish typesense/firestore-typesense-search
-```
+- Update version number in extension.yaml
+- 
+    ```shell
+    firebase ext:dev:publish typesense/firestore-typesense-search
+    ```
+- Create release in Github
