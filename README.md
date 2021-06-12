@@ -1,20 +1,19 @@
-# Search Firestore with Typesense
+# Firestore / Firebase Typesense Search Extension ⚡ 🔍 
 
 [![CircleCI](https://circleci.com/gh/typesense/firestore-typesense-search.svg?style=shield)](https://circleci.com/gh/typesense/firestore-typesense-search)
 
 **Author**: Typesense (**[https://typesense.org](https://typesense.org)**)
 
-**Description**: Indexes data from Firestore into Typesense for full-text search
-
-
+**Description**: Indexes data from Firestore into Typesense for full-text search.
 
 **Details**: Use this extension to sync data from your Firestore collection to [Typesense](https://typesense.org/), to be able to 
-do full-text fuzzy search on your Firestore data.
+do full-text fuzzy search on your Firestore data, with typo tolerance, faceting and more.
 
 This extension listens to your specified Firestore collection and syncs Firestore documents to Typesense 
 on creation, updates and deletes. It also provides a function to help you backfill data.
 
-#### Additional setup
+
+## ⚙️ Required Setup
 
 Before installing this extension, make sure that you have:
 
@@ -28,9 +27,10 @@ This extension will sync changes that happen _after_ you've installed the extens
 to backfill existing data in your Firestore collection. Detailed information for running this backfill function 
 will be provided after you install this extension.
 
-#### Billing
 
-To install an extension, your project must be on the [Blaze (pay as you go) plan](https://firebase.google.com/pricing)
+## 🧾 Billing
+
+To install an extension, your project must be on the [Blaze (pay as you go) plan](https://firebase.google.com/pricing).
 
 - You will be charged a small amount (typically around $0.01/month) for the Firebase resources required by this extension (even if it is not used).
 - This extension uses other Firebase and Google Cloud Platform services, which have associated charges if you exceed the service’s free tier:
@@ -40,58 +40,52 @@ To install an extension, your project must be on the [Blaze (pay as you go) plan
   self-hosted server. You are responsible for any associated costs with these services.
 
 
+## 🎛️ Configuration Parameters
 
+When you install this extension, you'll be able to configure the following parameters:
 
-**Configuration Parameters:**
-
-* Firestore Collection Path: The Firestore collection that needs to be indexed into Typesense.
-
-* Firestore Collection Fields: A comma separated list of fields that need to be indexed from each Firestore document. Leave blank to index all fields.
-
-* Typesense Hosts: A comma-separated list of Typesense Hosts. For single node clusters, a single hostname is sufficient. For multi-node Highly Available or SDN Clusters, please be sure to mention all hostnames.
-
-* Typesense API Key: An Typesense API key with admin permissions. Click on "Generate API Key" in cluster dashboard in Typesense Cloud
-
-* Typesense Collection Name: Typesense collection name to index data into
-
-* Cloud Functions location: Where do you want to deploy the functions created for this extension? You usually want a location close to your database. For help selecting a location, refer to the [location selection guide](https://firebase.google.com/docs/functions/locations).
+| Parameter | Description |
+|-----------|-------------|
+| Firestore Collection Path | The Firestore collection that needs to be indexed into Typesense. |
+| Firestore Collection Fields | A comma separated list of fields that need to be indexed from each Firestore document. Leave blank to index all fields. |
+| Typesense Hosts | A comma-separated list of Typesense Hosts. For single node clusters, a single hostname is sufficient. For multi-node Highly Available or SDN Clusters, please be sure to mention all hostnames. | 
+| Typesense API Key | An Typesense API key with admin permissions. Click on "Generate API Key" in cluster dashboard in Typesense Cloud. |
+| Typesense Collection Name | Typesense collection name to index data into. |
+| Cloud Functions location | Where do you want to deploy the functions created for this extension? You usually want a location close to your database. For help selecting a location, refer to the [location selection guide](https://firebase.google.com/docs/functions/locations). |
 
 
 
-**Cloud Functions:**
+## ☁️ Cloud Functions
 
 * **indexToTypesenseOnFirestoreWrite:** A function that indexes data into Typesense when it's triggered by Firestore changes
 
 * **backfillToTypesenseFromFirestore:** A function that backfills data from a Firestore collection into Typesense, triggered when a Firestore document with the path `typesense_sync/trigger` has the contents of `backfill: true`. The `backfill` key is deleted by the function, once the backfill is complete.
 
 
-
-**Access Required**:
-
-
+## 🔑 Access Required
 
 This extension will operate with the following project IAM roles:
 
 * datastore.user (Reason: Required to backfill data from your Firestore collection into Typesense)
 
----
 
-## 🧩 Install this extension
+## 🎬 Install this Extension 
 
-### Console
+You can install this extension either through the Firebase Web console or through the Firebase CLI.
+
+#### Firebase Console
 
 [![Install this extension in your Firebase project](https://www.gstatic.com/mobilesdk/210513_mobilesdk/install-extension.png "Install this extension in your Firebase project")][install-link]
 
-[install-link]: https://console.firebase.google.com/project/_/extensions/install?ref=typesense/firestore-search-extension
+[install-link]: https://console.firebase.google.com/project/_/extensions/install?ref=typesense/firestore-typesense-search
 
-### Firebase CLI
+#### Firebase CLI
 
 ```bash
-firebase ext:install typesense/firestore-search-extension --project=[your-project-id]
+firebase ext:install typesense/firestore-typesense-search --project=[your-project-id]
 ```
 
-> Learn more about installing extensions in the Firebase Extensions documentation:
-> [console](https://firebase.google.com/docs/extensions/install-extensions?platform=console),
-> [CLI](https://firebase.google.com/docs/extensions/install-extensions?platform=cli)
+Learn more about installing extensions in the Firebase Extensions documentation:
 
----
+- [Console](https://firebase.google.com/docs/extensions/install-extensions?platform=console)
+- [CLI](https://firebase.google.com/docs/extensions/install-extensions?platform=cli)
