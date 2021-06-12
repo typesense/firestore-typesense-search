@@ -30,5 +30,5 @@ firebase ext:info ./ --markdown > README.md
 ## Publish extension
 
 ```shell
-firebase ext:dev:publish typesense/firestore-search-extension
+firebase ext:dev:publish typesense/firestore-typesense-search
 ```
