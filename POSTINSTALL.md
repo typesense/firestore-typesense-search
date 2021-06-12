@@ -4,6 +4,16 @@ Now that you've installed the extension, changes from `${param:FIRESTORE_COLLECT
 in your Firestore Database will be synced to the Typesense Collection `${param:TYPESENSE_COLLECTION_NAME}`
 on `${param:TYPESENSE_HOSTS}`.
 
+### Pre-requisites
+
+As a reminder in case you haven't already done this, make sure that you have setup a Typesense Collection in one of the
+following ways:
+
+- Through the Typesense Cloud Dashboard or 
+- Through the [API](https://typesense.org/docs/0.20.0/api/collections.html#create-a-collection).
+
+This extension expects a Typesense Cloud collection to already be created and does not create it for you.
+
 ###  Backfilling Data
 
 This extension only syncs data that was created or changed after it was installed.
