@@ -2,15 +2,16 @@
 
 [![CircleCI](https://circleci.com/gh/typesense/firestore-typesense-search.svg?style=shield)](https://circleci.com/gh/typesense/firestore-typesense-search)
 
-**Author**: Typesense (**[https://typesense.org](https://typesense.org)**)
-
-**Description**: Indexes data from Firestore into Typesense for full-text search.
-
-**Details**: Use this extension to sync data from your Firestore collection to [Typesense](https://typesense.org/), to be able to 
-do full-text fuzzy search on your Firestore data, with typo tolerance, faceting and more.
+A Firebase extension to sync data from your Firestore collection to [Typesense](https://typesense.org/), 
+to be able to do full-text fuzzy search on your Firestore data, with typo tolerance, faceting and more.
 
 This extension listens to your specified Firestore collection and syncs Firestore documents to Typesense 
 on creation, updates and deletes. It also provides a function to help you backfill data.
+
+**What is Typesense?**
+
+If you're new to [Typesense](https://typesense.org), it is an open source search engine that is simple to use, run and scale, with clean APIs and documentation. Think of it as an open source alternative to Algolia and an easier-to-use, batteries-included alternative to ElasticSearch. Get a quick overview from [this guide](https://typesense.org/docs/guide).
+
 
 ## ⚙️ Usage
 
