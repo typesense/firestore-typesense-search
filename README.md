@@ -12,8 +12,9 @@ do full-text fuzzy search on your Firestore data, with typo tolerance, faceting 
 This extension listens to your specified Firestore collection and syncs Firestore documents to Typesense 
 on creation, updates and deletes. It also provides a function to help you backfill data.
 
+## ⚙️ Usage
 
-## ⚙️ Required Setup
+### 1. Setup Prerequisites
 
 Before installing this extension, make sure that you have:
 
@@ -23,10 +24,35 @@ Before installing this extension, make sure that you have:
 3. Setup a Typesense Collection either through the Typesense Cloud dashboard or 
   through the [API](https://typesense.org/docs/0.20.0/api/collections.html#create-a-collection).
 
-This extension will sync changes that happen _after_ you've installed the extension. You'll be able to run a function 
-to backfill existing data in your Firestore collection. Detailed information for running this backfill function 
-will be provided after you install this extension.
+### 2. Install the Extension 
 
+You can install this extension either through the Firebase Web console or through the Firebase CLI.
+
+##### Firebase Console
+
+[![Install this extension in your Firebase project](https://www.gstatic.com/mobilesdk/210513_mobilesdk/install-extension.png "Install this extension in your Firebase project")][install-link]
+
+[install-link]: https://console.firebase.google.com/project/_/extensions/install?ref=typesense/firestore-typesense-search
+
+##### Firebase CLI
+
+```bash
+firebase ext:install typesense/firestore-typesense-search --project=[your-project-id]
+```
+
+Learn more about installing extensions in the Firebase Extensions documentation:
+
+- [Console](https://firebase.google.com/docs/extensions/install-extensions?platform=console)
+- [CLI](https://firebase.google.com/docs/extensions/install-extensions?platform=cli)
+
+### 3. Backfilling data (optional)
+
+This extension only syncs data that was created or changed in Firestore, after it was installed. In order to backfill data that already exists in your Firestore collection to your Typesense Collection:
+
+- Create a new Firestore collection called `typesense_sync` through the Firestore UI.
+- Create a new document with the ID `backfill` and contents of `{trigger: true}`
+
+This will trigger the backfill background Cloud function, which will read data from your Firestore collection and create equivalent documents in your Typesense collection.
 
 ## 🧾 Billing
 
@@ -68,24 +94,44 @@ This extension will operate with the following project IAM roles:
 
 * datastore.user (Reason: Required to backfill data from your Firestore collection into Typesense)
 
+## Development Workflow
 
-## 🎬 Install this Extension 
+#### Run Emulator
 
-You can install this extension either through the Firebase Web console or through the Firebase CLI.
-
-#### Firebase Console
-
-[![Install this extension in your Firebase project](https://www.gstatic.com/mobilesdk/210513_mobilesdk/install-extension.png "Install this extension in your Firebase project")][install-link]
-
-[install-link]: https://console.firebase.google.com/project/_/extensions/install?ref=typesense/firestore-typesense-search
-
-#### Firebase CLI
-
-```bash
-firebase ext:install typesense/firestore-typesense-search --project=[your-project-id]
+```shell
+npm run emulator
+npm run typesenseServer
 ```
 
-Learn more about installing extensions in the Firebase Extensions documentation:
+- Emulator UI will be accessible at http://localhost:4000.
+- Local Typesense server will be accessible at http://localhost:8108
 
-- [Console](https://firebase.google.com/docs/extensions/install-extensions?platform=console)
-- [CLI](https://firebase.google.com/docs/extensions/install-extensions?platform=cli)
+Add records in the Firestore UI and they should be created in Typesense.
+
+#### Run Integration Tests
+
+```shell
+npm run test
+```
+
+#### Generate README
+
+The Firebase CLI provides the following convenience command to auto-generate a README file containing content
+pulled from extension.yaml file and PREINSTALL.md file:
+
+```shell
+firebase ext:info ./ --markdown > README.md
+```
+
+#### Publish Extension
+
+- Update version number in extension.yaml
+- 
+    ```shell
+    firebase ext:dev:publish typesense/firestore-typesense-search
+    ```
+- Create release in Github
+
+## ℹ️ Support
+
+Please open a Github issue or join our [Slack community](https://join.slack.com/t/typesense-community/shared_invite/zt-mx4nbsbn-AuOL89O7iBtvkz136egSJg).
