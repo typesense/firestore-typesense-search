@@ -94,7 +94,6 @@ params:
       guide](https://firebase.google.com/docs/functions/locations).
     type: select
     options:
-    options:
       - label: Iowa (us-central1)
         value: us-central1
       - label: South Carolina (us-east1)
