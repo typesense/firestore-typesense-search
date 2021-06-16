@@ -139,6 +139,3 @@ params:
     default: us-central1
     required: true
     immutable: true
-    default: us-central1
-    required: true
-    immutable: true
