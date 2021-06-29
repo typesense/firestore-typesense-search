@@ -4,6 +4,10 @@ const config = require("./config");
 const typesense = require("./typesenseClient");
 const utils = require("./utils");
 
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+});
+
 const validateBackfillRun = (snapshot) => {
   if (![true, "true"].includes(snapshot.after.get("trigger"))) {
     functions.logger.error(
@@ -25,10 +29,6 @@ module.exports = functions.handler.firestore.document
       if (!validateBackfillRun(snapshot)) {
         return false;
       }
-
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
-      });
 
       const querySnapshot =
         await admin.firestore().collection(config.firestoreCollectionPath).get();
