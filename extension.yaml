@@ -11,7 +11,7 @@ author:
   authorName: Typesense
   url: https://typesense.org
 
-sourceUrl: https://github.com/typesense/firebase-typesense-search-extension
+sourceUrl: https://github.com/typesense/firebase-typesense-search-extension/tree/master
 releaseNotesUrl: https://github.com/typesense/firestore-typesense-search/releases
 
 billingRequired: true
