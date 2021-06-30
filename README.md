@@ -84,9 +84,9 @@ When you install this extension, you'll be able to configure the following param
 
 ## ☁️ Cloud Functions
 
-* **indexToTypesenseOnFirestoreWrite:** A function that indexes data into Typesense when it's triggered by Firestore changes
+* **indexToTypesenseOnFirestoreWrite:** A function that indexes data into Typesense when it's triggered by Firestore changes.
 
-* **backfillToTypesenseFromFirestore:** A function that backfills data from a Firestore collection into Typesense, triggered when a Firestore document with the path `typesense_sync/trigger` has the contents of `backfill: true`. The `backfill` key is deleted by the function, once the backfill is complete.
+* **backfillToTypesenseFromFirestore:** A function that backfills data from a Firestore collection into Typesense, triggered when a Firestore document with the path `typesense_sync/trigger` has the contents of `backfill: true`.
 
 
 ## 🔑 Access Required

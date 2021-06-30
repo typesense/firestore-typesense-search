@@ -33,7 +33,6 @@ resources:
     description: >-
       A function that backfills data from a Firestore collection into Typesense,
       triggered when a Firestore document with the path `typesense_sync/trigger` has the contents of `backfill: true`.
-      The `backfill` key is deleted by the function, once the backfill is complete.
     type: firebaseextensions.v1beta.function
     properties:
       runtime: nodejs14
