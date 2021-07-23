@@ -1,5 +1,5 @@
 name: firestore-typesense-search
-version: 0.2.3
+version: 0.2.4
 specVersion: v1beta  # Firebase Extensions specification version (do not edit)
 
 displayName: Search Firestore with Typesense

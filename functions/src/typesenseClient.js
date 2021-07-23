@@ -10,4 +10,6 @@ module.exports = new Typesense.Client({
     };
   } ),
   apiKey: config.typesenseAPIKey,
+  connectionTimeoutSeconds: 120,
+  retryIntervalSeconds: 120,
 });
