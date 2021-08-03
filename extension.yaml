@@ -1,5 +1,5 @@
 name: firestore-typesense-search
-version: 0.2.4
+version: 0.2.5
 specVersion: v1beta  # Firebase Extensions specification version (do not edit)
 
 displayName: Search Firestore with Typesense
@@ -39,6 +39,7 @@ resources:
       sourceDirectory: functions
       timeout: 540s
       maxInstances: 1
+      availableMemoryMb: 2048
       location: ${LOCATION}
       eventTrigger:
         eventType: providers/cloud.firestore/eventTypes/document.write
