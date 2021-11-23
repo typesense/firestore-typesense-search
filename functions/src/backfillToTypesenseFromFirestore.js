@@ -59,7 +59,7 @@ module.exports = functions.handler.firestore.document
               .import(currentDocumentsBatch);
           functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
         } catch (error) {
-          functions.logger.error("Import error", erro);
+          functions.logger.error("Import error", error);
         }
       }
 
