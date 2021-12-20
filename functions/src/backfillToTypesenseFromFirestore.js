@@ -21,21 +21,21 @@ const validateBackfillRun = (snapshot) => {
 module.exports = functions.handler.firestore.document
     .onWrite(async (snapshot, context) => {
       functions.logger.info("Backfilling " +
-        `${config.firestoreCollectionFields.join(",")} fields in Firestore documents ` +
-        `from ${config.firestoreCollectionPath} ` +
-        `into Typesense Collection ${config.typesenseCollectionName} ` +
-        `on ${config.typesenseHosts.join(",")}`);
+      `${config.firestoreCollectionFields.join(",")} fields in Firestore documents ` +
+      `from ${config.firestoreCollectionPath} ` +
+      `into Typesense Collection ${config.typesenseCollectionName} ` +
+      `on ${config.typesenseHosts.join(",")}`);
 
       if (!validateBackfillRun(snapshot)) {
         return false;
       }
 
       const querySnapshot =
-        await admin.firestore().collection(config.firestoreCollectionPath).get();
+      await admin.firestore().collection(config.firestoreCollectionPath).get();
       let currentDocumentNumber = 0;
       let currentDocumentsBatch = [];
       querySnapshot.forEach(async (firestoreDocument) => {
-        currentDocumentNumber+=1;
+        currentDocumentNumber += 1;
         currentDocumentsBatch.push(utils.typesenseDocumentFromSnapshot(firestoreDocument));
 
         if (currentDocumentNumber === config.typesenseBackfillBatchSize) {
@@ -47,8 +47,7 @@ module.exports = functions.handler.firestore.document
             currentDocumentsBatch = [];
             functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
           } catch (error) {
-            functions.logger.error("Import error");
-            console.dir(error.importResults);
+            functions.logger.error("Import error", error);
           }
         }
       });
@@ -60,8 +59,7 @@ module.exports = functions.handler.firestore.document
               .import(currentDocumentsBatch);
           functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
         } catch (error) {
-          functions.logger.error("Import error");
-          console.dir(error.importResults);
+          functions.logger.error("Import error", error);
         }
       }
 
