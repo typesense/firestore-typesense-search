@@ -46,6 +46,10 @@ Learn more about installing extensions in the Firebase Extensions documentation:
 - [Console](https://firebase.google.com/docs/extensions/install-extensions?platform=console)
 - [CLI](https://firebase.google.com/docs/extensions/install-extensions?platform=cli)
 
+##### Syncing Multiple Firestore collections
+
+You can install this extension multiple times in your Firebase project by clicking on the installation link above multiple times, and use a different Firestore collection path in each installation instance. [Here](https://github.com/typesense/firestore-typesense-search/issues/9#issuecomment-885940705) is a screenshot of how this looks.
+
 ### 3. Backfilling data (optional)
 
 This extension only syncs data that was created or changed in Firestore, after it was installed. In order to backfill data that already exists in your Firestore collection to your Typesense Collection:
