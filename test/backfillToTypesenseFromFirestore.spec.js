@@ -16,7 +16,7 @@ describe("backfillToTypesenseFromFirestore", () => {
 
     // Clear any previously created collections
     try {
-      await typesense.collections(config.typesenseCollectionName).delete();
+      await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
     } catch (e) {
       console.info(`${config.typesenseCollectionName} collection not found, proceeding...`);
     }
@@ -49,7 +49,7 @@ describe("backfillToTypesenseFromFirestore", () => {
 
     // The above will automatically add the document to Typesense,
     // so delete it so we can test backfill
-    await typesense.collections(config.typesenseCollectionName).delete();
+    await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
     await typesense.collections().create({
       name: config.typesenseCollectionName,
       fields: [
@@ -66,7 +66,7 @@ describe("backfillToTypesenseFromFirestore", () => {
 
     // Check that the data was backfilled
     const typesenseDocsStr = await typesense
-        .collections(config.typesenseCollectionName)
+        .collections(encodeURIComponent(config.typesenseCollectionName))
         .documents()
         .export();
     const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));

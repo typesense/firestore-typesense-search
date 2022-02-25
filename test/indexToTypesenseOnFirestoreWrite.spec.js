@@ -16,7 +16,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
 
     // Clear any previously created collections
     try {
-      await typesense.collections(config.typesenseCollectionName).delete();
+      await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
     } catch (e) {
       console.info(`${config.typesenseCollectionName} collection not found, proceeding...`);
     }
@@ -48,7 +48,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     await new Promise((r) => setTimeout(r, 2000));
 
     let typesenseDocsStr = await typesense
-        .collections(config.typesenseCollectionName)
+        .collections(encodeURIComponent(config.typesenseCollectionName))
         .documents()
         .export();
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
@@ -69,7 +69,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     await new Promise((r) => setTimeout(r, 2000));
 
     typesenseDocsStr = await typesense
-        .collections(config.typesenseCollectionName)
+        .collections(encodeURIComponent(config.typesenseCollectionName))
         .documents()
         .export();
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
@@ -89,7 +89,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     await new Promise((r) => setTimeout(r, 2000));
 
     const typesenseCollection = await typesense
-        .collections(config.typesenseCollectionName)
+        .collections(encodeURIComponent(config.typesenseCollectionName))
         .retrieve();
     expect(typesenseCollection.num_documents).toBe(0);
   });

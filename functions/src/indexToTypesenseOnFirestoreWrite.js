@@ -10,7 +10,7 @@ module.exports = functions.handler.firestore.document
         const typesenseDocument = utils.typesenseDocumentFromSnapshot(snapshot.after);
         functions.logger.debug(`Creating document ${JSON.stringify(typesenseDocument)}`);
         return typesense
-            .collections(config.typesenseCollectionName)
+            .collections(encodeURIComponent(config.typesenseCollectionName))
             .documents()
             .create(typesenseDocument);
       } else if (snapshot.after.data() == null) {
@@ -18,7 +18,7 @@ module.exports = functions.handler.firestore.document
         const documentId = snapshot.before.id;
         functions.logger.debug(`Deleting document ${documentId}`);
         return typesense
-            .collections(config.typesenseCollectionName)
+            .collections(encodeURIComponent(config.typesenseCollectionName))
             .documents(documentId)
             .delete();
       } else {
@@ -26,7 +26,7 @@ module.exports = functions.handler.firestore.document
         const typesenseDocument = utils.typesenseDocumentFromSnapshot(snapshot.after);
         functions.logger.debug(`Upserting document ${JSON.stringify(typesenseDocument)}`);
         return typesense
-            .collections(config.typesenseCollectionName)
+            .collections(encodeURIComponent(config.typesenseCollectionName))
             .documents()
             .upsert(typesenseDocument);
       }

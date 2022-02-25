@@ -41,7 +41,7 @@ module.exports = functions.handler.firestore.document
         if (currentDocumentNumber === config.typesenseBackfillBatchSize) {
           try {
             await typesense
-                .collections(config.typesenseCollectionName)
+                .collections(encodeURIComponent(config.typesenseCollectionName))
                 .documents()
                 .import(currentDocumentsBatch);
             currentDocumentsBatch = [];
@@ -54,7 +54,7 @@ module.exports = functions.handler.firestore.document
       if (currentDocumentsBatch.length > 0) {
         try {
           await typesense
-              .collections(config.typesenseCollectionName)
+              .collections(encodeURIComponent(config.typesenseCollectionName))
               .documents()
               .import(currentDocumentsBatch);
           functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);

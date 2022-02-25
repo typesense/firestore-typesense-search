@@ -7,5 +7,8 @@ module.exports = async function globalSetup() {
     host: "0.0.0.0",
     usedPortAction: "ignore",
     launchTimeout: 50000,
+    waitOnScheme: {
+      window: 5000,
+    },
   });
 };
