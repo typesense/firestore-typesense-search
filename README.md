@@ -131,6 +131,7 @@ firebase ext:info ./ --markdown > README.md
 #### Publish Extension
 
 - Update version number in extension.yaml
+- Add entry to CHANGELOG.md
 - 
     ```shell
     firebase ext:dev:publish typesense/firestore-typesense-search
