@@ -20,9 +20,9 @@ If you're new to [Typesense](https://typesense.org), it is an open source search
 Before installing this extension, make sure that you have:
 
 1. [Set up a Cloud Firestore database](https://firebase.google.com/docs/firestore/quickstart) in your Firebase project.
-2. [Setup](https://typesense.org/docs/0.20.0/guide/install-typesense.html) a Typesense cluster 
+2. [Set up](https://typesense.org/docs/0.20.0/guide/install-typesense.html) a Typesense cluster 
   (on [Typesense Cloud](https://cloud.typesense.org) or Self-Hosted).
-3. Setup a Typesense Collection either through the Typesense Cloud dashboard or 
+3. Set up a Typesense Collection either through the Typesense Cloud dashboard or 
   through the [API](https://typesense.org/docs/0.20.0/api/collections.html#create-a-collection).
 
 ### 2. Install the Extension 
