@@ -1,3 +1,7 @@
+## Version 0.2.8
+
+- Add default values to params, add links to external services needed for plugin
+
 ## Version 0.2.7
 
 - Support for Typesense collection names with special characters like `/`
