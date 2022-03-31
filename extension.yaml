@@ -49,6 +49,10 @@ roles:
   - role: datastore.user
     reason: Required to backfill data from your Firestore collection into Typesense
 
+externalServices:
+  - name: Typesense
+    PricingUri: https://cloud.typesense.org/pricing
+
 params:
   - param: FIRESTORE_COLLECTION_PATH
     label: Firestore Collection Path
