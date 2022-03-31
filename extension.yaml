@@ -50,8 +50,10 @@ roles:
     reason: Required to backfill data from your Firestore collection into Typesense
 
 externalServices:
-  - name: Typesense
+  - name: Typesense Cloud
     PricingUri: https://cloud.typesense.org/pricing
+  - name: Typesense Self Hosted (Free)
+    PricingUri: https://typesense.org/downloads
 
 params:
   - param: FIRESTORE_COLLECTION_PATH
