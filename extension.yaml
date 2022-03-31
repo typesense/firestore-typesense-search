@@ -57,6 +57,7 @@ params:
     example: path/to/firestore_collection
     validationRegex: "^[^/]+(/[^/]+/[^/]+)*$"
     validationErrorMessage: Firestore collection paths must be an odd number of segments separated by slashes, e.g. "path/to/firestore_collection".
+    default: typesense
     required: true
     immutable: true
   - param: FIRESTORE_COLLECTION_FIELDS
@@ -86,6 +87,7 @@ params:
     label: Typesense Collection Name
     description: >-
       Typesense collection name to index data into
+    default: companies
     required: true
   - param: LOCATION
     label: Cloud Functions location
