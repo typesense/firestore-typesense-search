@@ -76,10 +76,11 @@ params:
     required: true
   - param: TYPESENSE_API_KEY
     label: Typesense API Key
+    type: secret
     description: >-
       An Typesense API key with admin permissions.
       Click on "Generate API Key" in cluster dashboard in Typesense Cloud
-    example: ''
+    example: ""
     required: true
   - param: TYPESENSE_COLLECTION_NAME
     label: Typesense Collection Name
