@@ -20,10 +20,10 @@ If you're new to [Typesense](https://typesense.org), it is an open source search
 Before installing this extension, make sure that you have:
 
 1. [Set up a Cloud Firestore database](https://firebase.google.com/docs/firestore/quickstart) in your Firebase project.
-2. [Set up](https://typesense.org/docs/0.20.0/guide/install-typesense.html) a Typesense cluster 
+2. [Set up](https://typesense.org/docs/guide/install-typesense.html) a Typesense cluster 
   (on [Typesense Cloud](https://cloud.typesense.org) or Self-Hosted).
 3. Set up a Typesense Collection either through the Typesense Cloud dashboard or 
-  through the [API](https://typesense.org/docs/0.20.0/api/collections.html#create-a-collection).
+  through the [API](https://typesense.org/docs/latest/api/collections.html#create-a-collection).
 
 ### 2. Install the Extension 
 
@@ -38,7 +38,7 @@ You can install this extension either through the Firebase Web console or throug
 ##### Firebase CLI
 
 ```bash
-firebase ext:install typesense/firestore-typesense-search --project=[your-project-id]
+firebase ext:install typesense/firestore-typesense-search@0.2.7 --project=[your-project-id]
 ```
 
 Learn more about installing extensions in the Firebase Extensions documentation:
