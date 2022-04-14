@@ -34,13 +34,13 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
   });
 
   it("indexes string values on writes to specified Firestore collection", async () => {
-    const docData = {name: "test"};
+    const docData = {author: "test"};
 
     // create document in Firestore
     const docRef = await firestore.collection(config.firestoreCollectionPath).add(docData);
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
@@ -50,15 +50,15 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, name: docData.name});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, author: docData.author});
 
     // update document in Firestore
-    docData.name = "test2";
+    docData.author = "test2";
 
     await docRef.update(docData);
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was updated
     typesenseDocsStr = await typesense
@@ -68,32 +68,31 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, name: docData.name});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, author: docData.author});
 
     // delete document in Firestore
     await docRef.delete();
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
         .collections(encodeURIComponent(config.typesenseCollectionName))
         .documents()
         .export();
-    typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
-    expect(typesenseDocs.length).toBe(0);
+    expect(typesenseDocsStr).toBe("");
   });
 
   it("indexes number values on writes to specified Firestore collection", async () => {
-    const docData = {age: 22};
+    const docData = {rating: 22};
 
     // create document in Firestore
     const docRef = await firestore.collection(config.firestoreCollectionPath).add(docData);
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
@@ -103,15 +102,15 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, age: docData.age});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, rating: docData.rating});
 
     // update document in Firestore
-    docData.age = 43;
+    docData.rating = 43;
 
     await docRef.update(docData);
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was updated
     typesenseDocsStr = await typesense
@@ -121,32 +120,31 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, age: docData.age});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, rating: docData.rating});
 
     // delete document in Firestore
     await docRef.delete();
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
         .collections(encodeURIComponent(config.typesenseCollectionName))
         .documents()
         .export();
-    typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
-    expect(typesenseDocs.length).toBe(0);
+    expect(typesenseDocsStr).toBe("");
   });
 
   it("indexes boolean values on writes to specified Firestore collection", async () => {
-    const docData = {isActive: true};
+    const docData = {isAvailable: true};
 
     // create document in Firestore
     const docRef = await firestore.collection(config.firestoreCollectionPath).add(docData);
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
@@ -156,15 +154,15 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, isActive: docData.isActive});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, isAvailable: docData.isAvailable});
 
     // update document in Firestore
-    docData.isActive = false;
+    docData.isAvailable = false;
 
     await docRef.update(docData);
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was updated
     typesenseDocsStr = await typesense
@@ -174,32 +172,31 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, isActive: docData.isActive});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, isAvailable: docData.isAvailable});
 
     // delete document in Firestore
     await docRef.delete();
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
         .collections(encodeURIComponent(config.typesenseCollectionName))
         .documents()
         .export();
-    typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
-    expect(typesenseDocs.length).toBe(0);
+    expect(typesenseDocsStr).toBe("");
   });
 
   it("indexes timestamp values on writes to specified Firestore collection", async () => {
-    const docData = {date: new Date()};
+    const docData = {createdAt: new Date()};
 
     // create document in Firestore
     const docRef = await firestore.collection(config.firestoreCollectionPath).add(docData);
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
@@ -211,16 +208,16 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     expect(typesenseDocs.length).toBe(1);
     expect(typesenseDocs[0]).toStrictEqual({
       id: docRef.id,
-      date: Math.floor(docData.date.getTime() / 1000),
+      createdAt: Math.floor(docData.createdAt.getTime() / 1000),
     });
 
     // update document in Firestore
-    docData.date = new Date(docData.date.getTime() + 1000);
+    docData.createdAt = new Date(docData.createdAt.getTime() + 1000);
 
     await docRef.update(docData);
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was updated
     typesenseDocsStr = await typesense
@@ -232,23 +229,22 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     expect(typesenseDocs.length).toBe(1);
     expect(typesenseDocs[0]).toStrictEqual({
       id: docRef.id,
-      date: Math.floor(docData.date.getTime() / 1000),
+      createdAt: Math.floor(docData.createdAt.getTime() / 1000),
     });
 
     // delete document in Firestore
     await docRef.delete();
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
         .collections(encodeURIComponent(config.typesenseCollectionName))
         .documents()
         .export();
-    typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
-    expect(typesenseDocs.length).toBe(0);
+    expect(typesenseDocsStr).toBe("");
   });
 
   it("indexes geo point values on writes to specified Firestore collection", async () => {
@@ -258,7 +254,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     const docRef = await firestore.collection(config.firestoreCollectionPath).add(docData);
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
@@ -279,7 +275,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     await docRef.update(docData);
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was updated
     typesenseDocsStr = await typesense
@@ -298,15 +294,14 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     await docRef.delete();
 
     // wait for the Firestore cloud function to write to Typesense
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 2500));
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
         .collections(encodeURIComponent(config.typesenseCollectionName))
         .documents()
         .export();
-    typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
-    expect(typesenseDocs.length).toBe(0);
+    expect(typesenseDocsStr).toBe("");
   });
 });
