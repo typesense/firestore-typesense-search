@@ -20,8 +20,15 @@ exports.typesenseDocumentFromSnapshot = (
 
   const typesenseDocument = Object.fromEntries(
       entries.map(([key, value]) => {
-        const isGeoPoint = value instanceof admin.firestore.GeoPoint;
-        return [key, isGeoPoint ? [value.latitude, value.longitude] : value];
+        let typesenseValue = value;
+
+        if (value instanceof admin.firestore.Timestamp) {
+          typesenseValue = Math.floor(value.toDate().getTime() / 1000);
+        } else if (value instanceof admin.firestore.GeoPoint) {
+          typesenseValue = [value.latitude, value.longitude];
+        }
+
+        return [key, typesenseValue];
       }),
   );
   typesenseDocument.id = firestoreDocumentSnapshot.id;
