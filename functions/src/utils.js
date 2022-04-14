@@ -1,8 +1,11 @@
 const admin = require("firebase-admin");
+const flat = require("flat");
 const config = require("./config");
 
 const mapValue = (value) => {
   if (value instanceof admin.firestore.Timestamp) {
+    // convert date to Unix timestamp
+    // https://typesense.org/docs/0.22.2/api/collections.html#indexing-dates
     return Math.floor(value.toDate().getTime() / 1000);
   } else if (value instanceof admin.firestore.GeoPoint) {
     return [value.latitude, value.longitude];
@@ -34,8 +37,11 @@ exports.typesenseDocumentFromSnapshot = (
     entries = entries.filter(([key]) => fieldsToExtract.includes(key));
   }
 
-  const typesenseDocument = Object.fromEntries(
-      entries.map(([key, value]) => [key, mapValue(value)]),
+  // using flat to flatten nested objects
+  // https://typesense.org/docs/0.22.2/api/collections.html#indexing-nested-fields
+  const typesenseDocument = flat(
+      Object.fromEntries(entries.map(([key, value]) => [key, mapValue(value)])),
+      {safe: true},
   );
   typesenseDocument.id = firestoreDocumentSnapshot.id;
   return typesenseDocument;
