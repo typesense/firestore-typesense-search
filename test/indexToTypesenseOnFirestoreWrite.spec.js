@@ -24,7 +24,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     // recreate the Typesense collection
     await typesense.collections().create({
       name: config.typesenseCollectionName,
-      fields: [{"name": ".*", "type": "auto"}],
+      fields: [{name: ".*", type: "auto"}],
     });
   });
 
@@ -173,6 +173,79 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
 
     expect(typesenseDocs.length).toBe(1);
     expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, isAvailable: docData.isAvailable});
+
+    // delete document in Firestore
+    await docRef.delete();
+
+    // wait for the Firestore cloud function to write to Typesense
+    await new Promise((r) => setTimeout(r, 2500));
+
+    // check that the document was deleted
+    typesenseDocsStr = await typesense
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
+
+    expect(typesenseDocsStr).toBe("");
+  });
+
+  it("indexes map values on writes to specified Firestore collection", async () => {
+    const docData = {
+      nested_field: {
+        field1: "value1",
+        field2: ["value2", "value3", "value4"],
+        field3: {
+          fieldA: "valueA",
+          fieldB: ["valueB", "valueC", "valueD"],
+        },
+      },
+    };
+
+    // create document in Firestore
+    const docRef = await firestore.collection(config.firestoreCollectionPath).add(docData);
+
+    // wait for the Firestore cloud function to write to Typesense
+    await new Promise((r) => setTimeout(r, 2500));
+
+    // check that the document was indexed
+    let typesenseDocsStr = await typesense
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
+    let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
+
+    expect(typesenseDocs.length).toBe(1);
+    expect(typesenseDocs[0]).toStrictEqual({
+      "id": docRef.id,
+      "nested_field.field1": "value1",
+      "nested_field.field2": ["value2", "value3", "value4"],
+      "nested_field.field3.fieldA": "valueA",
+      "nested_field.field3.fieldB": ["valueB", "valueC", "valueD"],
+    });
+
+    // update document in Firestore
+    docData.nested_field.field1 = "new value1";
+
+    await docRef.update(docData);
+
+    // wait for the Firestore cloud function to write to Typesense
+    await new Promise((r) => setTimeout(r, 2500));
+
+    // check that the document was updated
+    typesenseDocsStr = await typesense
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
+    typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
+
+    expect(typesenseDocs.length).toBe(1);
+    expect(typesenseDocs[0]).toStrictEqual({
+      "id": docRef.id,
+      "nested_field.field1": "new value1",
+      "nested_field.field2": ["value2", "value3", "value4"],
+      "nested_field.field3.fieldA": "valueA",
+      "nested_field.field3.fieldB": ["valueB", "valueC", "valueD"],
+    });
 
     // delete document in Firestore
     await docRef.delete();
