@@ -38,7 +38,7 @@ You can install this extension either through the Firebase Web console or throug
 ##### Firebase CLI
 
 ```bash
-firebase ext:install typesense/firestore-typesense-search@0.2.7 --project=[your-project-id]
+firebase ext:install typesense/firestore-typesense-search --project=[your-project-id]
 ```
 
 Learn more about installing extensions in the Firebase Extensions documentation:
