@@ -1,3 +1,9 @@
+## Version 0.3.0
+
+- Map Firestore Timestamps to int64 values in Typesense
+- Map Firestore GeoPoint values to Typesense geopoint format
+- Flatten nested field values to top-level keys in Typesense
+
 ## Version 0.2.8
 
 - Add default values to params, add links to external services needed for plugin

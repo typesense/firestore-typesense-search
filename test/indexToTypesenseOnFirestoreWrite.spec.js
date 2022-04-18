@@ -85,7 +85,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     expect(typesenseDocsStr).toBe("");
   });
 
-  it("indexes number values on writes to specified Firestore collection", async () => {
+  it("indexes numeric values on writes to specified Firestore collection", async () => {
     const docData = {rating: 22};
 
     // create document in Firestore
@@ -189,7 +189,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     expect(typesenseDocsStr).toBe("");
   });
 
-  it("indexes map values on writes to specified Firestore collection", async () => {
+  it("indexes nested fields on writes to specified Firestore collection", async () => {
     const docData = {
       nested_field: {
         field1: "value1",
