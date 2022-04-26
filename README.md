@@ -15,7 +15,7 @@ If you're new to [Typesense](https://typesense.org), it is an open source search
 
 ## ⚙️ Usage
 
-### 1. Setup Prerequisites
+### Step 1️⃣ : Setup Prerequisites
 
 Before installing this extension, make sure that you have:
 
@@ -24,8 +24,10 @@ Before installing this extension, make sure that you have:
   (on [Typesense Cloud](https://cloud.typesense.org) or Self-Hosted).
 3. Set up a Typesense Collection either through the Typesense Cloud dashboard or 
   through the [API](https://typesense.org/docs/latest/api/collections.html#create-a-collection).
+  
+⚠️ ☝️ #3 above is a commonly missed item. This extension **does not create the Typesense Collection for you**. If you see an HTTP 404 in the extension logs, it's most likely because of missing this step. 
 
-### 2. Install the Extension 
+### Step 2️⃣ : Install the Extension 
 
 You can install this extension either through the Firebase Web console or through the Firebase CLI.
 
@@ -50,7 +52,7 @@ Learn more about installing extensions in the Firebase Extensions documentation:
 
 You can install this extension multiple times in your Firebase project by clicking on the installation link above multiple times, and use a different Firestore collection path in each installation instance. [Here](https://github.com/typesense/firestore-typesense-search/issues/9#issuecomment-885940705) is a screenshot of how this looks.
 
-### 3. Backfilling data (optional)
+### Step 3️⃣ : [Optional] Backfill existing data
 
 This extension only syncs data that was created or changed in Firestore, after it was installed. In order to backfill data that already exists in your Firestore collection to your Typesense Collection:
 
