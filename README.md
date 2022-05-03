@@ -25,7 +25,7 @@ Before installing this extension, make sure that you have:
 3. Set up a Typesense Collection either through the Typesense Cloud dashboard or 
   through the [API](https://typesense.org/docs/latest/api/collections.html#create-a-collection).
   
-⚠️ ☝️ #3 above is a commonly missed item. This extension **does not create the Typesense Collection for you**. If you see an HTTP 404 in the extension logs, it's most likely because of missing this step. 
+⚠️ ☝️ #3 above is a commonly missed step. This extension **does not create the Typesense Collection for you**. Instead it syncs data to a Typesense collection you've already created. If you see an HTTP 404 in the extension logs, it's most likely because of missing this step. 
 
 ### Step 2️⃣ : Install the Extension 
 
