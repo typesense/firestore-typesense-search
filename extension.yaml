@@ -63,7 +63,7 @@ params:
     example: path/to/firestore_collection
     validationRegex: "^[^/]+(/[^/]+/[^/]+)*$"
     validationErrorMessage: Firestore collection paths must be an odd number of segments separated by slashes, e.g. "path/to/firestore_collection".
-    default: typesense
+    default: path/to/firestore_collection
     required: true
     immutable: true
   - param: FIRESTORE_COLLECTION_FIELDS
