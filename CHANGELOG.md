@@ -1,3 +1,8 @@
+## Version 0.4.0
+
+- Sync ref.path to Typesense
+- Ability to backfill specific collections to Typesense, when multiple instances of the extension are installed.
+
 ## Version 0.3.0
 
 - Map Firestore Timestamps to int64 values in Typesense
