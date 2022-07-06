@@ -57,8 +57,9 @@ This extension only syncs data that was created or changed in Firestore, after i
 
 - Create a new Firestore collection called `typesense_sync` through the Firestore UI.
 - Create a new document with the ID `backfill` and contents of `{trigger: true}`
+- [Optional] If you have [multiple instances](#syncing-multiple-firestore-collections) of the extension installed to sync multiple collections, you can specify which particular collections are backfilled by setting the contents of the `backfill` document in the previous step to `{trigger: true, firestore_collections: ["path/to/firestore_collection_1", "path/to/firestore_collection_2"] }`
 
-This will trigger the backfill background Cloud function, which will read data from your Firestore collection and create equivalent documents in your Typesense collection.
+This will trigger the backfill background Cloud function, which will read data from your Firestore collection(s) and create equivalent documents in your Typesense collection.
 
 ## 🧾 Billing
 

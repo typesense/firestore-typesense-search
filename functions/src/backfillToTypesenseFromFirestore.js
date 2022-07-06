@@ -15,6 +15,16 @@ const validateBackfillRun = (snapshot) => {
       `was not found in Firestore document ${config.typesenseBackfillTriggerDocumentInFirestore}.`);
     return false;
   }
+
+  // Check if there's a collection specific sync setup
+  const collectionsToSync = snapshot.after.get("firestore_collections");
+  if (Array.isArray(collectionsToSync) && !collectionsToSync.includes(config.firestoreCollectionPath)) {
+    functions.logger.error(
+        "Skipping backfill. The `firestore_collections` key in " +
+      `${config.typesenseBackfillTriggerDocumentInFirestore} did not contain collection ${config.firestoreCollectionPath}.`);
+    return false;
+  }
+
   return true;
 };
 

@@ -13,6 +13,6 @@ module.exports = {
   ],
   "rules": {
     "quotes": ["error", "double"],
-    "max-len": [1, {"code": 100}],
+    "max-len": [1, {"code": 200}],
   },
 };
