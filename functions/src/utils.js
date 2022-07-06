@@ -10,7 +10,7 @@ const mapValue = (value) => {
   } else if (value instanceof admin.firestore.GeoPoint) {
     return [value.latitude, value.longitude];
   } else if (value instanceof admin.firestore.DocumentReference) {
-    return null;
+    return {"path": value.path};
   } else if (Array.isArray(value)) {
     return value.map(mapValue);
   } else if (typeof value === "object" && value !== null) {
