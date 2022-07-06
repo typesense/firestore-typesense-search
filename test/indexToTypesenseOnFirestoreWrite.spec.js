@@ -464,7 +464,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     expect(typesenseDocsStr).toBe("");
   });
 
-  it("ignores reference values on writes to specified Firestore collection", async () => {
+  it("adds reference values as ref.path", async () => {
     const docData = {ref: firestore.doc("test/test")};
 
     // create document in Firestore
@@ -481,7 +481,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id});
+    expect(typesenseDocs[0]).toStrictEqual({"id": docRef.id, "ref.path": "test/test"});
 
     // update document in Firestore
     docData.ref = firestore.doc("test/test2");
@@ -499,7 +499,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id});
+    expect(typesenseDocs[0]).toStrictEqual({"id": docRef.id, "ref.path": "test/test2"});
 
     // delete document in Firestore
     await docRef.delete();
