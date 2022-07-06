@@ -8,6 +8,9 @@ jobs:
       - restore_cache:
           key: dependency-cache-v1-{{ checksum "package-lock.json" }}
       - run:
+          name: 'Install specific version of node'
+          command: circleci-install nodejs 14.18.0 && sudo -H -i -u ${CIRCLECI_USER} nvm alias default 14.18.0
+      - run:
           name: npm install
           command: npm install
       - run:
