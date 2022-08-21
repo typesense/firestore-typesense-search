@@ -1,3 +1,7 @@
+## Version 0.4.1
+
+- Added params to set typesense protocol and port
+
 ## Version 0.4.0
 
 - Sync ref.path to Typesense
