@@ -41,10 +41,10 @@ module.exports = functions.handler.firestore.document
       }
 
       const querySnapshot =
-      await admin.firestore().collection(config.firestoreCollectionPath).get();
+        await admin.firestore().collection(config.firestoreCollectionPath).get();
       let currentDocumentNumber = 0;
       let currentDocumentsBatch = [];
-      querySnapshot.forEach(async (firestoreDocument) => {
+      for (const firestoreDocument of querySnapshot.docs) {
         currentDocumentNumber += 1;
         currentDocumentsBatch.push(utils.typesenseDocumentFromSnapshot(firestoreDocument));
 
@@ -60,7 +60,7 @@ module.exports = functions.handler.firestore.document
             functions.logger.error("Import error", error);
           }
         }
-      });
+      }
       if (currentDocumentsBatch.length > 0) {
         try {
           await typesense

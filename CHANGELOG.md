@@ -1,3 +1,7 @@
+## Version 0.4.1
+
+- Use `for...of` instead of `forEach` in backfill function. #37
+
 ## Version 0.4.0
 
 - Sync ref.path to Typesense
