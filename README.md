@@ -44,7 +44,7 @@ firebase ext:install typesense/firestore-typesense-search --project=[your-projec
 
 > Learn more about installing extensions in the Firebase Extensions documentation: [Console](https://firebase.google.com/docs/extensions/install-extensions?platform=console), [CLI](https://firebase.google.com/docs/extensions/install-extensions?platform=cli).
 
-### 🎛️ Configuration Parameters
+#### 🎛️ Configuration Parameters
 
 When you install this extension, you'll be able to configure the following parameters:
 
@@ -54,17 +54,17 @@ When you install this extension, you'll be able to configure the following param
 | Firestore Collection Fields | A comma separated list of fields that need to be indexed from each Firestore document. Leave blank to index all fields.                                                                                                                                                                        |
 | Typesense Hosts             | A comma-separated list of Typesense Hosts (only domain without https or port number). For single node clusters, a single hostname is sufficient. For multi-node Highly Available or (Search Delivery Network) SDN Clusters, please be sure to mention all hostnames in a comma-separated list. | 
 | Typesense API Key           | A Typesense API key with admin permissions. Click on "Generate API Key" in cluster dashboard in Typesense Cloud.                                                                                                                                                                               |
-| Typesense Collection Name   | Typesense collection name to index data into (you need to create this collection in Typesense before installing the extension).                                                                                                                                                                |
+| Typesense Collection Name   | Typesense collection name to index data into (you need to create this collection in Typesense yourself. This extension does not create the Typesense Collection for you).                                                                                                                      |
 | Cloud Functions location    | Where do you want to deploy the functions created for this extension? You usually want a location close to your database. For help selecting a location, refer to the [location selection guide](https://firebase.google.com/docs/functions/locations).                                        |
 
-⚠️ You'll notice that there is no way to configure the port number or protocol.
+> ⚠️ You'll notice that there is no way to configure the port number or protocol.
 This is because this extension only supports connecting to Typesense running HTTPS on Port 443, since your data goes from Firebase to Typesense over the public internet and we want your data to be encrypted in transit.
 For Typesense Cloud, HTTPS is already configured for you.
-
-When self-hosting Typesense, you want to make sure you set `--api-port=443` and also get an SSL certificate from say [LetsEncrypt](https://letsencrypt.org/) or any registrar
+> 
+> When self-hosting Typesense, you want to make sure you set `--api-port=443` and also get an SSL certificate from say [LetsEncrypt](https://letsencrypt.org/) or any registrar
 and configure Typesense to use it using the `--ssl-certificate` and `--ssl-certificate-key` [server parameters](https://typesense.org/docs/latest/api/server-configuration.html).
 
-#### Example
+##### Example
 
 If you have a Firestore database like this called `users`:
 
@@ -74,7 +74,7 @@ Here's the extension configuration screen with all the options filled out, if yo
 
 <img src="assets/extension_configuration_example.png" alt="Firestore DB Example" width="500" />
 
-##### Syncing Multiple Firestore collections
+#### Syncing Multiple Firestore collections
 
 You can install this extension multiple times in your Firebase project by clicking on the installation link above multiple times, and use a different Firestore collection path in each installation instance. [Here](https://github.com/typesense/firestore-typesense-search/issues/9#issuecomment-885940705) is a screenshot of how this looks.
 
