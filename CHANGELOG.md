@@ -1,3 +1,7 @@
+## Version 0.4.2
+
+- Fix documentation for triggering backfill
+
 ## Version 0.4.1
 
 - Use `for...of` instead of `forEach` in backfill function. #37
