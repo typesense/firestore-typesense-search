@@ -149,3 +149,15 @@ params:
     default: us-central1
     required: true
     immutable: true
+  - param: USE_EVENT_OR_QUERY
+    label: Use data from event or query firestore
+    type: select
+    description: >-
+      Querying firestore directly ensures that out-of-order triggers will always result in the latest data being synced at the cost of extra reads.
+    options:
+      - label: Use Event
+        value: event
+      - label: Use Query
+        value: query
+    default: event
+    required: true

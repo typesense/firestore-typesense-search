@@ -13,4 +13,5 @@ module.exports = {
   typesenseAPIKey: process.env.TYPESENSE_API_KEY,
   typesenseBackfillTriggerDocumentInFirestore: "typesense_sync/backfill",
   typesenseBackfillBatchSize: 1000,
+  useQuery: process.env.USE_EVENT_OR_QUERY == "query"
 };
