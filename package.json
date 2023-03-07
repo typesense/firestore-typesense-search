@@ -4,8 +4,9 @@
   "scripts": {
     "emulator": "firebase ext:dev:emulators:start --test-params=test-params.env --import=emulator_data",
     "export": "firebase emulators:export emulator_data",
-    "test": "DOTENV_CONFIG=test-params.local.env firebase ext:dev:emulators:exec --test-params=test-params.local.env jest",
-    "test:ci": "DOTENV_CONFIG=test-params.local.env firebase ext:dev:emulators:exec --test-params=test-params.local.env 'jest --ci --reporters=default --reporters=jest-junit'",
+    "test": "npm run test-part-1 && npm run test-part-2",
+    "test-part-1": "DOTENV_CONFIG=test-params-flatten-nested-true.local.env firebase ext:dev:emulators:exec --test-params=test-params-flatten-nested-true.local.env 'jest --testPathIgnorePatterns=test/indexToTypesenseOnFirestoreWriteWithoutFlattening.spec.js'",
+    "test-part-2": "DOTENV_CONFIG=test-params-flatten-nested-true.local.env firebase ext:dev:emulators:exec --test-params=test-params-flatten-nested-false.local.env 'jest --testPathPattern=test/indexToTypesenseOnFirestoreWriteWithoutFlattening.spec.js'",
     "typesenseServer": "rm -rf ~/typesense-server-data && mkdir ~/typesense-server-data && docker run -i -p 8108:8108 -v/tmp/typesense-server-data/:/data typesense/typesense:0.24.0 --data-dir /data --api-key=xyz --listen-port 8108 --enable-cors",
     "lint": "eslint . --fix"
   },
