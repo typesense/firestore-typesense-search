@@ -23,7 +23,7 @@
     "jest": "^27.0.3",
     "jest-dev-server": "^4.4.0",
     "jest-junit": "^12.1.0",
-    "typesense": "^1.2.1"
+    "typesense": "^1.5.3"
   },
   "private": true,
   "dependencies": {}
