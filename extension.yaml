@@ -73,18 +73,18 @@ params:
     example: field1,field2,field3
     default: ""
     required: false
-  - param: FLATTEN_FIRESTORE_DOCUMENTS
-    label: Flatten Firestore Documents
+  - param: FLATTEN_NESTED_DOCUMENTS
+    label: Flatten Nested Documents
     description: >-
-      Should the Firestore documents be flattened before they are indexed in Typesense? 
-      Set to "Yes" for Typesense versions less than v0.24.
+      Should nested documents in Firestore be flattened before they are indexed in Typesense? 
+      Set to "Yes" for Typesense versions 0.23.1 and earlier.
     type: select
     options:
       - label: No
         value: false
       - label: Yes
         value: true
-    default: true
+    default: false
     required: false
   - param: TYPESENSE_HOSTS
     label: Typesense Hosts
