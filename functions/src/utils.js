@@ -37,12 +37,13 @@ exports.typesenseDocumentFromSnapshot = (
     entries = entries.filter(([key]) => fieldsToExtract.includes(key));
   }
 
-  // using flat to flatten nested objects
+  const unflattenedDocument = Object.fromEntries(entries.map(([key, value]) => [key, mapValue(value)]));
+
+  // using flat to flatten nested objects for older versions of Typesense that did not support nested fields
   // https://typesense.org/docs/0.22.2/api/collections.html#indexing-nested-fields
-  const typesenseDocument = flat(
-      Object.fromEntries(entries.map(([key, value]) => [key, mapValue(value)])),
-      {safe: true},
-  );
+  const typesenseDocument = config.shouldFlattenDocuments ?
+    flat(unflattenedDocument, {safe: true}) :
+    unflattenedDocument;
   typesenseDocument.id = firestoreDocumentSnapshot.id;
   return typesenseDocument;
 };

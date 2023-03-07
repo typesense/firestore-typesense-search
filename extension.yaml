@@ -1,11 +1,11 @@
 name: firestore-typesense-search
 version: 0.4.2
-specVersion: v1beta  # Firebase Extensions specification version (do not edit)
+specVersion: v1beta # Firebase Extensions specification version (do not edit)
 
 displayName: Search Firestore with Typesense
 description: Indexes data from Firestore into Typesense for full-text search
 
-license: Apache-2.0  # The license you want for the extension
+license: Apache-2.0 # The license you want for the extension
 
 author:
   authorName: Typesense
@@ -71,7 +71,20 @@ params:
     description: >-
       A comma separated list of fields that need to be indexed from each Firestore document. Leave blank to index all fields.
     example: field1,field2,field3
-    default: ''
+    default: ""
+    required: false
+  - param: FLATTEN_FIRESTORE_DOCUMENTS
+    label: Flatten Firestore Documents
+    description: >-
+      Should the Firestore documents be flattened before they are indexed in Typesense? 
+      Set to "Yes" for Typesense versions less than v0.24.
+    type: select
+    options:
+      - label: No
+        value: false
+      - label: Yes
+        value: true
+    default: true
     required: false
   - param: TYPESENSE_HOSTS
     label: Typesense Hosts
