@@ -1,3 +1,7 @@
+## Version 1.0.0-rc.2
+
+- Remove stale parameter.
+
 ## Version 1.0.0-rc.1
 
 - Adds a new parameter that controls whether a nested Firestore document is flattened by the extension, or sent as is to Typesense.
