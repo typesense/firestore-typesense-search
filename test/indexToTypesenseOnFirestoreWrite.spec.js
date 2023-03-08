@@ -189,7 +189,7 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
     expect(typesenseDocsStr).toBe("");
   });
 
-  describe("when the FLATTEN_NESTED_DOCUMENTS is true (default)", () => {
+  describe("when FLATTEN_NESTED_DOCUMENTS is true (default)", () => {
     it("indexes nested fields on writes to specified Firestore collection", async () => {
       const docData = {
         nested_field: {

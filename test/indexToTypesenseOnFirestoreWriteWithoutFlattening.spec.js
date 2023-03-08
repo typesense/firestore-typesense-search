@@ -33,7 +33,7 @@ describe("indexToTypesenseOnFirestoreWriteWithoutFlattening", () => {
     await app.delete();
   });
 
-  describe("when the FLATTEN_NESTED_DOCUMENTS is false", () => {
+  describe("when FLATTEN_NESTED_DOCUMENTS is false", () => {
     it("indexes nested fields on writes to specified Firestore collection", async () => {
       process.env.FLATTEN_NESTED_DOCUMENTS = "false";
 
