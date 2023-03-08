@@ -4,28 +4,24 @@ const typesense = require("./typesenseClient");
 const utils = require("./utils");
 
 module.exports = functions.handler.firestore.document
-    .onWrite((snapshot, context) => {
-      if (snapshot.before.data() == null) {
-        // Create
-        const typesenseDocument = utils.typesenseDocumentFromSnapshot(snapshot.after);
-        functions.logger.debug(`Creating document ${JSON.stringify(typesenseDocument)}`);
-        return typesense
-            .collections(encodeURIComponent(config.typesenseCollectionName))
-            .documents()
-            .create(typesenseDocument);
-      } else if (snapshot.after.data() == null) {
+    .onWrite(async (snapshot, context) => {
+      if (snapshot.after.data() == null) {
         // Delete
         const documentId = snapshot.before.id;
         functions.logger.debug(`Deleting document ${documentId}`);
-        return typesense
+        return await typesense
             .collections(encodeURIComponent(config.typesenseCollectionName))
             .documents(documentId)
             .delete();
       } else {
-        // Update
-        const typesenseDocument = utils.typesenseDocumentFromSnapshot(snapshot.after);
+        // Create / update
+
+        // snapshot.after.ref.get() will refetch the latest version of the document
+        const latestSnapshot = await snapshot.after.ref.get();
+        const typesenseDocument = utils.typesenseDocumentFromSnapshot(latestSnapshot);
+
         functions.logger.debug(`Upserting document ${JSON.stringify(typesenseDocument)}`);
-        return typesense
+        return await typesense
             .collections(encodeURIComponent(config.typesenseCollectionName))
             .documents()
             .upsert(typesenseDocument);
