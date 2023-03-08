@@ -1,3 +1,7 @@
+## Version 1.0.0-rc.3
+
+- Update dependencies
+
 ## Version 1.0.0-rc.2
 
 - Remove stale parameter.
