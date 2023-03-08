@@ -1,3 +1,10 @@
+## Version 1.0.0-rc.1
+
+- Adds a new parameter that controls whether a nested Firestore document is flattened by the extension, or sent as is to Typesense.
+  - If you are running Typesense Server v0.23.1 or below, set "Flatten Nested Documents" to "Yes" (since indexing nested fields is not supported in these versions).
+  - If you are running Typesense Server v0.24 or above, set "Flatten Nested Documents" to "Yes" (since indexing nested fields is natively supported in Typesense in these versions).
+- Read the latest snapshot of the document on each write, to prevent sync consistency issues given Firestore's out-of-order change triggers. See #32.
+
 ## Version 0.4.2
 
 - Fix documentation for triggering backfill
