@@ -1,5 +1,9 @@
 ## Version 1.0.0-rc.3
 
+- Handle special characters in document ID
+
+## Version 1.0.0-rc.3
+
 - Update dependencies
 
 ## Version 1.0.0-rc.2
