@@ -65,3 +65,4 @@ node_modules/
 # dotenv environment variables file
 .env
 test-params.env
+/typesense-server-data/

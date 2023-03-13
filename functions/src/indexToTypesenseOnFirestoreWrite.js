@@ -11,7 +11,7 @@ module.exports = functions.handler.firestore.document
         functions.logger.debug(`Deleting document ${documentId}`);
         return await typesense
             .collections(encodeURIComponent(config.typesenseCollectionName))
-            .documents(documentId)
+            .documents(encodeURIComponent(documentId))
             .delete();
       } else {
         // Create / update
