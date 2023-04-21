@@ -69,8 +69,8 @@ params:
   - param: FIRESTORE_COLLECTION_FIELDS
     label: Firestore Collection Fields
     description: >-
-      A comma separated list of fields that need to be indexed from each Firestore document. Leave blank to index all fields.
-    example: field1,field2,field3
+      A comma separated list of fields that need to be indexed from each Firestore document. Leave blank to index all fields. With a "=" separated another field name can be specified for a field, e.g. "field1=otherFieldName1". Thus the firestore field "field1" in typesense is called "otherFieldName1".
+    example: field1,field2=otherFieldName2,field3
     default: ""
     required: false
   - param: FLATTEN_NESTED_DOCUMENTS
