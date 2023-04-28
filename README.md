@@ -94,7 +94,7 @@ This will trigger the backfill background Cloud function, which will read data f
 
 * **indexToTypesenseOnFirestoreWrite:** A function that indexes data into Typesense when it's triggered by Firestore changes.
 
-* **backfillToTypesenseFromFirestore:** A function that backfills data from a Firestore collection into Typesense, triggered when a Firestore document with the path `typesense_sync/trigger` has the contents of `backfill: true`.
+* **backfillToTypesenseFromFirestore:** A function that backfills data from a Firestore collection into Typesense, triggered when a Firestore document with the path `typesense_sync/backfill` has the contents of `trigger: true`.
 
 
 ## 🔑 Access Required
