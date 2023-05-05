@@ -1,3 +1,7 @@
+## Version 1.0.1
+
+- Re-order parameters to improve installation UX
+
 ## Version 1.0.0
 
 - Adds a new parameter that controls whether a nested Firestore document is flattened by the extension, or sent as is to Typesense.
