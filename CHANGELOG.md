@@ -1,3 +1,7 @@
+## Version 1.0.2
+
+- Publish to extension hub
+
 ## Version 1.0.1
 
 - Re-order parameters to improve installation UX
