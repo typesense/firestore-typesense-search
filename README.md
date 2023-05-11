@@ -148,11 +148,11 @@ firebase ext:info ./ --markdown > README.md
 
 - Update version number in extension.yaml
 - Add entry to CHANGELOG.md
+- Create release in GitHub
 - 
     ```shell
-    firebase ext:dev:publish typesense/firestore-typesense-search
+    firebase ext:dev:upload typesense/firestore-typesense-search
     ```
-- Create release in Github
 
 ## ℹ️ Support
 
