@@ -1,3 +1,7 @@
+## Version 1.0.3
+
+- Fixed instructions in changelog 
+
 ## Version 1.0.2
 
 - Publish to extension hub
@@ -10,7 +14,7 @@
 
 - Adds a new parameter that controls whether a nested Firestore document is flattened by the extension, or sent as is to Typesense.
   - If you are running Typesense Server v0.23.1 or below, set "Flatten Nested Documents" to "Yes" (since indexing nested fields is not supported in these versions).
-  - If you are running Typesense Server v0.24 or above, set "Flatten Nested Documents" to "Yes" (since indexing nested fields is natively supported in Typesense in these versions).
+  - If you are running Typesense Server v0.24 or above, set "Flatten Nested Documents" to "No" (since indexing nested fields is natively supported in Typesense in these versions).
 - Read the latest snapshot of the document on each write, to prevent sync consistency issues given Firestore's out-of-order change triggers. See #32.
 - Update dependencies
 - Handle special characters in document ID
@@ -32,7 +36,7 @@
 
 - Adds a new parameter that controls whether a nested Firestore document is flattened by the extension, or sent as is to Typesense.
   - If you are running Typesense Server v0.23.1 or below, set "Flatten Nested Documents" to "Yes" (since indexing nested fields is not supported in these versions).
-  - If you are running Typesense Server v0.24 or above, set "Flatten Nested Documents" to "Yes" (since indexing nested fields is natively supported in Typesense in these versions).
+  - If you are running Typesense Server v0.24 or above, set "Flatten Nested Documents" to "No" (since indexing nested fields is natively supported in Typesense in these versions).
 - Read the latest snapshot of the document on each write, to prevent sync consistency issues given Firestore's out-of-order change triggers. See #32.
 
 ## Version 0.4.2
