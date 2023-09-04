@@ -15,5 +15,5 @@ module.exports = new Typesense.Client({
   } ),
   apiKey: config.typesenseAPIKey,
   connectionTimeoutSeconds: getRandomNumber(60, 90),
-  retryIntervalSeconds: getRandomNumber(60, 90),
+  retryIntervalSeconds: getRandomNumber(60, 120),
 });
