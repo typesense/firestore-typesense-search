@@ -7,7 +7,7 @@
     "test": "npm run test-part-1 && npm run test-part-2",
     "test-part-1": "DOTENV_CONFIG=test-params-flatten-nested-true.local.env firebase ext:dev:emulators:exec --test-params=test-params-flatten-nested-true.local.env 'jest --testPathIgnorePatterns=test/indexToTypesenseOnFirestoreWriteWithoutFlattening.spec.js'",
     "test-part-2": "DOTENV_CONFIG=test-params-flatten-nested-true.local.env firebase ext:dev:emulators:exec --test-params=test-params-flatten-nested-false.local.env 'jest --testPathPattern=test/indexToTypesenseOnFirestoreWriteWithoutFlattening.spec.js'",
-    "typesenseServer": "rm -rf $(pwd)/typesense-server-data && mkdir $(pwd)/typesense-server-data && docker run -i -p 8108:8108 -v$(pwd)/typesense-server-data/:/data typesense/typesense:0.24.0 --data-dir /data --api-key=xyz --listen-port 8108 --enable-cors",
+    "typesenseServer": "rm -rf $(pwd)/typesense-server-data && mkdir $(pwd)/typesense-server-data && docker run -i -p 8108:8108 -v$(pwd)/typesense-server-data/:/data typesense/typesense:0.25.0 --data-dir /data --api-key=xyz --listen-port 8108 --enable-cors",
     "lint": "eslint . --fix"
   },
   "engines": {

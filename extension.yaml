@@ -23,7 +23,7 @@ resources:
     properties:
       runtime: nodejs16
       sourceDirectory: functions
-      timeout: 120s
+      timeout: 540s
       location: ${LOCATION}
       eventTrigger:
         eventType: providers/cloud.firestore/eventTypes/document.write
