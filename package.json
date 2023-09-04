@@ -11,7 +11,7 @@
     "lint": "eslint . --fix"
   },
   "engines": {
-    "node": "14"
+    "node": "16"
   },
   "main": "src/index.js",
   "devDependencies": {
@@ -24,7 +24,7 @@
     "jest": "^27.0.3",
     "jest-dev-server": "^4.4.0",
     "jest-junit": "^12.1.0",
-    "typesense": "^1.5.3"
+    "typesense": "^1.7.1"
   },
   "private": true,
   "dependencies": {}
