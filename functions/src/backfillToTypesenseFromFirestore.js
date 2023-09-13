@@ -40,8 +40,16 @@ module.exports = functions.handler.firestore.document
         return false;
       }
 
-      const querySnapshot =
-        await admin.firestore().collection(config.firestoreCollectionPath).get();
+      const isSubcollection = config.firestoreCollectionPath.includes("/");
+      let query;
+      if (isSubcollection) {
+        const collectionGroup = config.firestoreCollectionPath.split("/").pop();
+        query = admin.firestore().collectionGroup(collectionGroup);
+      } else {
+        query= admin.firestore().collection(config.firestoreCollectionPath);
+      }
+      const querySnapshot = await query.get();
+
       let currentDocumentNumber = 0;
       let currentDocumentsBatch = [];
       for (const firestoreDocument of querySnapshot.docs) {
