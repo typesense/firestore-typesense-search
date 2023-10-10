@@ -31,7 +31,7 @@ const validateBackfillRun = (snapshot) => {
 module.exports = functions.handler.firestore.document
     .onWrite(async (snapshot, context) => {
       functions.logger.info("Backfilling " +
-      `${config.firestoreCollectionFields.join(",")} fields in Firestore documents ` +
+      `${Array.from(config.firestoreCollectionFields.keys()).join(",")} fields in Firestore documents ` +
       `from ${config.firestoreCollectionPath} ` +
       `into Typesense Collection ${config.typesenseCollectionName} ` +
       `on ${config.typesenseHosts.join(",")}`);
