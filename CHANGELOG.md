@@ -1,3 +1,7 @@
+## Version 1.2.0-rc1
+
+- Upgrade to Node 18
+
 ## Version 1.1.0
 
 - Add random jitter to retries to handle potential thundering herd issues for high volume writes.

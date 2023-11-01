@@ -1,2 +1,2 @@
-exports.indexToTypesenseOnFirestoreWrite = require("./indexToTypesenseOnFirestoreWrite");
-exports.backfillToTypesenseFromFirestore = require("./backfillToTypesenseFromFirestore");
+exports.indexToTypesenseOnFirestoreWrite = require("./indexToTypesenseOnFirestoreWrite.js");
+exports.backfillToTypesenseFromFirestore = require("./backfillToTypesenseFromFirestore.js");
