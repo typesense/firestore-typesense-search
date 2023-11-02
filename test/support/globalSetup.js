@@ -9,9 +9,9 @@ module.exports = async function globalSetup() {
     path: "health",
     protocol: "http",
     usedPortAction: "ignore",
-    launchTimeout: 50000,
+    launchTimeout: 120000,
     waitOnScheme: {
-      window: 50000,
+      window: 120000,
     },
   });
 };
