@@ -6,10 +6,12 @@ module.exports = async function globalSetup() {
     command: "npm run typesenseServer",
     port: 8108,
     host: "0.0.0.0",
+    path: "health",
+    protocol: "http",
     usedPortAction: "ignore",
     launchTimeout: 50000,
     waitOnScheme: {
-      window: 5000,
+      window: 50000,
     },
   });
 };
