@@ -1,4 +1,4 @@
-## Version 1.2.0
+## Version 1.2.0-rc.1
 
 - Upgrade to Node 18
 
