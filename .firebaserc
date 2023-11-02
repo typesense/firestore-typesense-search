@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "default": "ts-integration-aaf0c"
+  },
+  "targets": {},
+  "etags": {
+    "ts-integration-aaf0c": {
+      "extensionInstances": {
+        "firestore-typesense-search": "fd2b1a2d8f4bcfe149d42c706040827ee1ce311307b1f29b0347a63754af2d26"
+      }
+    }
+  }
+}
