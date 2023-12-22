@@ -517,4 +517,39 @@ describe("indexToTypesenseOnFirestoreWrite", () => {
 
     expect(typesenseDocsStr).toBe("");
   });
+
+  it("indexed fields are renamed to match the configured field name mapping", async () => {
+    const docData = {id: "123"};
+
+    // create document in Firestore
+    const docRef = await firestore.collection(config.firestoreCollectionPath).add(docData);
+
+    // wait for the Firestore cloud function to write to Typesense
+    await new Promise((r) => setTimeout(r, 2500));
+
+    // check that the document was indexed
+    let typesenseDocsStr = await typesense
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
+    const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
+
+    expect(typesenseDocs.length).toBe(1);
+    expect(typesenseDocs[0]).toStrictEqual({"id": docRef.id});
+    expect(typesenseDocs[0]).toStrictEqual({"book_id": docData.id});
+
+    // delete document in Firestore
+    await docRef.delete();
+
+    // wait for the Firestore cloud function to write to Typesense
+    await new Promise((r) => setTimeout(r, 2500));
+
+    // check that the document was deleted
+    typesenseDocsStr = await typesense
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
+
+    expect(typesenseDocsStr).toBe("");
+  });
 });

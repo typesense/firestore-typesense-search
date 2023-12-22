@@ -5,6 +5,15 @@ module.exports = {
         .split(",")
         .map((f) => f.trim())
         .filter((f) => f),
+  typesenseFieldsRenames: (process.env.TYPESENSE_FIELDS_RENAMES || "")
+      .split(",")
+      .map((f) => f.trim())
+      .filter((f) => f)
+      .map((f) => {
+        const [from, to] = f.split(":").map((f) => f.trim());
+        return {from, to};
+      })
+      .filter((f) => f.from && f.to),
   shouldFlattenNestedDocuments: process.env.FLATTEN_NESTED_DOCUMENTS === "true",
   typesenseHosts:
     (process.env.TYPESENSE_HOSTS || "").split(",").map((e) => e.trim()),

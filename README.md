@@ -1,15 +1,14 @@
-# Firestore / Firebase Typesense Search Extension ⚡ 🔍 
+# Firestore / Firebase Typesense Search Extension ⚡ 🔍
 
-A Firebase extension to sync data from your Firestore collection to [Typesense](https://typesense.org/), 
+A Firebase extension to sync data from your Firestore collection to [Typesense](https://typesense.org/),
 to be able to do full-text fuzzy search on your Firestore data, with typo tolerance, faceting, filtering, sorting, curation, synonyms, geosearch and more.
 
-This extension listens to your specified Firestore collection and syncs Firestore documents to Typesense 
+This extension listens to your specified Firestore collection and syncs Firestore documents to Typesense
 on creation, updates and deletes. It also provides a function to help you backfill data.
 
 **What is Typesense?**
 
 If you're new to [Typesense](https://typesense.org), it is an open source search engine that is simple to use, run and scale, with clean APIs and documentation. Think of it as an open source alternative to Algolia and an easier-to-use, batteries-included alternative to ElasticSearch. Get a quick overview from [this guide](https://typesense.org/docs/guide).
-
 
 ## ⚙️ Usage
 
@@ -19,12 +18,12 @@ Before installing this extension, make sure that you have:
 
 1. [Set up a Cloud Firestore database](https://firebase.google.com/docs/firestore/quickstart) in your Firebase project.
 2. [Set up](https://typesense.org/docs/guide/install-typesense.html) a Typesense cluster on [Typesense Cloud](https://cloud.typesense.org) or [Self-Hosted](https://typesense.org/docs/guide/install-typesense.html#option-2-local-machine-self-hosting) (free).
-3. Set up a Typesense Collection either through the Typesense Cloud dashboard or 
-  through the [API](https://typesense.org/docs/latest/api/collections.html#create-a-collection).
-  
-⚠️ ☝️ #3 above is a commonly missed step. This extension **does not create the Typesense Collection for you**. Instead it syncs data to a Typesense collection you've already created. If you see an HTTP 404 in the extension logs, it's most likely because of missing this step. 
+3. Set up a Typesense Collection either through the Typesense Cloud dashboard or
+   through the [API](https://typesense.org/docs/latest/api/collections.html#create-a-collection).
 
-### Step 2️⃣ : Install the Extension 
+⚠️ ☝️ #3 above is a commonly missed step. This extension **does not create the Typesense Collection for you**. Instead it syncs data to a Typesense collection you've already created. If you see an HTTP 404 in the extension logs, it's most likely because of missing this step.
+
+### Step 2️⃣ : Install the Extension
 
 You can install this extension either through the Firebase Web console or through the Firebase CLI.
 
@@ -47,22 +46,23 @@ firebase ext:install typesense/firestore-typesense-search --project=[your-projec
 When you install this extension, you'll be able to configure the following parameters:
 
 | Parameter                   | Description                                                                                                                                                                                                                                                                                    |
-|-----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Firestore Collection Path   | The Firestore collection that needs to be indexed into Typesense.                                                                                                                                                                                                                              |
 | Firestore Collection Fields | A comma separated list of fields that need to be indexed from each Firestore document. Leave blank to index all fields.                                                                                                                                                                        |
+| Typesense Fields Renames    | A comma separated list of field renames in the format `old_field_name:new_field_name`. This is useful when you want to rename fields from Firestore to a different name in Typesense. Leave blank to not rename any fields.                                                                                                                                                                        |
 | Flatten Nested Documents    | Should nested documents in Firestore be flattened before they are indexed in Typesense? Set to "Yes" for Typesense Server versions v0.23.1 and below, since indexing Nested objects is natively supported only in Typesense Server v0.24 and above.                                            |
-| Typesense Hosts             | A comma-separated list of Typesense Hosts (only domain without https or port number). For single node clusters, a single hostname is sufficient. For multi-node Highly Available or (Search Delivery Network) SDN Clusters, please be sure to mention all hostnames in a comma-separated list. | 
+| Typesense Hosts             | A comma-separated list of Typesense Hosts (only domain without https or port number). For single node clusters, a single hostname is sufficient. For multi-node Highly Available or (Search Delivery Network) SDN Clusters, please be sure to mention all hostnames in a comma-separated list. |
 | Typesense API Key           | A Typesense API key with admin permissions. Click on "Generate API Key" in cluster dashboard in Typesense Cloud.                                                                                                                                                                               |
 | Typesense Collection Name   | Typesense collection name to index data into (you need to create this collection in Typesense yourself. This extension does not create the Typesense Collection for you).                                                                                                                      |
 | Cloud Functions location    | Where do you want to deploy the functions created for this extension? You usually want a location close to your database. For help selecting a location, refer to the [location selection guide](https://firebase.google.com/docs/functions/locations).                                        |
 
 > ⚠️ You'll notice that there is no way to configure the port number or protocol.
-This is because this extension only supports connecting to Typesense running HTTPS on Port 443, since your data goes from Firebase to Typesense over the public internet and we want your data to be encrypted in transit.
-For Typesense Cloud, HTTPS is already configured for you.
-> 
+> This is because this extension only supports connecting to Typesense running HTTPS on Port 443, since your data goes from Firebase to Typesense over the public internet and we want your data to be encrypted in transit.
+> For Typesense Cloud, HTTPS is already configured for you.
+>
 > When self-hosting Typesense, you want to make sure you set `--api-port=443` and also get an SSL certificate from say [LetsEncrypt](https://letsencrypt.org/) or any registrar
-and configure Typesense to use it using the `--ssl-certificate` and `--ssl-certificate-key` [server parameters](https://typesense.org/docs/latest/api/server-configuration.html).
-> Alternatively, if you're running Typesense on your local machine, you can also set up a local HTTPS tunnel using something like [ngrok](https://ngrok.com/) (`ngrok http 8108`) and use the ngrok hostname in the extension. 
+> and configure Typesense to use it using the `--ssl-certificate` and `--ssl-certificate-key` [server parameters](https://typesense.org/docs/latest/api/server-configuration.html).
+> Alternatively, if you're running Typesense on your local machine, you can also set up a local HTTPS tunnel using something like [ngrok](https://ngrok.com/) (`ngrok http 8108`) and use the ngrok hostname in the extension.
 
 ##### Example
 
@@ -90,16 +90,15 @@ This will trigger the backfill background Cloud function, which will read data f
 
 ## ☁️ Cloud Functions
 
-* **indexToTypesenseOnFirestoreWrite:** A function that indexes data into Typesense when it's triggered by Firestore changes.
+- **indexToTypesenseOnFirestoreWrite:** A function that indexes data into Typesense when it's triggered by Firestore changes.
 
-* **backfillToTypesenseFromFirestore:** A function that backfills data from a Firestore collection into Typesense, triggered when a Firestore document with the path `typesense_sync/backfill` has the contents of `trigger: true`.
-
+- **backfillToTypesenseFromFirestore:** A function that backfills data from a Firestore collection into Typesense, triggered when a Firestore document with the path `typesense_sync/backfill` has the contents of `trigger: true`.
 
 ## 🔑 Access Required
 
 This extension will operate with the following project IAM roles:
 
-* datastore.user (Reason: Required to backfill data from your Firestore collection into Typesense)
+- datastore.user (Reason: Required to backfill data from your Firestore collection into Typesense)
 
 ## 🧾 Billing
 
@@ -111,7 +110,6 @@ To install an extension, your project must be on the [Blaze (pay as you go) plan
   - Cloud Functions (Node.js 14+ runtime. [See FAQs](https://firebase.google.com/support/faq#expandable-24))
 - Usage of this extension also requires you to have a running Typesense cluster either on Typesense Cloud or some
   self-hosted server. You are responsible for any associated costs with these services.
-
 
 ## Development Workflow
 
@@ -147,10 +145,9 @@ firebase ext:info ./ --markdown > README.md
 - Update version number in extension.yaml
 - Add entry to CHANGELOG.md
 - Create release in GitHub
-- 
-    ```shell
-    firebase ext:dev:upload typesense/firestore-typesense-search
-    ```
+- ```shell
+  firebase ext:dev:upload typesense/firestore-typesense-search
+  ```
 
 ## ℹ️ Support
 

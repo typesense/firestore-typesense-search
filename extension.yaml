@@ -73,6 +73,15 @@ params:
     example: field1,field2,field3
     default: ""
     required: false
+  - param: TYPESENSE_FIELDS_RENAMES
+    label: Typesense Fields Renames
+    description: >-
+      A comma separated list of field renames in the format `old_field_name:new_field_name`.
+      This is useful when you want to rename fields from Firestore to a different name in Typesense.
+      Leave blank to not rename any fields.
+    example: field1:field_1,field2:field_2,field3:field_3
+    default: ""
+    required: false
   - param: TYPESENSE_HOSTS
     label: Typesense Hosts
     description: >-
@@ -98,7 +107,7 @@ params:
   - param: FLATTEN_NESTED_DOCUMENTS
     label: Flatten Nested Documents
     description: >-
-      Should nested documents in Firestore be flattened by this extension before they are indexed in Typesense? 
+      Should nested documents in Firestore be flattened by this extension before they are indexed in Typesense?
       Set to "Yes" for Typesense versions 0.23.1 and earlier. Set to "No" for Typesense versions 0.24.0 and later.
     type: select
     options:
