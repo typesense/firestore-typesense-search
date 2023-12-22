@@ -43,6 +43,7 @@ describe("backfillToTypesenseFromFirestore", () => {
         author: "Author A",
         title: "Title X",
         country: "USA",
+        id: "123",
       };
       const firestoreDoc = await firestore.collection(config.firestoreCollectionPath).add(book);
       // Wait for firestore cloud function to write to Typesense
@@ -76,6 +77,7 @@ describe("backfillToTypesenseFromFirestore", () => {
         id: firestoreDoc.id,
         author: book.author,
         title: book.title,
+        book_id: book.id,
       });
     });
   });
@@ -89,6 +91,7 @@ describe("backfillToTypesenseFromFirestore", () => {
           author: "Author A",
           title: "Title X",
           country: "USA",
+          id: "123",
         };
         const firestoreDoc = await firestore.collection(config.firestoreCollectionPath).add(book);
         // Wait for firestore cloud function to write to Typesense
@@ -125,6 +128,7 @@ describe("backfillToTypesenseFromFirestore", () => {
           id: firestoreDoc.id,
           author: book.author,
           title: book.title,
+          book_id: book.id,
         });
       });
     });
@@ -136,6 +140,7 @@ describe("backfillToTypesenseFromFirestore", () => {
           author: "Author A",
           title: "Title X",
           country: "USA",
+          id: "123",
         };
         await firestore.collection(config.firestoreCollectionPath).add(book);
         // Wait for firestore cloud function to write to Typesense
