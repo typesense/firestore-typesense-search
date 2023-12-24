@@ -1,5 +1,5 @@
 name: firestore-typesense-search
-version: 1.1.0
+version: 1.2.0
 specVersion: v1beta # Firebase Extensions specification version (do not edit)
 
 displayName: Search Firestore with Typesense
@@ -21,7 +21,7 @@ resources:
     description: A function that indexes data into Typesense when it's triggered by Firestore changes
     type: firebaseextensions.v1beta.function
     properties:
-      runtime: nodejs16
+      runtime: nodejs18
       sourceDirectory: functions
       timeout: 540s
       location: ${LOCATION}
@@ -35,7 +35,7 @@ resources:
       triggered when a Firestore document with the path `typesense_sync/backfill` has the contents of `trigger: true`.
     type: firebaseextensions.v1beta.function
     properties:
-      runtime: nodejs16
+      runtime: nodejs18
       sourceDirectory: functions
       timeout: 540s
       maxInstances: 1
