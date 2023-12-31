@@ -8,7 +8,7 @@ module.exports = functions.firestore.document(config.firestoreCollectionPath)
       const typesense = createTypesenseClient();
 
       if (snapshot.after.data() == null) {
-        // Delete
+      // Delete
         const documentId = snapshot.before.id;
         functions.logger.debug(`Deleting document ${documentId}`);
         return await typesense
@@ -16,7 +16,7 @@ module.exports = functions.firestore.document(config.firestoreCollectionPath)
             .documents(encodeURIComponent(documentId))
             .delete();
       } else {
-        // Create / update
+      // Create / update
 
         // snapshot.after.ref.get() will refetch the latest version of the document
         const latestSnapshot = await snapshot.after.ref.get();
@@ -25,7 +25,6 @@ module.exports = functions.firestore.document(config.firestoreCollectionPath)
         functions.logger.debug(`Upserting document ${JSON.stringify(typesenseDocument)}`);
         return await typesense
             .collections(encodeURIComponent(config.typesenseCollectionName))
-            .documents()
-            .upsert(typesenseDocument);
+            .documents().upsert(typesenseDocument, {"action": "emplace", "dirty_values": "coerce_or_drop"});
       }
     });

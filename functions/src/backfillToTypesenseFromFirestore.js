@@ -43,7 +43,7 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
       const typesense = createTypesenseClient();
 
       const querySnapshot =
-        await admin.firestore().collection(config.firestoreCollectionPath).get();
+      await admin.firestore().collection(config.firestoreCollectionPath).get();
       let currentDocumentNumber = 0;
       let currentDocumentsBatch = [];
       for (const firestoreDocument of querySnapshot.docs) {
@@ -55,7 +55,9 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
             await typesense
                 .collections(encodeURIComponent(config.typesenseCollectionName))
                 .documents()
-                .import(currentDocumentsBatch);
+                .import(currentDocumentsBatch,
+                    utils.importDocumentsConfig(currentDocumentsBatch),
+                );
             currentDocumentsBatch = [];
             functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
           } catch (error) {
@@ -68,7 +70,7 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
           await typesense
               .collections(encodeURIComponent(config.typesenseCollectionName))
               .documents()
-              .import(currentDocumentsBatch);
+              .import(utils.importDocumentsConfig(currentDocumentsBatch));
           functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
         } catch (error) {
           functions.logger.error("Import error", error);

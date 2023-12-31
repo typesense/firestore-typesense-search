@@ -49,3 +49,10 @@ exports.typesenseDocumentFromSnapshot = async (
 
   return typesenseDocument;
 };
+
+exports.importDocumentsConfig = (batchSize) => ({
+  action: "emplace",
+  dirty_values: "coerce_or_drop",
+  return_doc: false,
+  batch_size: batchSize.length,
+});
