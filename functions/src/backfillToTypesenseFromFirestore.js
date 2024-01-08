@@ -43,37 +43,49 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
       const typesense = createTypesenseClient();
 
       const querySnapshot =
-        await admin.firestore().collection(config.firestoreCollectionPath).get();
-      let currentDocumentNumber = 0;
-      let currentDocumentsBatch = [];
-      for (const firestoreDocument of querySnapshot.docs) {
-        currentDocumentNumber += 1;
-        currentDocumentsBatch.push(await utils.typesenseDocumentFromSnapshot(firestoreDocument));
+      await admin.firestore().collection(config.firestoreCollectionPath);
+  
+      let lastDoc = null;
 
-        if (currentDocumentNumber === config.typesenseBackfillBatchSize) {
-          try {
-            await typesense
-                .collections(encodeURIComponent(config.typesenseCollectionName))
-                .documents()
-                .import(currentDocumentsBatch);
-            currentDocumentsBatch = [];
-            functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
-          } catch (error) {
-            functions.logger.error("Import error", error);
-          }
+      do {
+        const queryFotThisBatch = lastDoc ? querySnapshot.startAfter(lastDoc) : querySnapshot;
+        const thisBatch = await queryFotThisBatch.limit(config.typesenseBackfillBatchSize).get();
+        if (thisBatch.empty) {
+          break;
         }
-      }
-      if (currentDocumentsBatch.length > 0) {
+        const currentDocumentsBatch = thisBatch.docs.map((doc) => utils.typesenseDocumentFromSnapshot(doc));
+
+        lastDoc = thisBatch.docs.at(-1) ?? null;
         try {
           await typesense
               .collections(encodeURIComponent(config.typesenseCollectionName))
               .documents()
               .import(currentDocumentsBatch);
-          functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
+          functions.logger.info(`Imported ${currentDocumentsBatch.length} documents into Typesense`);
         } catch (error) {
-          functions.logger.error("Import error", error);
+          functions.logger.error(`Import error in a batch of documents from ${currentDocumentsBatch[0].id} to ${lastDoc.id}`, error);
+          if ("importResults" in error) {
+            logImportErrors(error.importResults);
+          }
         }
-      }
+
+        if (currentDocumentsBatch.length < config.typesenseBackfillBatchSize) {
+          break;
+        }
+        // Recurse on the next process tick, to avoid
+        // issues with the event loop on firebase functions related to resource release
+        await new Promise((resolve) => process.nextTick(resolve));
+      } while (lastDoc);
 
       functions.logger.info("Done backfilling to Typesense from Firestore");
     });
+
+function logImportErrors(importResults) {
+  importResults.forEach((result) => {
+    if (result.success) return;
+
+    functions.logger.error(
+        `Error importing document with error: ${result.error}`,
+        result);
+  });
+}
