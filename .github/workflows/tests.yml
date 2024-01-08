@@ -1,12 +1,25 @@
 name: tests
 
-on: [push, pull_request]
+on: [pull_request_target]
 
 jobs:
+  # Source: https://iterative.ai/blog/testing-external-contributions-using-github-actions-secrets
+  authorize:
+    environment:
+      ${{ github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name != github.repository &&
+      'sandbox' || 'internal' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
+
   build_and_test:
+    needs: authorize
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
       - uses: actions/setup-node@v3
         with:
           node-version: 18.17.1
