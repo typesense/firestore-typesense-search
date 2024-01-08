@@ -1,6 +1,6 @@
 name: tests
 
-on: [pull_request_target]
+on: [push, pull_request_target]
 
 jobs:
   # Source: https://iterative.ai/blog/testing-external-contributions-using-github-actions-secrets
