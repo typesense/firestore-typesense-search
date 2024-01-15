@@ -1,10 +1,12 @@
 const functions = require("firebase-functions");
-const config = require("./config");
-const typesense = require("./typesenseClient");
-const utils = require("./utils");
+const config = require("./config.js");
+const createTypesenseClient = require("./createTypesenseClient.js");
+const utils = require("./utils.js");
 
-module.exports = functions.handler.firestore.document
+module.exports = functions.firestore.document(config.firestoreCollectionPath)
     .onWrite(async (snapshot, context) => {
+      const typesense = createTypesenseClient();
+
       if (snapshot.after.data() == null) {
         // Delete
         const documentId = snapshot.before.id;
@@ -18,7 +20,7 @@ module.exports = functions.handler.firestore.document
 
         // snapshot.after.ref.get() will refetch the latest version of the document
         const latestSnapshot = await snapshot.after.ref.get();
-        const typesenseDocument = utils.typesenseDocumentFromSnapshot(latestSnapshot);
+        const typesenseDocument = await utils.typesenseDocumentFromSnapshot(latestSnapshot);
 
         functions.logger.debug(`Upserting document ${JSON.stringify(typesenseDocument)}`);
         return await typesense

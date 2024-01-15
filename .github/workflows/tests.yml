@@ -1,15 +1,28 @@
 name: tests
 
-on: [push, pull_request]
+on: [push, pull_request_target]
 
 jobs:
+  # Source: https://iterative.ai/blog/testing-external-contributions-using-github-actions-secrets
+  authorize:
+    environment:
+      ${{ github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name != github.repository &&
+      'sandbox' || 'internal' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
+
   build_and_test:
+    needs: authorize
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.20.2
+          node-version: 18.17.1
           cache: npm
       - uses: actions/cache@v3
         with:
@@ -17,7 +30,9 @@ jobs:
             ~/.cache/firebase/emulators
           key: ${{ runner.os }}-firebase-emulators
       - run: npm install
-      - run: npm install -g firebase-tools@10.5.0
-      - run: firebase --open-sesame extdev
+      - run: npm install -g firebase-tools
       - run: cd functions && npm install
-      - run: npm run test -- --ci --color
+      - name: Run Tests
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: npm run test -- --ci --color

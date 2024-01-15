@@ -1,6 +1,6 @@
 const firebase = require("firebase-admin");
-const config = require("../functions/src/config");
-const typesense = require("../functions/src/typesenseClient");
+const config = require("../functions/src/config.js");
+const typesense = require("../functions/src/createTypesenseClient.js")();
 
 const app = firebase.initializeApp({
   // Use a special URL to talk to the Realtime Database emulator

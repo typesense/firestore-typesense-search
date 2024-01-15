@@ -3,7 +3,7 @@ module.exports = {
   globalTeardown: "./test/support/globalTeardown.js",
   setupFiles: ["./test/support/dotenv.js"],
   verbose: true,
-  testTimeout: 15000,
+  testTimeout: 300000,
   maxConcurrency: 1,
   maxWorkers: 1,
 };

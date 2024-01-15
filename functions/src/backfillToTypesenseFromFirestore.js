@@ -1,8 +1,8 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const config = require("./config");
-const typesense = require("./typesenseClient");
-const utils = require("./utils");
+const config = require("./config.js");
+const createTypesenseClient = require("./createTypesenseClient.js");
+const utils = require("./utils.js");
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
@@ -28,7 +28,7 @@ const validateBackfillRun = (snapshot) => {
   return true;
 };
 
-module.exports = functions.handler.firestore.document
+module.exports = functions.firestore.document(config.typesenseBackfillTriggerDocumentInFirestore)
     .onWrite(async (snapshot, context) => {
       functions.logger.info("Backfilling " +
       `${config.firestoreCollectionFields.join(",")} fields in Firestore documents ` +
@@ -40,13 +40,15 @@ module.exports = functions.handler.firestore.document
         return false;
       }
 
+      const typesense = createTypesenseClient();
+
       const querySnapshot =
         await admin.firestore().collection(config.firestoreCollectionPath).get();
       let currentDocumentNumber = 0;
       let currentDocumentsBatch = [];
       for (const firestoreDocument of querySnapshot.docs) {
         currentDocumentNumber += 1;
-        currentDocumentsBatch.push(utils.typesenseDocumentFromSnapshot(firestoreDocument));
+        currentDocumentsBatch.push(await utils.typesenseDocumentFromSnapshot(firestoreDocument));
 
         if (currentDocumentNumber === config.typesenseBackfillBatchSize) {
           try {

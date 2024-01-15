@@ -4,17 +4,18 @@ const test = require("firebase-functions-test")({
 
 describe("Utils", () => {
   describe("typesenseDocumentFromSnapshot", () => {
-    const typesenseDocumentFromSnapshot =
-      require("../functions/src/utils").typesenseDocumentFromSnapshot;
     describe("when document fields are mentioned explicitly", () => {
-      it("returns a Typesense document with only the specified fields", () => {
+      it("returns a Typesense document with only the specified fields", async () => {
+        const typesenseDocumentFromSnapshot =
+          (await import("../functions/src/utils.js")).typesenseDocumentFromSnapshot;
+
         const documentSnapshot = test.firestore.makeDocumentSnapshot({
           author: "Author X",
           title: "Title X",
           country: "USA",
         }, "id");
 
-        const result = typesenseDocumentFromSnapshot(documentSnapshot);
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot);
         expect(result).toEqual({
           id: "id",
           author: "Author X",
@@ -23,14 +24,17 @@ describe("Utils", () => {
       });
     });
     describe("when no fields are mentioned explicitly", () => {
-      it("returns a Typesense document with all fields", () => {
+      it("returns a Typesense document with all fields", async () => {
+        const typesenseDocumentFromSnapshot =
+          (await import("../functions/src/utils.js")).typesenseDocumentFromSnapshot;
+
         const documentSnapshot = test.firestore.makeDocumentSnapshot({
           author: "Author X",
           title: "Title X",
           country: "USA",
         }, "id");
 
-        const result = typesenseDocumentFromSnapshot(documentSnapshot, []);
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, []);
         expect(result).toEqual({
           id: "id",
           author: "Author X",

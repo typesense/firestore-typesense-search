@@ -1,15 +1,13 @@
-const admin = require("firebase-admin");
-const flat = require("flat");
-const config = require("./config");
+const config = require("./config.js");
 
 const mapValue = (value) => {
-  if (value instanceof admin.firestore.Timestamp) {
+  if (typeof value === "object" && value !== null && value.seconds != null && value.nanoseconds != null) {
     // convert date to Unix timestamp
     // https://typesense.org/docs/0.22.2/api/collections.html#indexing-dates
     return Math.floor(value.toDate().getTime() / 1000);
-  } else if (value instanceof admin.firestore.GeoPoint) {
+  } else if (typeof value === "object" && value !== null && value.latitude != null && value.longitude != null) {
     return [value.latitude, value.longitude];
-  } else if (value instanceof admin.firestore.DocumentReference) {
+  } else if (typeof value === "object" && value !== null && value.firestore != null && value.path != null) {
     return {"path": value.path};
   } else if (Array.isArray(value)) {
     return value.map(mapValue);
@@ -25,10 +23,11 @@ const mapValue = (value) => {
  * @param {Array} fieldsToExtract
  * @return {Object} typesenseDocument
  */
-exports.typesenseDocumentFromSnapshot = (
+exports.typesenseDocumentFromSnapshot = async (
     firestoreDocumentSnapshot,
     fieldsToExtract = config.firestoreCollectionFields,
 ) => {
+  const flat = await import("flat");
   const data = firestoreDocumentSnapshot.data();
 
   let entries = Object.entries(data);
@@ -43,7 +42,7 @@ exports.typesenseDocumentFromSnapshot = (
   // using flat to flatten nested objects for older versions of Typesense that did not support nested fields
   // https://typesense.org/docs/0.22.2/api/collections.html#indexing-nested-fields
   const typesenseDocument = config.shouldFlattenNestedDocuments ?
-    flat(mappedDocument, {safe: true}) :
+    flat.flatten(mappedDocument, {safe: true}) :
     mappedDocument;
 
   typesenseDocument.id = firestoreDocumentSnapshot.id;
