@@ -1,3 +1,7 @@
+## Version 1.3.0-rc.1
+
+- Use `action=upsert` for back-filling data
+
 ## Version 1.2.0
 
 - Upgrade to Node 18

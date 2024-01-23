@@ -55,7 +55,7 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
             await typesense
                 .collections(encodeURIComponent(config.typesenseCollectionName))
                 .documents()
-                .import(currentDocumentsBatch);
+                .import(currentDocumentsBatch, {action: "upsert"});
             currentDocumentsBatch = [];
             functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
           } catch (error) {
@@ -68,7 +68,7 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
           await typesense
               .collections(encodeURIComponent(config.typesenseCollectionName))
               .documents()
-              .import(currentDocumentsBatch);
+              .import(currentDocumentsBatch, {action: "upsert"});
           functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
         } catch (error) {
           functions.logger.error("Import error", error);
