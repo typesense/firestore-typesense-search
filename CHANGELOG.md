@@ -1,4 +1,4 @@
-## Version 1.3.0-rc.0
+## Version 1.3.0
 
 - Use `action=upsert` for back-filling data
 
