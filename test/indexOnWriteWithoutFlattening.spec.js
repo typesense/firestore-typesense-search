@@ -9,7 +9,7 @@ const app = firebase.initializeApp({
 });
 const firestore = app.firestore();
 
-describe("indexToTypesenseOnFirestoreWriteWithoutFlattening", () => {
+describe("indexOnWriteWithoutFlattening", () => {
   beforeEach(async () => {
     // delete the Firestore collection
     await firestore.recursiveDelete(firestore.collection(config.firestoreCollectionPath));

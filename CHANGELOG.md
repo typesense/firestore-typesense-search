@@ -1,3 +1,7 @@
+## Version 1.4.0
+
+- Shorten function names to fix issue with local emulator
+
 ## Version 1.3.0
 
 - Use `action=upsert` for back-filling data

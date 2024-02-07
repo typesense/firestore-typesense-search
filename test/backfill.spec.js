@@ -9,7 +9,7 @@ const app = firebase.initializeApp({
 });
 const firestore = app.firestore();
 
-describe("backfillToTypesenseFromFirestore", () => {
+describe("backfill", () => {
   beforeEach(async () => {
     // Clear the database between tests
     await firestore.recursiveDelete(firestore.collection(config.firestoreCollectionPath));
