@@ -1,3 +1,7 @@
+## Version 1.4.1
+
+- Only log error documents in backfill log
+
 ## Version 1.4.0
 
 - Shorten function names to fix issue with local emulator

@@ -59,7 +59,14 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
             currentDocumentsBatch = [];
             functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
           } catch (error) {
-            functions.logger.error("Import error", error);
+            if (error.importResults) {
+              const failedItems = error.importResults.filter(
+                  (r) => r.success === false,
+              );
+              functions.logger.error("Import failed with document errors", failedItems);
+            } else {
+              functions.logger.error("Import error", error);
+            }
           }
         }
       }
@@ -71,7 +78,14 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
               .import(currentDocumentsBatch, {action: "upsert"});
           functions.logger.info(`Imported ${currentDocumentNumber} documents into Typesense`);
         } catch (error) {
-          functions.logger.error("Import error", error);
+          if (error.importResults) {
+            const failedItems = error.importResults.filter(
+                (r) => r.success === false,
+            );
+            functions.logger.error("Import failed with document errors", failedItems);
+          } else {
+            functions.logger.error("Import error", error);
+          }
         }
       }
 
