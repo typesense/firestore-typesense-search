@@ -21,8 +21,9 @@ Before installing this extension, make sure that you have:
 2. [Set up](https://typesense.org/docs/guide/install-typesense.html) a Typesense cluster on [Typesense Cloud](https://cloud.typesense.org) or [Self-Hosted](https://typesense.org/docs/guide/install-typesense.html#option-2-local-machine-self-hosting) (free).
 3. Set up a Typesense Collection either through the Typesense Cloud dashboard or 
   through the [API](https://typesense.org/docs/latest/api/collections.html#create-a-collection).
-  
-⚠️ ☝️ #3 above is a commonly missed step. This extension **does not create the Typesense Collection for you**. Instead it syncs data to a Typesense collection you've already created. If you see an HTTP 404 in the extension logs, it's most likely because of missing this step. 
+
+> [!IMPORTANT]
+> ☝️ #3 above is a commonly missed step. This extension **does not create the Typesense Collection for you**. Instead it syncs data to a Typesense collection you've already created. If you see an HTTP 404 in the extension logs, it's most likely because of missing this step. 
 
 ### Step 2️⃣ : Install the Extension 
 
@@ -40,7 +41,13 @@ You can install this extension either through the Firebase Web console or throug
 firebase ext:install typesense/firestore-typesense-search --project=[your-project-id]
 ```
 
-> Learn more about installing extensions in the Firebase Extensions documentation: [Console](https://firebase.google.com/docs/extensions/install-extensions?platform=console), [CLI](https://firebase.google.com/docs/extensions/install-extensions?platform=cli).
+Learn more about installing extensions in the Firebase Extensions documentation: [Console](https://firebase.google.com/docs/extensions/install-extensions?platform=console), [CLI](https://firebase.google.com/docs/extensions/install-extensions?platform=cli).
+
+#### Syncing Multiple Firestore collections
+
+> [!TIP]
+> You can install this extension multiple times in your Firebase project by clicking on the installation link above multiple times, and use a different Firestore collection path in each installation instance. [Here](https://github.com/typesense/firestore-typesense-search/issues/9#issuecomment-885940705) is a screenshot of how this looks.
+
 
 #### 🎛️ Configuration Parameters
 
@@ -73,10 +80,6 @@ If you have a Firestore database like this called `users`:
 Here's the extension configuration screen with all the options filled out, if you want to sync the `users` Firestore collection to Typesense:
 
 <img src="assets/extension_configuration_example.png" alt="Firestore DB Example" width="500" />
-
-#### Syncing Multiple Firestore collections
-
-You can install this extension multiple times in your Firebase project by clicking on the installation link above multiple times, and use a different Firestore collection path in each installation instance. [Here](https://github.com/typesense/firestore-typesense-search/issues/9#issuecomment-885940705) is a screenshot of how this looks.
 
 ### Step 3️⃣ : [Optional] Backfill existing data
 
@@ -154,4 +157,27 @@ firebase ext:info ./ --markdown > README.md
 
 ## ℹ️ Support
 
-Please open a GitHub issue or join our [Slack community](https://join.slack.com/t/typesense-community/shared_invite/zt-mx4nbsbn-AuOL89O7iBtvkz136egSJg).
+Please read through the FAQ below, search through [past GitHub issues](https://github.com/search?q=repo%3Atypesense%2Ffirestore-typesense-search+repo%3Atypesense%2Ftypesense+firebase&type=issues), past threads in our [knowledge base](https://threads.typesense.org) and if you're unable to find an answer, please open a GitHub issue in this repo or join our [Slack community](https://join.slack.com/t/typesense-community/shared_invite/zt-2fetvh0pw-ft5y2YQlq4l_bPhhqpjXig) and ask there.
+
+#### FAQs
+
+- **My Typesenese collection is empty, even after installing the extension. What could be wrong?**
+
+   The extension only syncs changes from your Firestore collection _from the time when it is installed_. To backfill existing data from your Firestore collection into Typesense, you want to run the backfill step described [here](#step-3%EF%B8%8F⃣--optional-backfill-existing-data).
+
+- **My Typesense collection is missing some records. What could be wrong?**
+
+  This almost always is because the collection schema in Typesense does not match the structure of the documents in Firebase, and so Typesense is rejecting the documents due to validation failure.
+  All validation errors returned by Typesense are logged in detail in the Firebase extension logs, which are accessible via the Firebase web console. You want to search the logs for both the backfill function and also the indexing function from this extension.
+
+- **The backfill function is not getting triggered. What could be wrong?**
+
+  The backfill function watches for changes to a document with ID called `backfill`, in a Firestore collection called `typesense_sync`. This document should have a key called `trigger` with a boolean value of `true`. So if you've already created this key, you want to change its value to `false` and then change it back to `true` to re-trigger the backfill function.
+
+- **How do I sync multiple collections?**
+
+  You can install this extension multiple times and set a different Firestore collection path for each instance. Read more [here](#syncing-multiple-firestore-collections)
+
+- **How do I backfill just a single collection, when I've installed the extension multiple times?**
+
+  See the last bullet point under the backfilling instructions [here](#step-3%EF%B8%8F⃣--optional-backfill-existing-data)
