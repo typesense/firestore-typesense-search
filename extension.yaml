@@ -57,9 +57,9 @@ externalServices:
 
 params:
   - param: DATABASE_ID
-    label: Database ID
+    label: Firestore Database ID
     description: >-
-      The Firestore database ID which contains the collection that needs to be indexed into Typesense.
+      The Firestore Database ID which contains the collection that needs to be indexed into Typesense. Set it to (default) if you're only using a single database.
     default: '(default)'
     example: (default)
     required: true
