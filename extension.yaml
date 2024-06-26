@@ -1,5 +1,5 @@
 name: firestore-typesense-search
-version: 1.4.1
+version: 1.4.2
 specVersion: v1beta # Firebase Extensions specification version (do not edit)
 
 displayName: Search Firestore with Typesense
@@ -27,7 +27,7 @@ resources:
       location: ${LOCATION}
       eventTrigger:
         eventType: providers/cloud.firestore/eventTypes/document.write
-        resource: projects/${param:PROJECT_ID}/databases/(default)/documents/${param:FIRESTORE_COLLECTION_PATH}/{documentID}
+        resource: projects/${param:PROJECT_ID}/databases/${param:DATABASE_ID}/documents/${param:FIRESTORE_COLLECTION_PATH}/{documentID}
 
   - name: backfill
     description: >-
@@ -43,7 +43,7 @@ resources:
       location: ${LOCATION}
       eventTrigger:
         eventType: providers/cloud.firestore/eventTypes/document.write
-        resource: projects/${param:PROJECT_ID}/databases/(default)/documents/typesense_sync/backfill
+        resource: projects/${param:PROJECT_ID}/databases/${param:DATABASE_ID}/documents/typesense_sync/backfill
 
 roles:
   - role: datastore.user
@@ -56,6 +56,15 @@ externalServices:
     PricingUri: https://typesense.org/downloads
 
 params:
+  - param: DATABASE_ID
+    label: Database ID
+    description: >-
+      The Firestore database ID which contains the collection that needs to be indexed into Typesense.
+    default: '(default)'
+    example: (default)
+    required: true
+    immutable: true
+
   - param: FIRESTORE_COLLECTION_PATH
     label: Firestore Collection Path
     description: >-
@@ -66,6 +75,7 @@ params:
     default: path/to/firestore_collection
     required: true
     immutable: true
+
   - param: FIRESTORE_COLLECTION_FIELDS
     label: Firestore Collection Fields
     description: >-
@@ -73,6 +83,7 @@ params:
     example: field1,field2,field3
     default: ""
     required: false
+
   - param: TYPESENSE_HOSTS
     label: Typesense Hosts
     description: >-
@@ -81,6 +92,7 @@ params:
       please be sure to mention all hostnames.
     example: xyz.a1.typesense.net,xyz-1.a1.typesense.net,xyz-2.a1.typesense.net,xyz-3.a1.typesense.net
     required: true
+
   - param: TYPESENSE_API_KEY
     label: Typesense API Key
     type: secret
@@ -89,12 +101,14 @@ params:
       Click on "Generate API Key" in cluster dashboard in Typesense Cloud
     example: ""
     required: true
+
   - param: TYPESENSE_COLLECTION_NAME
     label: Typesense Collection Name
     description: >-
       Typesense collection name to index data into. This collection needs to exist before this extension is installed. Please create it via the Typesense Cloud dashboard or API.
     default: companies
     required: true
+
   - param: FLATTEN_NESTED_DOCUMENTS
     label: Flatten Nested Documents
     description: >-
@@ -108,6 +122,7 @@ params:
         value: true
     default: false
     required: false
+
   - param: LOCATION
     label: Cloud Functions location
     description: >-
