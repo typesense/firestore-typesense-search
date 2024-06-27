@@ -7,7 +7,7 @@
     "test": "npm run test-part-1 && npm run test-part-2",
     "test-part-1": "cp -f extensions/test-params-flatten-nested-true.local.env extensions/firestore-typesense-search.env.local && NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-true.local.env firebase emulators:exec --only functions,firestore,extensions 'jest --testPathIgnorePatterns=test/indexOnWriteWithoutFlattening.spec.js'",
     "test-part-2": "cp -f extensions/test-params-flatten-nested-false.local.env extensions/firestore-typesense-search.env.local && NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-false.local.env firebase emulators:exec --only functions,firestore,extensions 'jest --testPathPattern=test/indexOnWriteWithoutFlattening.spec.js'",
-    "typesenseServer": "mkdir -p $(pwd)/typesense-server-data && docker run -i -p 8108:8108 -v$(pwd)/typesense-server-data/:/data typesense/typesense:0.25.1 --data-dir /data --api-key=xyz --listen-port 8108 --enable-cors",
+    "typesenseServer": "mkdir -p $(pwd)/typesense-server-data && docker run -i -p 8108:8108 -v$(pwd)/typesense-server-data/:/data typesense/typesense:26.0 --data-dir /data --api-key=xyz --listen-port 8108 --enable-cors",
     "lint": "eslint . --fix"
   },
   "engines": {
@@ -15,16 +15,16 @@
   },
   "main": "src/index.js",
   "devDependencies": {
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
     "eslint": "^8.52.0",
     "eslint-config-google": "^0.14.0",
-    "firebase-admin": "^11.11.0",
-    "firebase-functions": "^4.4.1",
-    "firebase-functions-test": "^3.1.0",
+    "firebase-admin": "^12.2.0",
+    "firebase-functions": "^5.0.1",
+    "firebase-functions-test": "^3.3.0",
     "jest": "^29.7.0",
-    "jest-dev-server": "^9.0.1",
+    "jest-dev-server": "^10.0.0",
     "jest-junit": "^16.0.0",
-    "typesense": "^1.7.2"
+    "typesense": "^1.8.2"
   },
   "private": true
 }
