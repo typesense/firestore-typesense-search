@@ -1,17 +1,26 @@
 const config = require("./config.js");
 
 const mapValue = (value) => {
-  if (typeof value === "object" && value !== null && value.seconds != null && value.nanoseconds != null) {
+  const isObject = typeof value === 'object';
+  const notNull = value !== null;
+  const length = Object.keys(value).length;
+
+  const latitude = value.latitude ?? value.lat;
+  const longitude = value.longitude ?? value.lng;
+  const hasGeohashField = value.geohash != null && length == 3;
+  const isGeopointType = latitude != null && longitude != null && (length == 2 || hasGeohashField);
+
+  if (isObject && notNull && value.seconds != null && value.nanoseconds != null) {
     // convert date to Unix timestamp
     // https://typesense.org/docs/0.22.2/api/collections.html#indexing-dates
     return Math.floor(value.toDate().getTime() / 1000);
-  } else if (typeof value === "object" && value !== null && value.latitude != null && value.longitude != null) {
-    return [value.latitude, value.longitude];
-  } else if (typeof value === "object" && value !== null && value.firestore != null && value.path != null) {
+  } else if (isObject && notNull && isGeopointType) {
+    return [latitude, longitude];
+  } else if (isObject && notNull && value.firestore != null && value.path != null) {
     return {"path": value.path};
   } else if (Array.isArray(value)) {
     return value.map(mapValue);
-  } else if (typeof value === "object" && value !== null) {
+  } else if (isObject && notNull) {
     return Object.fromEntries(Object.entries(value).map(([key, value]) => [key, mapValue(value)]));
   } else {
     return value;
