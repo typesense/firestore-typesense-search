@@ -3,6 +3,20 @@ name: tests
 on: [push, pull_request_target]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.17.1
+          cache: npm
+      - run: npm install
+      - name: Run ESLint
+        run: npm run lint
+
   # Source: https://iterative.ai/blog/testing-external-contributions-using-github-actions-secrets
   authorize:
     environment:
