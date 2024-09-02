@@ -181,3 +181,4 @@ Please read through the FAQ below, search through [past GitHub issues](https://g
 - **How do I backfill just a single collection, when I've installed the extension multiple times?**
 
   See the last bullet point under the backfilling instructions [here](#step-3%EF%B8%8F⃣--optional-backfill-existing-data)
+
