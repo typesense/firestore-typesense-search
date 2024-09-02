@@ -6,17 +6,15 @@ describe("Utils", () => {
   describe("typesenseDocumentFromSnapshot", () => {
     describe("when document fields are mentioned explicitly", () => {
       it("returns a Typesense document with only the specified fields", async () => {
-        const typesenseDocumentFromSnapshot = (
-          await import("../functions/src/utils.js")
-        ).typesenseDocumentFromSnapshot;
+        const typesenseDocumentFromSnapshot = (await import("../functions/src/utils.js")).typesenseDocumentFromSnapshot;
 
         const documentSnapshot = test.firestore.makeDocumentSnapshot(
-            {
-              author: "Author X",
-              title: "Title X",
-              country: "USA",
-            },
-            "id",
+          {
+            author: "Author X",
+            title: "Title X",
+            country: "USA",
+          },
+          "id",
         );
 
         const result = await typesenseDocumentFromSnapshot(documentSnapshot);
@@ -30,23 +28,18 @@ describe("Utils", () => {
 
     describe("when no fields are mentioned explicitly", () => {
       it("returns a Typesense document with all fields", async () => {
-        const typesenseDocumentFromSnapshot = (
-          await import("../functions/src/utils.js")
-        ).typesenseDocumentFromSnapshot;
+        const typesenseDocumentFromSnapshot = (await import("../functions/src/utils.js")).typesenseDocumentFromSnapshot;
 
         const documentSnapshot = test.firestore.makeDocumentSnapshot(
-            {
-              author: "Author X",
-              title: "Title X",
-              country: "USA",
-            },
-            "id",
+          {
+            author: "Author X",
+            title: "Title X",
+            country: "USA",
+          },
+          "id",
         );
 
-        const result = await typesenseDocumentFromSnapshot(
-            documentSnapshot,
-            [],
-        );
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, []);
         expect(result).toEqual({
           id: "id",
           author: "Author X",
@@ -58,9 +51,7 @@ describe("Utils", () => {
 
     describe("Parsing geopoint datatype", () => {
       it("Can parse object into geopoint when there are only lat, lng & geohash fields", async () => {
-        const typesenseDocumentFromSnapshot = (
-          await import("../functions/src/utils.js")
-        ).typesenseDocumentFromSnapshot;
+        const typesenseDocumentFromSnapshot = (await import("../functions/src/utils.js")).typesenseDocumentFromSnapshot;
         const data = [
           {
             location: {
@@ -90,14 +81,8 @@ describe("Utils", () => {
           },
         ];
         data.forEach(async (item) => {
-          const documentSnapshot = test.firestore.makeDocumentSnapshot(
-              item,
-              "id",
-          );
-          const result = await typesenseDocumentFromSnapshot(
-              documentSnapshot,
-              [],
-          );
+          const documentSnapshot = test.firestore.makeDocumentSnapshot(item, "id");
+          const result = await typesenseDocumentFromSnapshot(documentSnapshot, []);
           expect(result).toEqual({
             id: "id",
             location: [1, 2],
@@ -106,11 +91,11 @@ describe("Utils", () => {
       });
 
       it("Do not parse into geopoint data type if object has other fields", async () => {
-        const typesenseDocumentFromSnapshot = (
-          await import("../functions/src/utils.js")
-        ).typesenseDocumentFromSnapshot;
+        const typesenseDocumentFromSnapshot = (await import("../functions/src/utils.js")).typesenseDocumentFromSnapshot;
         const data = {
           title: "Title X",
+          author: null,
+          genres: ["comedy"],
           location: {
             country: "USA",
             geohash: "abc",
@@ -118,17 +103,13 @@ describe("Utils", () => {
             longitude: 2,
           },
         };
-        const documentSnapshot = test.firestore.makeDocumentSnapshot(
-            data,
-            "id",
-        );
-        const result = await typesenseDocumentFromSnapshot(
-            documentSnapshot,
-            [],
-        );
+        const documentSnapshot = test.firestore.makeDocumentSnapshot(data, "id");
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, []);
         expect(result).toEqual({
-          "id": "id",
-          "title": "Title X",
+          id: "id",
+          title: "Title X",
+          author: null,
+          genres: ["comedy"],
           "location.country": "USA",
           "location.geohash": "abc",
           "location.latitude": 1,

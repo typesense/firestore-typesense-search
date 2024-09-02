@@ -56,14 +56,14 @@ describe("indexOnWriteWithoutFlattening", () => {
 
       // check that the document was indexed
       let typesenseDocsStr = await typesense
-          .collections(encodeURIComponent(config.typesenseCollectionName))
-          .documents()
-          .export();
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
       let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
       expect(typesenseDocs.length).toBe(1);
       expect(typesenseDocs[0]).toStrictEqual({
-        "id": docRef.id,
+        id: docRef.id,
         ...docData,
       });
 
@@ -77,14 +77,14 @@ describe("indexOnWriteWithoutFlattening", () => {
 
       // check that the document was updated
       typesenseDocsStr = await typesense
-          .collections(encodeURIComponent(config.typesenseCollectionName))
-          .documents()
-          .export();
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
       typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
       expect(typesenseDocs.length).toBe(1);
       expect(typesenseDocs[0]).toStrictEqual({
-        "id": docRef.id,
+        id: docRef.id,
         ...docData,
       });
 
@@ -96,9 +96,9 @@ describe("indexOnWriteWithoutFlattening", () => {
 
       // check that the document was deleted
       typesenseDocsStr = await typesense
-          .collections(encodeURIComponent(config.typesenseCollectionName))
-          .documents()
-          .export();
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
 
       expect(typesenseDocsStr).toBe("");
     });

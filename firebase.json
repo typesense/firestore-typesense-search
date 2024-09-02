@@ -15,9 +15,7 @@
     "ui": {
       "enabled": true
     },
-    "extensions": {
-
-    },
+    "extensions": {},
     "singleProjectMode": true
   },
   "extensions": {
