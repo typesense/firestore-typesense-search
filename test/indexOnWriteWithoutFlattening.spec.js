@@ -25,6 +25,7 @@ describe("indexOnWriteWithoutFlattening", () => {
     await typesense.collections().create({
       name: config.typesenseCollectionName,
       fields: [{name: ".*", type: "auto"}],
+      enable_nested_fields: true,
     });
   });
 
@@ -55,10 +56,7 @@ describe("indexOnWriteWithoutFlattening", () => {
       await new Promise((r) => setTimeout(r, 2500));
 
       // check that the document was indexed
-      let typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      let typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export();
       let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
       expect(typesenseDocs.length).toBe(1);
@@ -76,10 +74,7 @@ describe("indexOnWriteWithoutFlattening", () => {
       await new Promise((r) => setTimeout(r, 2500));
 
       // check that the document was updated
-      typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export({exclude_fields: ""});
       typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
       expect(typesenseDocs.length).toBe(1);
@@ -95,10 +90,7 @@ describe("indexOnWriteWithoutFlattening", () => {
       await new Promise((r) => setTimeout(r, 2500));
 
       // check that the document was deleted
-      typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export();
 
       expect(typesenseDocsStr).toBe("");
     });
