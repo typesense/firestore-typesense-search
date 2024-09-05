@@ -44,9 +44,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
@@ -62,9 +62,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was updated
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
@@ -78,9 +78,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
 
     expect(typesenseDocsStr).toBe("");
   });
@@ -96,9 +96,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
@@ -114,9 +114,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was updated
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
@@ -130,9 +130,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
 
     expect(typesenseDocsStr).toBe("");
   });
@@ -148,9 +148,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
@@ -166,9 +166,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was updated
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
@@ -182,9 +182,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
 
     expect(typesenseDocsStr).toBe("");
   });
@@ -210,14 +210,14 @@ describe("indexOnWrite", () => {
 
       // check that the document was indexed
       let typesenseDocsStr = await typesense
-          .collections(encodeURIComponent(config.typesenseCollectionName))
-          .documents()
-          .export();
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
       let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
       expect(typesenseDocs.length).toBe(1);
       expect(typesenseDocs[0]).toStrictEqual({
-        "id": docRef.id,
+        id: docRef.id,
         "nested_field.field1": "value1",
         "nested_field.field2": ["value2", "value3", "value4"],
         "nested_field.field3.fieldA": "valueA",
@@ -234,14 +234,14 @@ describe("indexOnWrite", () => {
 
       // check that the document was updated
       typesenseDocsStr = await typesense
-          .collections(encodeURIComponent(config.typesenseCollectionName))
-          .documents()
-          .export();
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
       typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
       expect(typesenseDocs.length).toBe(1);
       expect(typesenseDocs[0]).toStrictEqual({
-        "id": docRef.id,
+        id: docRef.id,
         "nested_field.field1": "new value1",
         "nested_field.field2": ["value2", "value3", "value4"],
         "nested_field.field3.fieldA": "valueA",
@@ -256,9 +256,9 @@ describe("indexOnWrite", () => {
 
       // check that the document was deleted
       typesenseDocsStr = await typesense
-          .collections(encodeURIComponent(config.typesenseCollectionName))
-          .documents()
-          .export();
+        .collections(encodeURIComponent(config.typesenseCollectionName))
+        .documents()
+        .export();
 
       expect(typesenseDocsStr).toBe("");
     });
@@ -275,13 +275,13 @@ describe("indexOnWrite", () => {
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({"id": docRef.id, "tags": docData.tags});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, tags: docData.tags});
 
     // update document in Firestore
     docData.tags = ["tag1", "tag2", "tag3", "tag4"];
@@ -293,13 +293,13 @@ describe("indexOnWrite", () => {
 
     // check that the document was updated
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({"id": docRef.id, "tags": docData.tags});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, tags: docData.tags});
 
     // delete document in Firestore
     await docRef.delete();
@@ -309,9 +309,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
 
     expect(typesenseDocsStr).toBe("");
   });
@@ -327,13 +327,13 @@ describe("indexOnWrite", () => {
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({"id": docRef.id});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id});
 
     // delete document in Firestore
     await docRef.delete();
@@ -343,9 +343,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
 
     expect(typesenseDocsStr).toBe("");
   });
@@ -361,9 +361,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
@@ -382,9 +382,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was updated
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
@@ -401,9 +401,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
 
     expect(typesenseDocsStr).toBe("");
   });
@@ -419,9 +419,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
@@ -440,9 +440,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was updated
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
@@ -459,9 +459,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
 
     expect(typesenseDocsStr).toBe("");
   });
@@ -477,13 +477,13 @@ describe("indexOnWrite", () => {
 
     // check that the document was indexed
     let typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({"id": docRef.id, "ref.path": "test/test"});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, "ref.path": "test/test"});
 
     // update document in Firestore
     docData.ref = firestore.doc("test/test2");
@@ -495,13 +495,13 @@ describe("indexOnWrite", () => {
 
     // check that the document was updated
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
     typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
     expect(typesenseDocs.length).toBe(1);
-    expect(typesenseDocs[0]).toStrictEqual({"id": docRef.id, "ref.path": "test/test2"});
+    expect(typesenseDocs[0]).toStrictEqual({id: docRef.id, "ref.path": "test/test2"});
 
     // delete document in Firestore
     await docRef.delete();
@@ -511,9 +511,9 @@ describe("indexOnWrite", () => {
 
     // check that the document was deleted
     typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      .collections(encodeURIComponent(config.typesenseCollectionName))
+      .documents()
+      .export();
 
     expect(typesenseDocsStr).toBe("");
   });
