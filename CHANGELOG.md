@@ -1,3 +1,7 @@
+## Version 1.5.0
+
+- Fix handling incorrect casting of nested objects into geopoints
+
 ## Version 1.4.1
 
 - Only log error documents in backfill log
