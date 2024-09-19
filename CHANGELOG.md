@@ -1,3 +1,19 @@
+## Version 1.5.0
+
+- Fix handling incorrect casting of nested objects into geopoints
+
+## Version 1.4.1
+
+- Only log error documents in backfill log
+
+## Version 1.4.0
+
+- Shorten function names to fix issue with local emulator
+
+## Version 1.3.0
+
+- Use `action=upsert` for back-filling data
+
 ## Version 1.2.0
 
 - Upgrade to Node 18

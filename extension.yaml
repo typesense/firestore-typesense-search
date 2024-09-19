@@ -1,5 +1,5 @@
 name: firestore-typesense-search
-version: 1.2.0
+version: 1.5.0
 specVersion: v1beta # Firebase Extensions specification version (do not edit)
 
 displayName: Search Firestore with Typesense
@@ -17,7 +17,7 @@ releaseNotesUrl: https://github.com/typesense/firestore-typesense-search/release
 billingRequired: true
 
 resources:
-  - name: indexToTypesenseOnFirestoreWrite
+  - name: indexOnWrite
     description: A function that indexes data into Typesense when it's triggered by Firestore changes
     type: firebaseextensions.v1beta.function
     properties:
@@ -29,7 +29,7 @@ resources:
         eventType: providers/cloud.firestore/eventTypes/document.write
         resource: projects/${param:PROJECT_ID}/databases/(default)/documents/${param:FIRESTORE_COLLECTION_PATH}/{documentID}
 
-  - name: backfillToTypesenseFromFirestore
+  - name: backfill
     description: >-
       A function that backfills data from a Firestore collection into Typesense,
       triggered when a Firestore document with the path `typesense_sync/backfill` has the contents of `trigger: true`.
