@@ -1,5 +1,6 @@
 ## Version 1.5.0
 
+- Use batching to back-fill, to prevent memory overflow when back-filling large collections
 - Fix handling incorrect casting of nested objects into geopoints
 
 ## Version 1.4.1
