@@ -18,7 +18,9 @@ If you're new to [Typesense](https://typesense.org), it is an open source search
 Before installing this extension, make sure that you have:
 
 1. [Set up a Cloud Firestore database](https://firebase.google.com/docs/firestore/quickstart) in your Firebase project.
-2. If using Google Workspace for Business, ensure that your default cloud compute based service account has the following roles (which can be found in the Google Cloud Console IAM section):
+
+   If using Google Workspace for Business, ensure that your default cloud compute based service account has the following roles (which can be found in the Google Cloud Console IAM section):
+   
     * Artifact Registry Administrator
     * Artifact Registry Create-on-Push Writer
     * Artifact Registry Service Agent
