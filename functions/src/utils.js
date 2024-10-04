@@ -1,4 +1,5 @@
 const config = require("./config.js");
+const get = require("lodash.get");
 
 const mapValue = (value) => {
   const isObject = typeof value === "object";
@@ -36,14 +37,14 @@ exports.typesenseDocumentFromSnapshot = async (firestoreDocumentSnapshot, fields
   const flat = await import("flat");
   const data = firestoreDocumentSnapshot.data();
 
-  let entries = Object.entries(data);
+  const extractedData =
+    fieldsToExtract.length === 0 ? data :
+       fieldsToExtract.reduce((acc, field) => {
+         acc[field] = get(data, field);
+         return acc;
+       }, {});
 
-  if (fieldsToExtract.length) {
-    entries = entries.filter(([key]) => fieldsToExtract.includes(key));
-  }
-
-  // Build a document with just the fields requested by the user, and mapped from Firestore types to Typesense types
-  const mappedDocument = Object.fromEntries(entries.map(([key, value]) => [key, mapValue(value)]));
+  const mappedDocument = Object.fromEntries(Object.entries(extractedData).map(([key, value]) => [key, mapValue(value)]));
 
   // using flat to flatten nested objects for older versions of Typesense that did not support nested fields
   // https://typesense.org/docs/0.22.2/api/collections.html#indexing-nested-fields
