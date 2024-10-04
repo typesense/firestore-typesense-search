@@ -117,5 +117,86 @@ describe("Utils", () => {
         });
       });
     });
+    describe("Nested fields extraction", () => {
+      it("extracts nested fields using dot notation", async () => {
+        const typesenseDocumentFromSnapshot = (await import("../functions/src/utils.js")).typesenseDocumentFromSnapshot;
+        const documentSnapshot = test.firestore.makeDocumentSnapshot(
+          {
+            user: {
+              name: "John Doe",
+              address: {
+                city: "New York",
+                country: "USA",
+              },
+            },
+            tags: ["tag1", "tag2"],
+          },
+          "id",
+        );
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, ["user.name", "user.address.city", "tags"]);
+        expect(result).toEqual({
+          id: "id",
+          "user.name": "John Doe",
+          "user.address.city": "New York",
+          tags: ["tag1", "tag2"],
+        });
+      });
+
+      it("handles missing nested fields gracefully", async () => {
+        const typesenseDocumentFromSnapshot = (await import("../functions/src/utils.js")).typesenseDocumentFromSnapshot;
+        const documentSnapshot = test.firestore.makeDocumentSnapshot(
+          {
+            user: {
+              name: "John Doe",
+            },
+          },
+          "id",
+        );
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, ["user.name", "user.address.city"]);
+        expect(result).toEqual({
+          id: "id",
+          "user.name": "John Doe",
+        });
+      });
+
+      it("extracts nested fields alongside top-level fields", async () => {
+        const typesenseDocumentFromSnapshot = (await import("../functions/src/utils.js")).typesenseDocumentFromSnapshot;
+        const documentSnapshot = test.firestore.makeDocumentSnapshot(
+          {
+            title: "Main Title",
+            user: {
+              name: "John Doe",
+              age: 30,
+            },
+          },
+          "id",
+        );
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, ["title", "user.name"]);
+        expect(result).toEqual({
+          id: "id",
+          title: "Main Title",
+          "user.name": "John Doe",
+        });
+      });
+
+      it("handles array indexing in dot notation", async () => {
+        const typesenseDocumentFromSnapshot = (await import("../functions/src/utils.js")).typesenseDocumentFromSnapshot;
+        const documentSnapshot = test.firestore.makeDocumentSnapshot(
+          {
+            comments: [
+              {author: "Alice", text: "Great post!"},
+              {author: "Bob", text: "Thanks for sharing."},
+            ],
+          },
+          "id",
+        );
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, ["comments[0].author", "comments[1].text"]);
+        expect(result).toEqual({
+          id: "id",
+          "comments[0].author": "Alice",
+          "comments[1].text": "Thanks for sharing.",
+        });
+      });
+    });
   });
 });
