@@ -1,5 +1,4 @@
 const config = require("./config.js");
-const get = require("lodash.get");
 
 const mapValue = (value) => {
   const isObject = typeof value === "object";
@@ -27,6 +26,77 @@ const mapValue = (value) => {
     return value;
   }
 };
+
+/**
+ * Sets a nested value in an object using a dot-notated path.
+ * @param {Object} obj - The object to modify.
+ * @param {string} path - The dot-notated path to the value.
+ * @param {*} value - The value to set.
+ * @return {Object} The modified object.
+ */
+function setNestedValue(obj, path, value) {
+  const keys = path.split(".");
+  keys.reduce((acc, key, index) => {
+    if (index === keys.length - 1) {
+      acc[key] = value;
+      return acc;
+    }
+    if (acc[key] === undefined) {
+      acc[key] = Number.isInteger(+keys[index + 1]) ? [] : {};
+    }
+    return acc[key];
+  }, obj);
+  return obj;
+}
+
+/**
+ * Gets a nested value from an object using a dot-notated path.
+ * @param {Object} obj - The object to retrieve the value from.
+ * @param {string} path - The dot-notated path to the value.
+ * @return {*} The value at the specified path, or undefined if not found.
+ */
+function getNestedValue(obj, path) {
+  const keys = path.split(".");
+  return keys.reduce((current, key) => {
+    if (current === undefined) return undefined;
+    if (Array.isArray(current)) {
+      return Number.isInteger(+key) ? current[+key] : current.map((item) => ({[key]: item[key]}));
+    }
+    return current[key];
+  }, obj);
+}
+
+/**
+ * Merges an array of objects into a single array, combining objects at the same index.
+ * @param {Array<Object[]>} arrays - An array of object arrays to merge.
+ * @return {Object[]} A merged array of objects.
+ */
+function mergeArrays(arrays) {
+  const maxLength = Math.max(...arrays.map((arr) => arr.length));
+  return Array.from({length: maxLength}, (_, i) => Object.assign({}, ...arrays.map((arr) => arr[i] || {})));
+}
+
+/**
+ * Extracts a field from the data and adds it to the accumulator.
+ * @param {Object} data - The source data object.
+ * @param {Object} acc - The accumulator object.
+ * @param {string} field - The field to extract.
+ * @return {Object} The updated accumulator.
+ */
+function extractField(data, acc, field) {
+  const value = getNestedValue(data, field);
+  if (value === undefined) return acc;
+  const [topLevelField] = field.split(".");
+  const isArrayOfObjects = Array.isArray(value) && typeof value[0] === "object";
+  if (isArrayOfObjects) {
+    return {
+      ...acc,
+      [topLevelField]: acc[topLevelField] ? mergeArrays([acc[topLevelField], value]) : value,
+    };
+  } else {
+    return setNestedValue(acc, field, value);
+  }
+}
 
 /**
  * Flattens a nested object, converting nested properties to dot-notation.
@@ -65,21 +135,16 @@ function flattenDocument(obj, prefix = "") {
  * @return {Object} typesenseDocument
  */
 exports.typesenseDocumentFromSnapshot = async (firestoreDocumentSnapshot, fieldsToExtract = config.firestoreCollectionFields) => {
-  const flat = await import("flat");
   const data = firestoreDocumentSnapshot.data();
 
-  const extractedData =
-    fieldsToExtract.length === 0 ? data :
-       fieldsToExtract.reduce((acc, field) => {
-         acc[field] = get(data, field);
-         return acc;
-       }, {});
+  const extractedData = fieldsToExtract.length === 0 ? data : fieldsToExtract.reduce((acc, field) => extractField(data, acc, field), {});
 
   const mappedDocument = Object.fromEntries(Object.entries(extractedData).map(([key, value]) => [key, mapValue(value)]));
 
   // using flat to flatten nested objects for older versions of Typesense that did not support nested fields
   // https://typesense.org/docs/0.22.2/api/collections.html#indexing-nested-fields
   const typesenseDocument = config.shouldFlattenNestedDocuments ? flattenDocument(mappedDocument) : mappedDocument;
+  console.log("typesenseDocument", typesenseDocument);
 
   typesenseDocument.id = firestoreDocumentSnapshot.id;
 
