@@ -185,16 +185,17 @@ describe("Utils", () => {
           {
             comments: [
               {author: "Alice", text: "Great post!"},
-              {author: "Bob", text: "Thanks for sharing."},
+              {author: "Bob", text: "Thanks for sharing.", likes: 5},
             ],
           },
           "id",
         );
-        const result = await typesenseDocumentFromSnapshot(documentSnapshot, ["comments[0].author", "comments[1].text"]);
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, ["comments.author", "comments.text", "comments.likes"]);
         expect(result).toEqual({
           id: "id",
-          "comments[0].author": "Alice",
-          "comments[1].text": "Thanks for sharing.",
+          "comments.author": ["Alice", "Bob"],
+          "comments.text": ["Great post!", "Thanks for sharing."],
+          "comments.likes": [5],
         });
       });
     });
