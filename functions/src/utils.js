@@ -29,6 +29,37 @@ const mapValue = (value) => {
 };
 
 /**
+ * Flattens a nested object, converting nested properties to dot-notation.
+ * @param {Object} obj - The object to flatten.
+ * @param {string} [prefix=""] - The prefix to use for flattened keys.
+ * @return {Object} A new flattened object.
+ */
+function flattenDocument(obj, prefix = "") {
+  return Object.keys(obj).reduce((acc, key) => {
+    const newKey = prefix ? `${prefix}.${key}` : key;
+    const value = obj[key];
+    // Handle primitive values (including null)
+    if (typeof value !== "object" || value === null) {
+      acc[newKey] = value;
+      return acc;
+    }
+    // Handle arrays
+    if (Array.isArray(value)) {
+      if (value.length === 0 || typeof value[0] !== "object") {
+        acc[newKey] = value;
+        return acc;
+      }
+      Object.keys(value[0]).forEach((subKey) => {
+        acc[`${newKey}.${subKey}`] = value.map((item) => item[subKey]).filter((v) => v !== undefined);
+      });
+      return acc;
+    }
+    // Handle nested objects
+    return {...acc, ...flattenDocument(value, newKey)};
+  }, {});
+}
+
+/**
  * @param {DocumentSnapshot} firestoreDocumentSnapshot
  * @param {Array} fieldsToExtract
  * @return {Object} typesenseDocument
@@ -48,7 +79,7 @@ exports.typesenseDocumentFromSnapshot = async (firestoreDocumentSnapshot, fields
 
   // using flat to flatten nested objects for older versions of Typesense that did not support nested fields
   // https://typesense.org/docs/0.22.2/api/collections.html#indexing-nested-fields
-  const typesenseDocument = config.shouldFlattenNestedDocuments ? flat.flatten(mappedDocument, {safe: true}) : mappedDocument;
+  const typesenseDocument = config.shouldFlattenNestedDocuments ? flattenDocument(mappedDocument) : mappedDocument;
 
   typesenseDocument.id = firestoreDocumentSnapshot.id;
 
