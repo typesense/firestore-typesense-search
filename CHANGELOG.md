@@ -2,6 +2,7 @@
 
 - Use batching to back-fill, to prevent memory overflow when back-filling large collections
 - Fix handling incorrect casting of nested objects into geopoints
+- Allow specifying nested field names in list of fields to sync
 
 ## Version 1.4.1
 
