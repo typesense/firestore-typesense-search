@@ -86,7 +86,7 @@ describe("indexOnWriteWithoutFlattening", () => {
       // update document in Firestore
       subDocData.nested_field.field1 = "new value1";
 
-      await subDocRef.update(docData);
+      await subDocRef.update(subDocRef);
 
       // wait for the Firestore cloud function to write to Typesense
       await new Promise((r) => setTimeout(r, 2500));
