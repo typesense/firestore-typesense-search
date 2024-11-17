@@ -41,7 +41,16 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
 
   const typesense = createTypesenseClient();
 
-  const querySnapshot = await admin.firestore().collection(config.firestoreCollectionPath);
+  const isSubcollection = config.firestoreCollectionPath.includes("/");
+  let query;
+  if (isSubcollection) {
+    const collectionGroup = config.firestoreCollectionPath.split("/").pop();
+    query = admin.firestore().collectionGroup(collectionGroup);
+  } else {
+    query = admin.firestore().collection(config.firestoreCollectionPath);
+  }
+
+  const querySnapshot = await query;
 
   let lastDoc = null;
 
