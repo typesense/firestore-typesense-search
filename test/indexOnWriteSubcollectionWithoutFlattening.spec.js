@@ -24,7 +24,7 @@ describe("indexOnWriteWithoutFlattening", () => {
       try {
         await typesense.collections(encodeURIComponent(collectionName)).delete();
       } catch (e) {
-          console.info(`${collectionName} collection not found, proceeding...`);
+        console.info(`${collectionName} collection not found, proceeding...`);
       }
     }
 
