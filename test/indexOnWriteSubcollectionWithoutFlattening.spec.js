@@ -65,7 +65,7 @@ describe("indexOnWriteWithoutFlattening", () => {
 
       // create a subcollection with document under the parent document
       const subCollectionRef = docRef.collection(subcollection);
-      const subDocRef = await subCollectionRef.doc()(subDocData);
+      const subDocRef = await subCollectionRef.add(subDocData);
 
       // wait for the Firestore cloud function to write to Typesense
       await new Promise((r) => setTimeout(r, 2500));
