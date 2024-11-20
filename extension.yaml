@@ -81,6 +81,20 @@ params:
       please be sure to mention all hostnames.
     example: xyz.a1.typesense.net,xyz-1.a1.typesense.net,xyz-2.a1.typesense.net,xyz-3.a1.typesense.net
     required: true
+  - param: TYPESENSE_PORT
+    label: Typesense Port
+    description: >-
+      Typesense cluster Port
+    example: 8108
+    required: true
+    default: 443
+  - param: TYPESENSE_PROTOCOL
+    label: Typesense protocol
+    description: >-
+      Typesense cluster Protocol
+    example: http
+    default: https
+    required: true
   - param: TYPESENSE_API_KEY
     label: Typesense API Key
     type: secret
