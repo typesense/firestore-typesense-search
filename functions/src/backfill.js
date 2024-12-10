@@ -1,4 +1,5 @@
-const functions = require("firebase-functions");
+const {onDocumentWritten} = require("firebase-functions/v2/firestore");
+const {info, error} = require("firebase-functions/logger");
 const admin = require("firebase-admin");
 const config = require("./config.js");
 const createTypesenseClient = require("./createTypesenseClient.js");
@@ -10,24 +11,22 @@ admin.initializeApp({
 
 const validateBackfillRun = (snapshot) => {
   if (![true, "true"].includes(snapshot.after.get("trigger"))) {
-    functions.logger.error("Skipping backfill. `trigger: true` key " + `was not found in Firestore document ${config.typesenseBackfillTriggerDocumentInFirestore}.`);
+    error("Skipping backfill. `trigger: true` key " + `was not found in Firestore document ${config.typesenseBackfillTriggerDocumentInFirestore}.`);
     return false;
   }
 
   // Check if there's a collection specific sync setup
   const collectionsToSync = snapshot.after.get("firestore_collections");
   if (Array.isArray(collectionsToSync) && !collectionsToSync.includes(config.firestoreCollectionPath)) {
-    functions.logger.error(
-        "Skipping backfill. The `firestore_collections` key in " + `${config.typesenseBackfillTriggerDocumentInFirestore} did not contain collection ${config.firestoreCollectionPath}.`,
-    );
+    error("Skipping backfill. The `firestore_collections` key in " + `${config.typesenseBackfillTriggerDocumentInFirestore} did not contain collection ${config.firestoreCollectionPath}.`);
     return false;
   }
 
   return true;
 };
 
-module.exports = functions.firestore.document(config.typesenseBackfillTriggerDocumentInFirestore).onWrite(async (snapshot, context) => {
-  functions.logger.info(
+module.exports = onDocumentWritten(config.typesenseBackfillTriggerDocumentInFirestore, async (event) => {
+  info(
       "Backfilling " +
       `${config.firestoreCollectionFields.join(",")} fields in Firestore documents ` +
       `from ${config.firestoreCollectionPath} ` +
@@ -35,7 +34,7 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
       `on ${config.typesenseHosts.join(",")}`,
   );
 
-  if (!validateBackfillRun(snapshot)) {
+  if (!validateBackfillRun(event.data)) {
     return false;
   }
 
@@ -60,9 +59,9 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
     lastDoc = thisBatch.docs.at(-1) ?? null;
     try {
       await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().import(currentDocumentsBatch);
-      functions.logger.info(`Imported ${currentDocumentsBatch.length} documents into Typesense`);
+      info(`Imported ${currentDocumentsBatch.length} documents into Typesense`);
     } catch (error) {
-      functions.logger.error(`Import error in a batch of documents from ${currentDocumentsBatch[0].id} to ${lastDoc.id}`, error);
+      error(`Import error in a batch of documents from ${currentDocumentsBatch[0].id} to ${lastDoc.id}`, error);
       if ("importResults" in error) {
         logImportErrors(error.importResults);
       }
@@ -76,7 +75,7 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
     await new Promise((resolve) => process.nextTick(resolve));
   } while (lastDoc);
 
-  functions.logger.info("Done backfilling to Typesense from Firestore");
+  info("Done backfilling to Typesense from Firestore");
 });
 
 /**
@@ -87,6 +86,6 @@ function logImportErrors(importResults) {
   importResults.forEach((result) => {
     if (result.success) return;
 
-    functions.logger.error(`Error importing document with error: ${result.error}`, result);
+    error(`Error importing document with error: ${result.error}`, result);
   });
 }
