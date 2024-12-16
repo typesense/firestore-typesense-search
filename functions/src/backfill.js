@@ -53,7 +53,7 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
     }
     const currentDocumentsBatch = await Promise.all(
         thisBatch.docs.map(async (doc) => {
-          return await utils.typesenseDocumentFromSnapshot(doc);
+          return await utils.typesenseDocumentFromSnapshot(doc, {});
         }),
     );
 

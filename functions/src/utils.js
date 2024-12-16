@@ -131,10 +131,11 @@ function flattenDocument(obj, prefix = "") {
 
 /**
  * @param {DocumentSnapshot} firestoreDocumentSnapshot
+ * @param {Object} contextParams
  * @param {Array} fieldsToExtract
  * @return {Object} typesenseDocument
  */
-exports.typesenseDocumentFromSnapshot = async (firestoreDocumentSnapshot, fieldsToExtract = config.firestoreCollectionFields) => {
+exports.typesenseDocumentFromSnapshot = async (firestoreDocumentSnapshot, contextParams = {}, fieldsToExtract = config.firestoreCollectionFields) => {
   const data = firestoreDocumentSnapshot.data();
 
   const extractedData = fieldsToExtract.length === 0 ? data : fieldsToExtract.reduce((acc, field) => extractField(data, acc, field), {});
@@ -147,6 +148,10 @@ exports.typesenseDocumentFromSnapshot = async (firestoreDocumentSnapshot, fields
   console.log("typesenseDocument", typesenseDocument);
 
   typesenseDocument.id = firestoreDocumentSnapshot.id;
+
+  Object.entries(contextParams).forEach(([key, value]) => {
+    typesenseDocument[key] = value;
+  });
 
   return typesenseDocument;
 };

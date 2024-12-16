@@ -20,7 +20,7 @@ module.exports = functions.firestore.document(config.firestoreCollectionPath)
 
         // snapshot.after.ref.get() will refetch the latest version of the document
         const latestSnapshot = await snapshot.after.ref.get();
-        const typesenseDocument = await utils.typesenseDocumentFromSnapshot(latestSnapshot);
+        const typesenseDocument = await utils.typesenseDocumentFromSnapshot(latestSnapshot, context.params);
 
         functions.logger.debug(`Upserting document ${JSON.stringify(typesenseDocument)}`);
         return await typesense
