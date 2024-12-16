@@ -155,3 +155,69 @@ exports.typesenseDocumentFromSnapshot = async (firestoreDocumentSnapshot, contex
 
   return typesenseDocument;
 };
+
+/**
+ * Parses a Firestore path with placeholdersto extract indices and names of placeholders.
+ * @param {string} firestorePath - The Firestore path to parse.
+ * @return {Object} An object containing the names of placeholders, and their corresponding indices.
+ * @throws Will throw an error if the path is invalid.
+ */
+exports.parseFirestorePath = function(firestorePath) {
+  if (!firestorePath || typeof firestorePath !== "string") {
+    throw new Error("Invalid Firestore path: Path must be a non-empty string.");
+  }
+
+  const segments = firestorePath.split("/").filter(Boolean);
+  const placeholders = {};
+
+  segments.forEach((segment, index) => {
+    const match = segment.match(/^{([^}]+)}$/); // Match placeholders like {userId}
+    if (match) {
+      const varName = match[1];
+      if (placeholders[varName]) {
+        throw new Error(`Duplicate placeholder detected: ${varName}`);
+      }
+      placeholders[varName] = index;
+    }
+  });
+
+  return placeholders;
+};
+
+/**
+ * Verifies if a given Firestore path matches a selector and extracts placeholder values.
+ * @param {string} path - The static Firestore path (e.g., "users/123/library/456/books/789").
+ * @param {string} selector - The path selector with placeholders (e.g., "users/{userId}/library/{libraryId}/books").
+ * @return {Object|null} A dictionary of extracted values if the path matches the selector, or `null` if it does not match.
+ */
+exports.pathMatchesSelector = function(path, selector) {
+  if (!path || typeof path !== "string") {
+    throw new Error("Invalid path: Path must be a non-empty string.");
+  }
+  if (!selector || typeof selector !== "string") {
+    throw new Error("Invalid selector: Selector must be a non-empty string.");
+  }
+
+  const pathSegments = path.split("/").filter(Boolean);
+  const selectorSegments = selector.split("/").filter(Boolean);
+
+  if (pathSegments.length < selectorSegments.length) {
+    return null;
+  }
+
+  const extractedValues = {};
+
+  for (let i = 0; i < selectorSegments.length; i++) {
+    const selectorSegment = selectorSegments[i];
+    const pathSegment = pathSegments[i];
+
+    if (selectorSegment.startsWith("{") && selectorSegment.endsWith("}")) {
+      const placeholderName = selectorSegment.slice(1, -1); // Remove {}
+      extractedValues[placeholderName] = pathSegment;
+    } else if (selectorSegment !== pathSegment) {
+      return null;
+    }
+  }
+
+  return extractedValues;
+};
