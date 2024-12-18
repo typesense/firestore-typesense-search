@@ -41,7 +41,17 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
 
   const typesense = createTypesenseClient();
 
-  const querySnapshot = await admin.firestore().collection(config.firestoreCollectionPath);
+  const pathSegments = config.firestoreCollectionPath.split("/").filter(Boolean);
+  const pathPlaceholders = utils.parseFirestorePath(config.firestoreCollectionPath);
+  const isGroupQuery = pathSegments.length > 1 && Object.values(pathPlaceholders).length;
+
+  let querySnapshot;
+  if (isGroupQuery) {
+    const collectionGroup = pathSegments.pop();
+    querySnapshot = admin.firestore().collectionGroup(collectionGroup);
+  } else {
+    querySnapshot = admin.firestore().collection(config.firestoreCollectionPath);
+  }
 
   let lastDoc = null;
 
@@ -53,9 +63,15 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
     }
     const currentDocumentsBatch = await Promise.all(
         thisBatch.docs.map(async (doc) => {
-          return await utils.typesenseDocumentFromSnapshot(doc);
-        }),
-    );
+          const docPath = doc.ref.path;
+          const pathParams = utils.pathMatchesSelector(docPath, config.firestoreCollectionPath);
+
+          if (!isGroupQuery || (isGroupQuery && pathParams !== null)) {
+            return await utils.typesenseDocumentFromSnapshot(doc, pathParams);
+          } else {
+            return null;
+          }
+        }).filter((doc) => doc !== null));
 
     lastDoc = thisBatch.docs.at(-1) ?? null;
     try {
