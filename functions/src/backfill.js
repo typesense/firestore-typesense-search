@@ -61,17 +61,20 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
     if (thisBatch.empty) {
       break;
     }
-    const currentDocumentsBatch = await Promise.all(
-        thisBatch.docs.map(async (doc) => {
-          const docPath = doc.ref.path;
-          const pathParams = utils.pathMatchesSelector(docPath, config.firestoreCollectionPath);
+    const currentDocumentsBatch = (
+      await Promise.all(
+          thisBatch.docs.map(async (doc) => {
+            const docPath = doc.ref.path;
+            const pathParams = utils.pathMatchesSelector(docPath, config.firestoreCollectionPath);
 
-          if (!isGroupQuery || (isGroupQuery && pathParams !== null)) {
-            return await utils.typesenseDocumentFromSnapshot(doc, pathParams);
-          } else {
-            return null;
-          }
-        }).filter((doc) => doc !== null));
+            if (!isGroupQuery || (isGroupQuery && pathParams !== null)) {
+              return await utils.typesenseDocumentFromSnapshot(doc, pathParams);
+            } else {
+              return null;
+            }
+          }),
+      )
+    ).filter((doc) => doc !== null);
 
     lastDoc = thisBatch.docs.at(-1) ?? null;
     try {
