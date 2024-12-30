@@ -22,7 +22,11 @@ module.exports = functions.firestore.document(config.firestoreCollectionPath)
         const latestSnapshot = await snapshot.after.ref.get();
         const typesenseDocument = await utils.typesenseDocumentFromSnapshot(latestSnapshot, context.params);
 
-        functions.logger.debug(`Upserting document ${JSON.stringify(typesenseDocument)}`);
+        if (config.shouldLogTypesenseInserts) {
+          functions.logger.debug(`Upserting document ${JSON.stringify(typesenseDocument)}`);
+        } else {
+          functions.logger.debug(`Upserting document ${typesenseDocument.id}`);
+        }
         return await typesense
             .collections(encodeURIComponent(config.typesenseCollectionName))
             .documents()
