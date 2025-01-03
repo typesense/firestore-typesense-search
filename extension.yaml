@@ -108,6 +108,18 @@ params:
         value: true
     default: false
     required: false
+  - param: LOG_TYPESENSE_INSERTS
+    label: Log Typesense Inserts for Debugging
+    description: >-
+      Should data inserted into Typesense be logged in Cloud Logging? This can be useful for debugging, but should not be enabled in production.
+    type: select
+    options:
+      - label: No
+        value: false
+      - label: Yes
+        value: true
+    default: false
+    required: false
   - param: LOCATION
     label: Cloud Functions location
     description: >-

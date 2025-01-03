@@ -1,50 +1,50 @@
-const firebase = require("firebase-admin");
-const config = require("../functions/src/config.js");
-const typesense = require("../functions/src/createTypesenseClient.js")();
+const {TestEnvironment} = require("./support/testEnvironment");
 
-const app = firebase.initializeApp({
-  // Use a special URL to talk to the Realtime Database emulator
-  databaseURL: `${process.env.FIREBASE_DATABASE_EMULATOR_HOST}?ns=${process.env.GCLOUD_PROJECT}`,
-  projectId: process.env.GCLOUD_PROJECT,
-});
-const firestore = app.firestore();
+// test case configs
+const TEST_FIRESTORE_PARENT_COLLECTION_PATH = "users";
+const TEST_FIRESTORE_CHILD_FIELD_NAME = "books";
+
 
 describe("indexOnWriteSubcollection", () => {
-  const parentCollectionPath = process.env.TEST_FIRESTORE_PARENT_COLLECTION_PATH;
-  const childFieldName = process.env.TEST_FIRESTORE_CHILD_FIELD_NAME;
+  let testEnvironment;
+
+  const parentCollectionPath = TEST_FIRESTORE_PARENT_COLLECTION_PATH;
+  const childFieldName = TEST_FIRESTORE_CHILD_FIELD_NAME;
   let parentIdField = null;
 
-  beforeAll(async () => {
-    const matches = config.firestoreCollectionPath.match(/{([^}]+)}/g);
-    expect(matches).toBeDefined();
-    expect(matches.length).toBe(1);
+  let config = null;
+  let firestore = null;
+  let typesense = null;
 
-    parentIdField = matches[0].replace(/{|}/g, "");
-    expect(parentIdField).toBeDefined();
-  });
+  beforeAll((done) => {
+    testEnvironment = new TestEnvironment({
+      dotenvPath: "extensions/test-params-subcategory-flatten-nested-false.local.env",
+      outputAllEmulatorLogs: true,
+    });
+    testEnvironment.setupTestEnvironment((err) => {
+      const matches = testEnvironment.config.firestoreCollectionPath.match(/{([^}]+)}/g);
+      expect(matches).toBeDefined();
+      expect(matches.length).toBe(1);
 
-  beforeEach(async () => {
-    // delete the Firestore collection
-    await firestore.recursiveDelete(firestore.collection(parentCollectionPath));
+      parentIdField = matches[0].replace(/{|}/g, "");
+      expect(parentIdField).toBeDefined();
 
-    // Clear any previously created collections
-    try {
-      await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
-    } catch (e) {
-      console.info(`${config.typesenseCollectionName} collection not found, proceeding...`);
-    }
-
-    // recreate the Typesense collection
-    await typesense.collections().create({
-      name: config.typesenseCollectionName,
-      fields: [{name: ".*", type: "auto"}],
-      enable_nested_fields: true,
+      config = testEnvironment.config;
+      firestore = testEnvironment.firestore;
+      typesense = testEnvironment.typesense;
+      done();
     });
   });
 
   afterAll(async () => {
-    // clean up the whole firebase app
-    await app.delete();
+    await testEnvironment.teardownTestEnvironment();
+  });
+
+  beforeEach(async () => {
+    // For subcollections, need special handling to clear parent collection. Deleting here triggers firebase functions
+    await firestore.recursiveDelete(firestore.collection(parentCollectionPath));
+
+    await testEnvironment.clearAllData();
   });
 
   describe("Backfill from dynamic subcollections", () => {

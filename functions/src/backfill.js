@@ -68,7 +68,11 @@ module.exports = functions.firestore.document(config.typesenseBackfillTriggerDoc
             const pathParams = utils.pathMatchesSelector(docPath, config.firestoreCollectionPath);
 
             if (!isGroupQuery || (isGroupQuery && pathParams !== null)) {
-              return await utils.typesenseDocumentFromSnapshot(doc, pathParams);
+              const typesenseDocument = await utils.typesenseDocumentFromSnapshot(doc, pathParams);
+              if (config.shouldLogTypesenseInserts) {
+                functions.logger.debug(`Backfilling document ${JSON.stringify(typesenseDocument)}`);
+              }
+              return typesenseDocument;
             } else {
               return null;
             }
