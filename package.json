@@ -5,9 +5,9 @@
     "emulator": "cross-env DOTENV_CONFIG=extensions/test-params-flatten-nested-false.local.env firebase emulators:start --import=emulator_data",
     "export": "firebase emulators:export emulator_data",
     "test": "npm run test-part-1 && npm run test-part-2 && npm run test-part-3",
-    "test-part-1": "cp -f extensions/test-params-flatten-nested-true.local.env extensions/firestore-typesense-search.env.local && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-true.local.env firebase emulators:exec --only functions,firestore,extensions 'jest --testPathIgnorePatterns=\"WithoutFlattening\" --testPathIgnorePatterns=\"Subcollection\"'",
+    "test-part-1": "cp -f extensions/test-params-flatten-nested-true.local.env extensions/firestore-typesense-search.env.local && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-true.local.env firebase emulators:exec --only functions,firestore,extensions 'jest --testRegex=\"WithFlattening\" --testRegex=\"backfill.spec\"'",
     "test-part-2": "cp -f extensions/test-params-flatten-nested-false.local.env extensions/firestore-typesense-search.env.local && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-false.local.env firebase emulators:exec --only functions,firestore,extensions 'jest --testRegex=\"WithoutFlattening\"'",
-    "test-part-3": "cp -f extensions/test-params-subcategory-flatten-nested-false.local.env extensions/firestore-typesense-search.env.local && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-subcategory-flatten-nested-false.local.env firebase emulators:exec --only functions,firestore,extensions 'jest --testRegex=\"Subcollection\"'",
+    "test-part-3": "jest --testRegex=\"writeLogging\" --testRegex=\"Subcollection\" --detectOpenHandles",
     "typesenseServer": "docker compose up",
     "lint:fix": "eslint . --fix",
     "lint": "eslint ."
