@@ -24,9 +24,7 @@ describe("backfill", () => {
     // Create a new Typesense collection
     return typesense.collections().create({
       name: config.typesenseCollectionName,
-      fields: [
-        {name: ".*", type: "auto"},
-      ],
+      fields: [{name: ".*", type: "auto"}],
     });
   });
 
@@ -36,9 +34,7 @@ describe("backfill", () => {
   });
 
   describe("when firestore_collections is not specified", () => {
-    it("backfills existing Firestore data in all collections to Typesense" +
-      " when `trigger: true` is set " +
-      ` in ${config.typesenseBackfillTriggerDocumentInFirestore}`, async () => {
+    it("backfills existing Firestore data in all collections to Typesense" + " when `trigger: true` is set " + ` in ${config.typesenseBackfillTriggerDocumentInFirestore}`, async () => {
       const book = {
         author: "Author A",
         title: "Title X",
@@ -53,23 +49,15 @@ describe("backfill", () => {
       await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
       await typesense.collections().create({
         name: config.typesenseCollectionName,
-        fields: [
-          {name: ".*", type: "auto"},
-        ],
+        fields: [{name: ".*", type: "auto"}],
       });
 
-      await firestore
-        .collection(config.typesenseBackfillTriggerDocumentInFirestore.split("/")[0])
-        .doc("backfill")
-        .set({trigger: true});
+      await firestore.collection(config.typesenseBackfillTriggerDocumentInFirestore.split("/")[0]).doc("backfill").set({trigger: true});
       // Wait for firestore cloud function to write to Typesense
       await new Promise((r) => setTimeout(r, 2000));
 
       // Check that the data was backfilled
-      const typesenseDocsStr = await typesense
-        .collections(encodeURIComponent(config.typesenseCollectionName))
-        .documents()
-        .export();
+      const typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export();
       const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
       expect(typesenseDocs.length).toBe(1);
       expect(typesenseDocs[0]).toStrictEqual({
@@ -82,9 +70,7 @@ describe("backfill", () => {
 
   describe("when firestore_collections is specified", () => {
     describe("when firestore_collections includes this collection", () => {
-      it("backfills existing Firestore data in this particular collection to Typesense" +
-      " when `trigger: true` is set " +
-      ` in ${config.typesenseBackfillTriggerDocumentInFirestore}`, async () => {
+      it("backfills existing Firestore data in this particular collection to Typesense" + " when `trigger: true` is set " + ` in ${config.typesenseBackfillTriggerDocumentInFirestore}`, async () => {
         const book = {
           author: "Author A",
           title: "Title X",
@@ -99,9 +85,7 @@ describe("backfill", () => {
         await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
         await typesense.collections().create({
           name: config.typesenseCollectionName,
-          fields: [
-            {name: ".*", type: "auto"},
-          ],
+          fields: [{name: ".*", type: "auto"}],
         });
 
         await firestore
@@ -115,10 +99,7 @@ describe("backfill", () => {
         await new Promise((r) => setTimeout(r, 2000));
 
         // Check that the data was backfilled
-        const typesenseDocsStr = await typesense
-          .collections(encodeURIComponent(config.typesenseCollectionName))
-          .documents()
-          .export();
+        const typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export();
         const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
         expect(typesenseDocs.length).toBe(1);
         expect(typesenseDocs[0]).toStrictEqual({
@@ -129,45 +110,41 @@ describe("backfill", () => {
       });
     });
     describe("when firestore_collections does not include this collection", () => {
-      it("does not backfill existing Firestore data in this particular collection to Typesense" +
-      " when `trigger: true` is set " +
-      ` in ${config.typesenseBackfillTriggerDocumentInFirestore}`, async () => {
-        const book = {
-          author: "Author A",
-          title: "Title X",
-          country: "USA",
-        };
-        await firestore.collection(config.firestoreCollectionPath).add(book);
-        // Wait for firestore cloud function to write to Typesense
-        await new Promise((r) => setTimeout(r, 2000));
+      it(
+        "does not backfill existing Firestore data in this particular collection to Typesense" + " when `trigger: true` is set " + ` in ${config.typesenseBackfillTriggerDocumentInFirestore}`,
+        async () => {
+          const book = {
+            author: "Author A",
+            title: "Title X",
+            country: "USA",
+          };
+          await firestore.collection(config.firestoreCollectionPath).add(book);
+          // Wait for firestore cloud function to write to Typesense
+          await new Promise((r) => setTimeout(r, 2000));
 
-        // The above will automatically add the document to Typesense,
-        // so delete it so we can test backfill
-        await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
-        await typesense.collections().create({
-          name: config.typesenseCollectionName,
-          fields: [
-            {name: ".*", type: "auto"},
-          ],
-        });
-
-        await firestore
-          .collection(config.typesenseBackfillTriggerDocumentInFirestore.split("/")[0])
-          .doc("backfill")
-          .set({
-            trigger: true,
-            firestore_collections: ["some/other/collection"],
+          // The above will automatically add the document to Typesense,
+          // so delete it so we can test backfill
+          await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
+          await typesense.collections().create({
+            name: config.typesenseCollectionName,
+            fields: [{name: ".*", type: "auto"}],
           });
-        // Wait for firestore cloud function to write to Typesense
-        await new Promise((r) => setTimeout(r, 2000));
 
-        // Check that the data was not backfilled
-        const typesenseDocsStr = await typesense
-          .collections(encodeURIComponent(config.typesenseCollectionName))
-          .documents()
-          .export();
-        expect(typesenseDocsStr).toEqual("");
-      });
+          await firestore
+            .collection(config.typesenseBackfillTriggerDocumentInFirestore.split("/")[0])
+            .doc("backfill")
+            .set({
+              trigger: true,
+              firestore_collections: ["some/other/collection"],
+            });
+          // Wait for firestore cloud function to write to Typesense
+          await new Promise((r) => setTimeout(r, 2000));
+
+          // Check that the data was not backfilled
+          const typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export();
+          expect(typesenseDocsStr).toEqual("");
+        },
+      );
     });
   });
 });

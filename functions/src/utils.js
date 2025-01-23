@@ -164,7 +164,7 @@ exports.typesenseDocumentFromSnapshot = async (firestoreDocumentSnapshot, contex
  * @return {Object} An object containing the names of placeholders, and their corresponding indices.
  * @throws Will throw an error if the path is invalid.
  */
-exports.parseFirestorePath = function(firestorePath) {
+exports.parseFirestorePath = function (firestorePath) {
   if (!firestorePath || typeof firestorePath !== "string") {
     throw new Error("Invalid Firestore path: Path must be a non-empty string.");
   }
@@ -192,7 +192,7 @@ exports.parseFirestorePath = function(firestorePath) {
  * @param {string} selector - The path selector with placeholders (e.g., "users/{userId}/library/{libraryId}/books").
  * @return {Object|null} A dictionary of extracted values if the path matches the selector, or `null` if it does not match.
  */
-exports.pathMatchesSelector = function(path, selector) {
+exports.pathMatchesSelector = function (path, selector) {
   if (!path || typeof path !== "string") {
     throw new Error("Invalid path: Path must be a non-empty string.");
   }

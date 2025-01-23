@@ -6,7 +6,7 @@ function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-module.exports = function() {
+module.exports = function () {
   return new Typesense.Client({
     nodes: config.typesenseHosts.map((h) => {
       return {
@@ -14,7 +14,7 @@ module.exports = function() {
         port: config.typesensePort,
         protocol: config.typesenseProtocol,
       };
-    } ),
+    }),
     apiKey: config.typesenseAPIKey,
     connectionTimeoutSeconds: getRandomNumber(60, 90),
     retryIntervalSeconds: getRandomNumber(60, 120),

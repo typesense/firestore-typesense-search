@@ -33,9 +33,7 @@ describe("indexOnWriteLogging - when shouldLogTypesenseInserts is false", () => 
       const docRef = await testEnvironment.firestore.collection(testEnvironment.config.firestoreCollectionPath).add(docData);
 
       await new Promise((r) => setTimeout(r, 5000));
-      expect(testEnvironment.capturedEmulatorLogs).toContain(
-        `Upserting document ${docRef.id}`,
-      );
+      expect(testEnvironment.capturedEmulatorLogs).toContain(`Upserting document ${docRef.id}`);
     });
   });
 
@@ -55,23 +53,15 @@ describe("indexOnWriteLogging - when shouldLogTypesenseInserts is false", () => 
       await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).delete();
       await testEnvironment.typesense.collections().create({
         name: testEnvironment.config.typesenseCollectionName,
-        fields: [
-          {name: ".*", type: "auto"},
-        ],
+        fields: [{name: ".*", type: "auto"}],
       });
 
-      await testEnvironment.firestore
-        .collection(testEnvironment.config.typesenseBackfillTriggerDocumentInFirestore.split("/")[0])
-        .doc("backfill")
-        .set({trigger: true});
+      await testEnvironment.firestore.collection(testEnvironment.config.typesenseBackfillTriggerDocumentInFirestore.split("/")[0]).doc("backfill").set({trigger: true});
       // Wait for firestore cloud function to write to Typesense
       await new Promise((r) => setTimeout(r, 2000));
 
       // Check that the data was backfilled
-      const typesenseDocsStr = await testEnvironment.typesense
-        .collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName))
-        .documents()
-        .export();
+      const typesenseDocsStr = await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).documents().export();
       const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
       expect(typesenseDocs.length).toBe(1);
       expect(typesenseDocs[0]).toStrictEqual({
@@ -81,13 +71,9 @@ describe("indexOnWriteLogging - when shouldLogTypesenseInserts is false", () => 
       });
 
       // Check that the backfill log was written
-      expect(testEnvironment.capturedEmulatorLogs).not.toContain(
-        "Backfilling document",
-      );
+      expect(testEnvironment.capturedEmulatorLogs).not.toContain("Backfilling document");
 
-      expect(testEnvironment.capturedEmulatorLogs).toContain(
-        "Imported 1 documents into Typesense",
-      );
+      expect(testEnvironment.capturedEmulatorLogs).toContain("Imported 1 documents into Typesense");
     });
   });
 });
@@ -132,9 +118,7 @@ TYPESENSE_API_KEY=xyz
       const docRef = await testEnvironment.firestore.collection(testEnvironment.config.firestoreCollectionPath).add(docData);
 
       await new Promise((r) => setTimeout(r, 5000));
-      expect(testEnvironment.capturedEmulatorLogs).toContain(
-        `Upserting document ${JSON.stringify({...docData, id: docRef.id})}`,
-      );
+      expect(testEnvironment.capturedEmulatorLogs).toContain(`Upserting document ${JSON.stringify({...docData, id: docRef.id})}`);
     });
   });
 
@@ -154,23 +138,15 @@ TYPESENSE_API_KEY=xyz
       await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).delete();
       await testEnvironment.typesense.collections().create({
         name: testEnvironment.config.typesenseCollectionName,
-        fields: [
-          {name: ".*", type: "auto"},
-        ],
+        fields: [{name: ".*", type: "auto"}],
       });
 
-      await testEnvironment.firestore
-        .collection(testEnvironment.config.typesenseBackfillTriggerDocumentInFirestore.split("/")[0])
-        .doc("backfill")
-        .set({trigger: true});
+      await testEnvironment.firestore.collection(testEnvironment.config.typesenseBackfillTriggerDocumentInFirestore.split("/")[0]).doc("backfill").set({trigger: true});
       // Wait for firestore cloud function to write to Typesense
       await new Promise((r) => setTimeout(r, 2000));
 
       // Check that the data was backfilled
-      const typesenseDocsStr = await testEnvironment.typesense
-        .collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName))
-        .documents()
-        .export();
+      const typesenseDocsStr = await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).documents().export();
       const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
       expect(typesenseDocs.length).toBe(1);
       const expectedResult = {
@@ -181,13 +157,9 @@ TYPESENSE_API_KEY=xyz
       expect(typesenseDocs[0]).toStrictEqual(expectedResult);
 
       // Check that the backfill log was written
-      expect(testEnvironment.capturedEmulatorLogs).toContain(
-        `Backfilling document ${JSON.stringify(expectedResult)}`,
-      );
+      expect(testEnvironment.capturedEmulatorLogs).toContain(`Backfilling document ${JSON.stringify(expectedResult)}`);
 
-      expect(testEnvironment.capturedEmulatorLogs).toContain(
-        "Imported 1 documents into Typesense",
-      );
+      expect(testEnvironment.capturedEmulatorLogs).toContain("Imported 1 documents into Typesense");
     });
   });
 });
