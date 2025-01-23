@@ -10,7 +10,8 @@
     "test:subcollection": "jest --testRegex=\"writeLogging\" --testRegex=\"Subcollection\" --detectOpenHandles",
     "typesenseServer": "docker compose up",
     "lint:fix": "eslint . --fix",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{js, cjs, md}\""
   },
   "engines": {
     "node": "18"
@@ -27,6 +28,7 @@
     "jest": "^29.7.0",
     "jest-dev-server": "^10.1.0",
     "jest-junit": "^16.0.0",
+    "prettier": "^3.4.2",
     "typesense": "^1.8.2"
   },
   "private": true
