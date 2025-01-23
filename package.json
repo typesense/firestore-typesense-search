@@ -11,7 +11,8 @@
     "typesenseServer": "docker compose up",
     "lint:fix": "eslint . --fix",
     "lint": "eslint .",
-    "format": "prettier --write \"**/*.{js, cjs, md}\""
+    "format": "prettier --write \"**/*.{js, cjs, md}\"",
+    "format:check": "prettier --check \"**/*.{js, cjs, md}\""
   },
   "engines": {
     "node": "18"
