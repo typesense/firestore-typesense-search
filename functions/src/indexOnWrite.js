@@ -1,4 +1,4 @@
-const functions = require("firebase-functions");
+const functions = require("firebase-functions/v1");
 const config = require("./config.js");
 const createTypesenseClient = require("./createTypesenseClient.js");
 const utils = require("./utils.js");
