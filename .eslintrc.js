@@ -8,7 +8,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2022,
   },
-  extends: ["eslint:recommended", "google"],
+  extends: ["eslint:recommended", "google", "prettier"],
   rules: {
     quotes: ["error", "double"],
     "max-len": [1, {code: 200}],
