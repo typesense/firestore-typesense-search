@@ -43,7 +43,7 @@ function loadFirebaseEnvironment(projectRootPath) {
 class TestEnvironment {
   // Global ouput all emulator logs
   projectRootPath = path.resolve(__dirname, "../../");
-  firebaseEnvPath = "extensions/firestore-typesense-search.env.local";
+  firebaseEnvPath = "functions/.env";
   shouldOutputAllEmulatorLogs = false;
   dotenvPath = null;
   dotenvConfig = null;
