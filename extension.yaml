@@ -64,6 +64,29 @@ resources:
             value: ${FIRESTORE_COLLECTION_PATH}/{documentID}
             operator: match-path-pattern
 
+  - name: backfillSecondGen
+    description: >-
+      A function that backfills data from a Firestore collection into Typesense,
+      triggered when a Firestore document with the path `typesense_sync/backfill` has the contents of `trigger: true`.
+    type: firebaseextensions.v1beta.v2.function
+    properties:
+      buildConfig:
+        runtime: nodejs18
+      sourceDirectory: functions
+      serviceConfig:
+        timeout: 540s
+        availableMemoryMb: 2048
+      maxInstances: 1
+      eventTrigger:
+        eventType: google.cloud.firestore.document.v1.written
+        triggerRegion: ${LOCATION}
+        eventFilters:
+          - attribute: database
+            value: (default)
+          - attribute: document
+            value: typesense_sync/backfill
+            operator: match-path-pattern
+
 roles:
   - role: datastore.user
     reason: Required to backfill data from your Firestore collection into Typesense
