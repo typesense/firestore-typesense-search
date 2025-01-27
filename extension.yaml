@@ -45,6 +45,25 @@ resources:
         eventType: providers/cloud.firestore/eventTypes/document.write
         resource: projects/${param:PROJECT_ID}/databases/(default)/documents/typesense_sync/backfill
 
+  - name: indexOnWriteSecondGen
+    description: A function that indexes data into Typesense when it's triggered by Firestore changes
+    type: firebaseextensions.v1beta.v2.function
+    properties:
+      sourceDirectory: functions
+      buildConfig:
+        runtime: nodejs18
+      serviceConfig:
+        timeout: 540s
+      eventTrigger:
+        eventType: google.cloud.firestore.document.v1.written
+        triggerRegion: ${LOCATION}
+        eventFilters:
+          - attribute: database
+            value: (default)
+          - attribute: document
+            value: ${FIRESTORE_COLLECTION_PATH}/{documentID}
+            operator: match-path-pattern
+
 roles:
   - role: datastore.user
     reason: Required to backfill data from your Firestore collection into Typesense
