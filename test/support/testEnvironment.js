@@ -120,6 +120,10 @@ class TestEnvironment {
 
     // Listen for logs from the emulator
     this.emulator.stdout.on("data", (data) => {
+      if (!data) {
+        return;
+      }
+
       let logMessage = data.toString().trim();
 
       if (this.shouldLogEmulator) {
