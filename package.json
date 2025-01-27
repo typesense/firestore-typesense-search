@@ -4,10 +4,10 @@
   "scripts": {
     "emulator": "cross-env DOTENV_CONFIG=extensions/test-params-flatten-nested-false.local.env firebase emulators:start --import=emulator_data",
     "export": "firebase emulators:export emulator_data",
-    "test": "npm run test-part-1 && npm run test-part-2 && npm run test-part-3",
-    "test-part-1": "cp -f extensions/test-params-flatten-nested-true.local.env functions/.env && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-true.local.env firebase emulators:exec --only functions,firestore,extensions  'jest --testRegex=\"WithFlattening\" --testRegex=\"backfill.spec\"'",
-    "test-part-2": "cp -f extensions/test-params-flatten-nested-false.local.env functions/.env && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-false.local.env firebase emulators:exec --only functions,firestore,extensions 'jest --testRegex=\"WithoutFlattening\"'",
-    "test-part-3": "jest --testRegex=\"writeLogging\" --testRegex=\"Subcollection\" --detectOpenHandles",
+    "test": "npm run test:flatttened && npm run test:unflattened && npm run test:subcollection",
+    "test:flatttened": "cp -f extensions/test-params-flatten-nested-true.local.env functions/.env && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-true.local.env firebase emulators:exec --only functions,firestore,extensions  'jest --testRegex=\"WithFlattening\" --testRegex=\"backfill.spec\"'",
+    "test:unflattened": "cp -f extensions/test-params-flatten-nested-false.local.env functions/.env && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-false.local.env firebase emulators:exec --only functions,firestore,extensions 'jest --testRegex=\"WithoutFlattening\"'",
+    "test:subcollection": "jest --testRegex=\"writeLogging\" --testRegex=\"Subcollection\" --detectOpenHandles",
     "typesenseServer": "docker compose up",
     "lint:fix": "eslint . --fix",
     "lint": "eslint ."
