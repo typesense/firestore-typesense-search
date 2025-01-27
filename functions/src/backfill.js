@@ -4,10 +4,6 @@ const config = require("./config.js");
 const createTypesenseClient = require("./createTypesenseClient.js");
 const utils = require("./utils.js");
 
-admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-});
-
 const validateBackfillRun = (snapshot) => {
   if (![true, "true"].includes(snapshot.after.get("trigger"))) {
     functions.logger.error("Skipping backfill. `trigger: true` key " + `was not found in Firestore document ${config.typesenseBackfillTriggerDocumentInFirestore}.`);
