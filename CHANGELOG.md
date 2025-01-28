@@ -2,6 +2,7 @@
 
 - Support for syncing data from sub-collections
 - Use action=upsert for backfill
+- Migrate to Firebase Functions V2 API
 
 ## Version 1.5.0
 
