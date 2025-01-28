@@ -149,7 +149,9 @@ exports.typesenseDocumentFromSnapshot = async (firestoreDocumentSnapshot, contex
 
   if (contextParams && Object.entries(contextParams).length) {
     Object.entries(contextParams).forEach(([key, value]) => {
-      typesenseDocument[key] = value;
+      if (key !== "docId") {
+        typesenseDocument[key] = value;
+      }
     });
   }
 
