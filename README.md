@@ -169,7 +169,7 @@ Please read through the FAQ below, search through [past GitHub issues](https://g
 
 #### FAQs
 
-- **My Typesenese collection is empty, even after installing the extension. What could be wrong?**
+- **My Typesense collection is empty, even after installing the extension. What could be wrong?**
 
    The extension only syncs changes from your Firestore collection _from the time when it is installed_. To backfill existing data from your Firestore collection into Typesense, you want to run the backfill step described [here](#step-3%EF%B8%8F⃣--optional-backfill-existing-data).
 

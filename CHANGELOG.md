@@ -1,3 +1,8 @@
+## Version 2.0.0
+
+- Support for syncing data from sub-collections
+- Use action=upsert for backfill
+
 ## Version 1.5.0
 
 - Use batching to back-fill, to prevent memory overflow when back-filling large collections

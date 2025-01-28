@@ -39,7 +39,7 @@ describe("Utils", () => {
           "id",
         );
 
-        const result = await typesenseDocumentFromSnapshot(documentSnapshot, []);
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, {}, []);
         expect(result).toEqual({
           id: "id",
           author: "Author X",
@@ -82,7 +82,7 @@ describe("Utils", () => {
         ];
         data.forEach(async (item) => {
           const documentSnapshot = test.firestore.makeDocumentSnapshot(item, "id");
-          const result = await typesenseDocumentFromSnapshot(documentSnapshot, []);
+          const result = await typesenseDocumentFromSnapshot(documentSnapshot, {}, []);
           expect(result).toEqual({
             id: "id",
             location: [1, 2],
@@ -104,7 +104,7 @@ describe("Utils", () => {
           },
         };
         const documentSnapshot = test.firestore.makeDocumentSnapshot(data, "id");
-        const result = await typesenseDocumentFromSnapshot(documentSnapshot, []);
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, {}, []);
         expect(result).toEqual({
           id: "id",
           title: "Title X",
@@ -133,7 +133,7 @@ describe("Utils", () => {
           },
           "id",
         );
-        const result = await typesenseDocumentFromSnapshot(documentSnapshot, ["user.name", "user.address.city", "tags"]);
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, {}, ["user.name", "user.address.city", "tags"]);
         expect(result).toEqual({
           id: "id",
           "user.name": "John Doe",
@@ -152,7 +152,7 @@ describe("Utils", () => {
           },
           "id",
         );
-        const result = await typesenseDocumentFromSnapshot(documentSnapshot, ["user.name", "user.address.city"]);
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, {}, ["user.name", "user.address.city"]);
         expect(result).toEqual({
           id: "id",
           "user.name": "John Doe",
@@ -171,7 +171,7 @@ describe("Utils", () => {
           },
           "id",
         );
-        const result = await typesenseDocumentFromSnapshot(documentSnapshot, ["title", "user.name"]);
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, {}, ["title", "user.name"]);
         expect(result).toEqual({
           id: "id",
           title: "Main Title",
@@ -190,7 +190,7 @@ describe("Utils", () => {
           },
           "id",
         );
-        const result = await typesenseDocumentFromSnapshot(documentSnapshot, ["comments.author", "comments.text", "comments.likes"]);
+        const result = await typesenseDocumentFromSnapshot(documentSnapshot, {}, ["comments.author", "comments.text", "comments.likes"]);
         expect(result).toEqual({
           id: "id",
           "comments.author": ["Alice", "Bob"],
