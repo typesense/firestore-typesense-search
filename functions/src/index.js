@@ -1,7 +1,5 @@
 require("dotenv").config();
 
-const {indexOnWriteSecondGen} = require("./indexOnWriteSecondGen.js");
-exports.indexOnWriteSecondGen = indexOnWriteSecondGen;
-exports.indexOnWrite = require("./indexOnWrite.js");
+const {indexOnWrite} = require("./indexOnWrite.js");
+exports.indexOnWrite = indexOnWrite;
 exports.backfill = require("./backfill.js");
-exports.backfillSecondGen = require("./backfillSecondGen.js");
