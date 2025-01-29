@@ -34,6 +34,8 @@ jobs:
       - name: Run ESLint
         run: npm run lint
         continue-on-error: false # Ensure the workflow fails if ESLint fails
+      - name: Run Prettier
+        run: npm run format:check
       - name: Run Tests
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

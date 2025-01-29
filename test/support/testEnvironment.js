@@ -65,11 +65,7 @@ class TestEnvironment {
    * @param {string} config.dotenvConfig - path to the env file to use for the firebase emulator and test
    * @param {boolean} config.debugLog - whether to log all emulator logs to console
    */
-  constructor({
-    dotenvPath,
-    dotenvConfig,
-    outputAllEmulatorLogs = false,
-  } = {}) {
+  constructor({dotenvPath, dotenvConfig, outputAllEmulatorLogs = false} = {}) {
     this.dotenvPath = dotenvPath;
     this.dotenvConfig = dotenvConfig;
     this.shouldOutputAllEmulatorLogs = outputAllEmulatorLogs;
@@ -94,29 +90,19 @@ class TestEnvironment {
     directConsole.log("Setting Up Firebase emulator...");
     if (this.dotenvPath) {
       directConsole.log(`Copying ${this.dotenvPath} to ${this.firebaseEnvPath}...`);
-      execSync(
-        `cp -f ${this.dotenvPath} ${this.firebaseEnvPath}`,
-      );
+      execSync(`cp -f ${this.dotenvPath} ${this.firebaseEnvPath}`);
     } else if (this.dotenvConfig) {
       fs.writeFileSync(this.firebaseEnvPath, this.dotenvConfig);
     }
 
-    this.emulator = spawn(
-      "firebase",
-      [
-        "emulators:start",
-        "--only",
-        "functions,firestore,extensions",
-      ],
-      {
-        stdio: ["pipe", "pipe", "pipe"],
-        env: {
-          ...process.env,
-          NODE_OPTIONS: "--experimental-vm-modules",
-          FORCE_COLOR: "1",
-        },
+    this.emulator = spawn("firebase", ["emulators:start", "--only", "functions,firestore,extensions"], {
+      stdio: ["pipe", "pipe", "pipe"],
+      env: {
+        ...process.env,
+        NODE_OPTIONS: "--experimental-vm-modules",
+        FORCE_COLOR: "1",
       },
-    );
+    });
 
     // Listen for logs from the emulator
     this.emulator.stdout.on("data", (data) => {
@@ -148,7 +134,8 @@ class TestEnvironment {
         directConsole.log(logMessage);
       }
 
-      if (logMessage.includes("All emulators ready")) { // Adjust to the actual readiness log message
+      if (logMessage.includes("All emulators ready")) {
+        // Adjust to the actual readiness log message
         directConsole.log("Emulator is ready");
 
         try {
