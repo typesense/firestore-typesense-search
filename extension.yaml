@@ -23,7 +23,7 @@ resources:
     properties:
       sourceDirectory: functions
       buildConfig:
-        runtime: nodejs18
+        runtime: nodejs22
       serviceConfig:
         timeout: 540s
       eventTrigger:
@@ -43,7 +43,7 @@ resources:
     type: firebaseextensions.v1beta.v2.function
     properties:
       buildConfig:
-        runtime: nodejs18
+        runtime: nodejs22
       sourceDirectory: functions
       serviceConfig:
         timeout: 540s
