@@ -3,6 +3,7 @@
 - Support for syncing data from sub-collections
 - Use action=upsert for backfill
 - Migrate to Firebase Functions V2 API
+- Upgrade to Node 22
 
 ## Version 1.5.0
 
