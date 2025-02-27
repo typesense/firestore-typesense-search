@@ -25,7 +25,7 @@ resources:
       buildConfig:
         runtime: nodejs22
       serviceConfig:
-        timeout: 540s
+        timeoutSeconds: 540
       eventTrigger:
         eventType: google.cloud.firestore.document.v1.written
         triggerRegion: ${LOCATION}
@@ -46,9 +46,8 @@ resources:
         runtime: nodejs22
       sourceDirectory: functions
       serviceConfig:
-        timeout: 540s
-        availableMemoryMb: 2048
-      maxInstances: 1
+        timeoutSeconds: 540
+        availableMemory: 2048M
       eventTrigger:
         eventType: google.cloud.firestore.document.v1.written
         triggerRegion: ${LOCATION}
