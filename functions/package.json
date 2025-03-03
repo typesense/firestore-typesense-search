@@ -16,6 +16,7 @@
   "main": "src/index.js",
   "dependencies": {
     "@babel/runtime": "^7.24.7",
+    "dotenv": "^16.4.7",
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.2.0",
     "lodash.get": "^4.4.2",
