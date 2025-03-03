@@ -30,6 +30,8 @@ resources:
         eventType: google.cloud.firestore.document.v1.written
         triggerRegion: ${LOCATION}
         eventFilters:
+          - attribute: database
+            value: "(default)"
           - attribute: document
             value: ${FIRESTORE_COLLECTION_PATH}/{documentID}
             operator: match-path-pattern
@@ -50,6 +52,8 @@ resources:
         eventType: google.cloud.firestore.document.v1.written
         triggerRegion: ${LOCATION}
         eventFilters:
+          - attribute: database
+            value: "(default)"
           - attribute: document
             value: typesense_sync/backfill
             operator: match-path-pattern
