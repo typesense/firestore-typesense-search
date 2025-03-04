@@ -184,6 +184,10 @@ params:
         value: southamerica-east1
       - label: Sydney (australia-southeast1)
         value: australia-southeast1
+      - label: Europe (eur3)
+        value: eur3
+      - label: North America (nam5)
+        value: nam5
     default: us-central1
     required: true
     immutable: true
