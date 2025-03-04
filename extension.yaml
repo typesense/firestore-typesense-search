@@ -31,7 +31,7 @@ resources:
         triggerRegion: ${LOCATION}
         eventFilters:
           - attribute: database
-            value: "(default)"
+            value: ${DATABASE}
           - attribute: document
             value: ${FIRESTORE_COLLECTION_PATH}/{documentID}
             operator: match-path-pattern
@@ -53,7 +53,7 @@ resources:
         triggerRegion: ${LOCATION}
         eventFilters:
           - attribute: database
-            value: "(default)"
+            value: ${DATABASE}
           - attribute: document
             value: typesense_sync/backfill
             operator: match-path-pattern
@@ -231,3 +231,10 @@ params:
     default: us-central1
     required: true
     immutable: true
+  - param: DATABASE
+    label: Firestore Database
+    description: >-
+      The Firestore database to use. Use "(default)" for the default database.
+    example: "(default)"
+    default: "(default)"
+    required: false
