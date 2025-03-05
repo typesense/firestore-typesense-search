@@ -121,6 +121,13 @@ params:
         value: true
     default: false
     required: false
+  - param: DATABASE
+    label: Firestore Database
+    description: >-
+      The Firestore database to use. Use "(default)" for the default database.
+    example: "(default)"
+    default: "(default)"
+    required: false
   - param: LOG_TYPESENSE_INSERTS
     label: Log Typesense Inserts for Debugging
     description: >-
@@ -231,10 +238,3 @@ params:
     default: us-central1
     required: true
     immutable: true
-  - param: DATABASE
-    label: Firestore Database
-    description: >-
-      The Firestore database to use. Use "(default)" for the default database.
-    example: "(default)"
-    default: "(default)"
-    required: false
