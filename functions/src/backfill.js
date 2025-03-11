@@ -92,10 +92,10 @@ module.exports = onDocumentWritten("typesense_sync/backfill", async (snapshot, c
     try {
       await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().import(currentDocumentsBatch, {action: "upsert"});
       info(`Imported ${currentDocumentsBatch.length} documents into Typesense`);
-    } catch (error) {
-      error(`Import error in a batch of documents from ${currentDocumentsBatch[0].id} to ${lastDoc.id}`, error);
-      if ("importResults" in error) {
-        logImportErrors(error.importResults);
+    } catch (err) {
+      error(`Import error in a batch of documents from ${currentDocumentsBatch[0].id} to ${lastDoc.id}`, err);
+      if ("importResults" in err) {
+        logImportErrors(err.importResults);
       }
     }
 
