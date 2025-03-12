@@ -4,6 +4,8 @@
 - Use action=upsert for backfill
 - Migrate to Firebase Functions V2 API
 - Upgrade to Node 22
+- Improvements to logging for debugging purposes
+- Support for non-default databases
 
 ## Version 1.5.0
 
