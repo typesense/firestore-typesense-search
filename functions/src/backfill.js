@@ -90,7 +90,7 @@ module.exports = onDocumentWritten("typesense_sync/backfill", async (snapshot, c
 
     lastDoc = thisBatch.docs.at(-1) ?? null;
     try {
-      await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().import(currentDocumentsBatch, {action: "upsert"});
+      await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().import(currentDocumentsBatch, {action: "upsert", return_id: true});
       info(`Imported ${currentDocumentsBatch.length} documents into Typesense`);
     } catch (err) {
       error(`Import error in a batch of documents from ${currentDocumentsBatch[0].id} to ${lastDoc.id}`, err);
