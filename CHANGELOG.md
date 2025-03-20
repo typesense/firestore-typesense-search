@@ -1,12 +1,12 @@
 ## Version 2.0.1
 
-- [2.0.1] Fix for "Database does not exist in region" error during installation
 - Support for syncing data from sub-collections
 - Use action=upsert for backfill
 - Migrate to Firebase Functions V2 API
 - Upgrade to Node 22
 - Improvements to logging for debugging purposes
 - Support for non-default databases
+- [2.0.1] Fix for "Database does not exist in region" error during installation
 
 ## Version 2.0.0
 
