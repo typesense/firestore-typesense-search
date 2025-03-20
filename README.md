@@ -83,7 +83,7 @@ and configure Typesense to use it using the `--ssl-certificate` and `--ssl-certi
 
 ##### Example
 
-If you have a Firestore database like this called `users`:
+If you have a Firestore database called `(default)` with a collection inside it called `users` in the `nam5` region like this:
 
 <img src="assets/firestore_db_example.png" alt="Firestore DB Example" width="800"/>
 
