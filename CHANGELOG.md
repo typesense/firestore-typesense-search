@@ -1,3 +1,7 @@
+## Version 2.0.1
+
+- Fix for "Database does not exist in region" error during installation 
+
 ## Version 2.0.0
 
 - Support for syncing data from sub-collections
