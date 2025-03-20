@@ -85,6 +85,7 @@ describe("indexOnWriteLogging - when shouldLogTypesenseInserts is true", () => {
     testEnvironment = new TestEnvironment({
       dotenvConfig: `
 LOCATION=us-central1
+FIRESTORE_DATABASE_REGION=nam5
 FIRESTORE_COLLECTION_PATH=books
 FIRESTORE_COLLECTION_FIELDS=author,title,rating,isAvailable,location,createdAt,nested_field,tags,nullField,ref
 FLATTEN_NESTED_DOCUMENTS=true
