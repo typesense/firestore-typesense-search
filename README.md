@@ -26,8 +26,8 @@ Before installing this extension, make sure that you have:
     * Artifact Registry Service Agent
     * Logs Writer
     * Storage Object Viewer
-3. [Set up](https://typesense.org/docs/guide/install-typesense.html) a Typesense cluster on [Typesense Cloud](https://cloud.typesense.org) or [Self-Hosted](https://typesense.org/docs/guide/install-typesense.html#option-2-local-machine-self-hosting) (free).
-4. Set up a Typesense Collection either through the Typesense Cloud dashboard or 
+2. [Set up](https://typesense.org/docs/guide/install-typesense.html) a Typesense cluster on [Typesense Cloud](https://cloud.typesense.org) or [Self-Hosted](https://typesense.org/docs/guide/install-typesense.html#option-2-local-machine-self-hosting) (free).
+3. Set up a Typesense Collection either through the Typesense Cloud dashboard or 
   through the [API](https://typesense.org/docs/latest/api/collections.html#create-a-collection).
 
 > [!IMPORTANT]
