@@ -131,7 +131,7 @@ const based = async () => {
 
       if (result.num_deleted !== deleteBatch.length) {
         const completionBatch = admin.firestore().batch();
-        const missing = deleteBatch.filter((id) => !result.ids.includes(id));
+        const missing = result.num_deleted === 0 ? deleteBatch : deleteBatch.filter((id) => !result.ids.includes(id));
 
         missing.forEach(async (id) => {
           // eslint-disable-next-line no-unused-vars
