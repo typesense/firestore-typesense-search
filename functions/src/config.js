@@ -13,4 +13,7 @@ module.exports = {
   typesenseAPIKey: process.env.TYPESENSE_API_KEY,
   typesenseBackfillTriggerDocumentInFirestore: "typesense_sync/backfill",
   typesenseBackfillBatchSize: 1000,
+  typesenseBufferCollectionInFirestore: "typesense_buffer",
+  typesenseBufferBatchSize: 100,
+  typesenseBufferFlushInterval: 1000 * 60 * 3, // 3 minutes
 };
