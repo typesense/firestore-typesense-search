@@ -91,8 +91,8 @@ const based = async () => {
       const completionBatch = admin.firestore().batch();
 
       if (err.payload && err.payload.failedItems) {
-        const failedIds = new Set();
-        err.payload.failedItems.forEach((item) => failedIds.add(item.id));
+        const failedIds = new Map();
+        err.payload.failedItems.forEach((item) => failedIds.set(item.id, {error: item.error}));
 
         for (const [documentId, docRef] of docRefs.entries()) {
           if (failedIds.has(documentId)) {
