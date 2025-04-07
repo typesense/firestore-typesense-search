@@ -215,7 +215,7 @@ class TestEnvironment {
     }
 
     try {
-      await this.typesense.collections(encodeURIComponent(this.config.typesenseCollectionName)).delete();
+      await this.typesense.collections(this.config.typesenseCollectionName).delete();
     } catch (e) {
       directConsole.info(`${this.config.typesenseCollectionName} collection not found, proceeding...`);
     }
