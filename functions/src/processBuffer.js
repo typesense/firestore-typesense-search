@@ -5,6 +5,7 @@ const createTypesenseClient = require("./createTypesenseClient.js");
 const {typesenseDocumentFromSnapshot} = require("./utils.js");
 
 const admin = require("firebase-admin");
+const {default: ImportError} = require("typesense/lib/Typesense/Errors/ImportError.js");
 
 exports.processBuffer = onSchedule(config.typesenseBufferFlushInterval, async (event) => {
   await based();
@@ -86,7 +87,7 @@ const based = async () => {
       });
       await completionBatch.commit();
     } catch (err) {
-      error(`Error upserting documents: ${err.message}`);
+      !(err instanceof ImportError) ? error(`Error upserting documents: ${err.message}`) : error(`Error upserting documents: ${JSON.stringify(err.payload.failedItems)}`);
 
       const completionBatch = admin.firestore().batch();
 
