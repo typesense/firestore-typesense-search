@@ -99,8 +99,8 @@ const based = async () => {
           if (failedIds.has(documentId)) {
             const doc = await docRef.get();
             const data = doc.data();
+            const lastError = failedIds.get(documentId).error ?? err.message ?? "Unknown error";
 
-            if (data.retries < config.typesenseBufferMaxRetries) {
               completionBatch.update(docRef, {
                 status: "retrying",
                 retries: data.retries + 1,
