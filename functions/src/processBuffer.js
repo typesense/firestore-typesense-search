@@ -139,14 +139,14 @@ const based = async () => {
           const doc = await docRef.get();
           const data = doc.data();
 
-          if (data.retries < config.typesenseBufferMaxRetries) {
+          if (data.retries === config.typesenseBufferMaxRetries) {
+            completionBatch.update(docRef, {status: "failed", lastError: "Missing from Typesense"});
+          } else {
             completionBatch.update(docRef, {
               status: "retrying",
               retries: data.retries + 1,
               lastError: "Missing from Typesense",
             });
-          } else {
-            completionBatch.update(docRef, {status: "failed", lastError: "Missing from Typesense"});
           }
         }
 
