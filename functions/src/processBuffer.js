@@ -24,7 +24,7 @@ const based = async () => {
     .firestore()
     .collection(config.typesenseBufferCollectionInFirestore)
     .where("status", "in", ["pending", "retrying"])
-    .where("retries", "<", config.typesenseBufferMaxRetries) // Might be redundant, but just in case
+    .where("retries", "<=", config.typesenseBufferMaxRetries)
     .orderBy("timestamp")
     .limit(config.typesenseBufferBatchSize);
 
