@@ -101,15 +101,16 @@ const based = async () => {
             const data = doc.data();
             const lastError = failedIds.get(documentId).error ?? err.message ?? "Unknown error";
 
+            if (data.retries === config.typesenseBufferMaxRetries) {
               completionBatch.update(docRef, {
-                status: "retrying",
-                retries: data.retries + 1,
-                lastError: err.message,
+                status: "failed",
+                lastError,
               });
             } else {
               completionBatch.update(docRef, {
-                status: "failed",
-                lastError: err.message,
+                status: "retrying",
+                retries: data.retries + 1,
+                lastError,
               });
             }
           }
