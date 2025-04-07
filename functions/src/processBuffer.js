@@ -133,8 +133,7 @@ const based = async () => {
         const completionBatch = admin.firestore().batch();
         const missing = result.num_deleted === 0 ? deleteBatch : deleteBatch.filter((id) => !result.ids.includes(id));
 
-        missing.forEach(async (id) => {
-          // eslint-disable-next-line no-unused-vars
+        for (const id of missing) {
           const docRef = docRefs.get(id);
 
           const doc = await docRef.get();
@@ -149,7 +148,7 @@ const based = async () => {
           } else {
             completionBatch.update(docRef, {status: "failed", lastError: "Missing from Typesense"});
           }
-        });
+        }
 
         await completionBatch.commit();
 
