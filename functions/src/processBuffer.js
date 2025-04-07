@@ -135,7 +135,7 @@ const based = async () => {
 
         missing.forEach(async (id) => {
           // eslint-disable-next-line no-unused-vars
-          const [_, docRef] = docRefs.get(id);
+          const docRef = docRefs.get(id);
 
           const doc = await docRef.get();
           const data = doc.data();
