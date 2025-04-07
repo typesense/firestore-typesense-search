@@ -7,6 +7,15 @@ const {typesenseDocumentFromSnapshot} = require("./utils.js");
 const admin = require("firebase-admin");
 
 exports.processBuffer = onSchedule(config.typesenseBufferFlushInterval, async (event) => {
+  await based();
+});
+
+const filterByDelete = (ids) => {
+  const commaSeparatedIds = ids.join(",");
+  return `id:[${commaSeparatedIds}]`;
+};
+
+const based = async () => {
   const typesense = createTypesenseClient();
 
   info("Processing buffer");
@@ -186,8 +195,6 @@ exports.processBuffer = onSchedule(config.typesenseBufferFlushInterval, async (e
   }
 
   info(`Completed processing ${bufferDocs.size} documents`);
-});
-const filterByDelete = (ids) => {
-  const commaSeparatedIds = ids.join(",");
-  return `id:[${commaSeparatedIds}]`;
 };
+
+exports.based = based;
