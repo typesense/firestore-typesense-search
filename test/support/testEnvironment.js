@@ -47,6 +47,7 @@ class TestEnvironment {
   shouldOutputAllEmulatorLogs = false;
   dotenvPath = null;
   dotenvConfig = null;
+  typesenseFields = null;
 
   // Emulator vars
   emulator = null;
@@ -65,10 +66,11 @@ class TestEnvironment {
    * @param {string} config.dotenvConfig - path to the env file to use for the firebase emulator and test
    * @param {boolean} config.debugLog - whether to log all emulator logs to console
    */
-  constructor({dotenvPath, dotenvConfig, outputAllEmulatorLogs = false} = {}) {
+  constructor({dotenvPath, dotenvConfig, outputAllEmulatorLogs = false, typesenseFields = null} = {}) {
     this.dotenvPath = dotenvPath;
     this.dotenvConfig = dotenvConfig;
     this.shouldOutputAllEmulatorLogs = outputAllEmulatorLogs;
+    this.typesenseFields = typesenseFields;
 
     if (dotenvPath && dotenvConfig) {
       throw new Error("Provide either 'dotenvPath' or 'dotenvConfig', not both.");
@@ -217,9 +219,12 @@ class TestEnvironment {
     } catch (e) {
       directConsole.info(`${this.config.typesenseCollectionName} collection not found, proceeding...`);
     }
+
+    const fields = this.typesenseFields || [{name: ".*", type: "auto"}];
+
     await this.typesense.collections().create({
       name: this.config.typesenseCollectionName,
-      fields: [{name: ".*", type: "auto"}],
+      fields,
       enable_nested_fields: true,
     });
   }
