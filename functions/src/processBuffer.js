@@ -7,6 +7,10 @@ const {typesenseDocumentFromSnapshot} = require("./utils.js");
 const admin = require("firebase-admin");
 const {default: ImportError} = require("typesense/lib/Typesense/Errors/ImportError.js");
 
+admin.initializeApp({
+  credential: admin.credential.applicationDefault(),
+});
+
 exports.processBuffer = onSchedule(config.typesenseBufferFlushInterval, async (event) => {
   await based();
 });
