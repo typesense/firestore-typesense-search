@@ -15,5 +15,6 @@ module.exports = {
   typesenseBackfillBatchSize: 1000,
   typesenseBufferCollectionInFirestore: "typesense_buffer",
   typesenseBufferBatchSize: 100,
+  typesenseBufferMaxRetries: 3,
   typesenseBufferFlushInterval: 1000 * 60 * 3, // 3 minutes
 };
