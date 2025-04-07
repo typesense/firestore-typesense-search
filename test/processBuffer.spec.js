@@ -59,8 +59,8 @@ describe("processBuffer", () => {
         retries: 0,
       });
 
-      const {based} = require("../functions/src/processBuffer");
-      await based();
+      const {processTypesenseBuffer} = require("../functions/src/processBuffer");
+      await processTypesenseBuffer();
 
       await new Promise((r) => setTimeout(r, 2500));
 
@@ -100,8 +100,8 @@ describe("processBuffer", () => {
         retries: 0,
       });
 
-      const {based} = require("../functions/src/processBuffer");
-      await based();
+      const {processTypesenseBuffer} = require("../functions/src/processBuffer");
+      await processTypesenseBuffer();
 
       await new Promise((r) => setTimeout(r, 2500));
 
@@ -140,9 +140,9 @@ describe("processBuffer", () => {
         retries: 0,
       });
 
-      const {based} = require("../functions/src/processBuffer");
+      const {processTypesenseBuffer} = require("../functions/src/processBuffer");
       for (let i = 0; i < config.typesenseBufferMaxRetries; i++) {
-        await based();
+        await processTypesenseBuffer();
 
         const bufferSnapshot = await firestore.collection(config.typesenseBufferCollectionInFirestore).where("documentId", "==", missingDocId).get();
 
@@ -154,7 +154,7 @@ describe("processBuffer", () => {
         expect(docData.retries).toBe(i + 1);
       }
 
-      await based();
+      await processTypesenseBuffer();
       await new Promise((r) => setTimeout(r, 2500));
       const bufferSnapshot = await firestore.collection(config.typesenseBufferCollectionInFirestore).where("documentId", "==", missingDocId).get();
 
@@ -178,9 +178,9 @@ describe("processBuffer", () => {
         retries: 0,
       });
 
-      const {based} = require("../functions/src/processBuffer");
+      const {processTypesenseBuffer} = require("../functions/src/processBuffer");
       for (let i = 0; i < config.typesenseBufferMaxRetries; i++) {
-        await based();
+        await processTypesenseBuffer();
 
         const bufferSnapshot = await firestore.collection(config.typesenseBufferCollectionInFirestore).where("documentId", "==", documentId).get();
 
@@ -192,7 +192,7 @@ describe("processBuffer", () => {
         expect(docData.retries).toBe(i + 1);
       }
 
-      await based();
+      await processTypesenseBuffer();
       await new Promise((r) => setTimeout(r, 2500));
       const bufferSnapshot = await firestore.collection(config.typesenseBufferCollectionInFirestore).where("documentId", "==", documentId).get();
 
