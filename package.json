@@ -7,7 +7,7 @@
     "test": "npm run test:flatttened && npm run test:unflattened && npm run test:rest",
     "test:flatttened": "cp -f extensions/test-params-flatten-nested-true.local.env functions/.env && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-true.local.env firebase emulators:exec --only functions,firestore,extensions  'jest --testRegex=\"WithFlattening\" --testRegex=\"backfill.spec\"'",
     "test:unflattened": "cp -f extensions/test-params-flatten-nested-false.local.env functions/.env && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-false.local.env firebase emulators:exec --only functions,firestore,extensions 'jest --testRegex=\"WithoutFlattening\"'",
-    "test:rest": "jest --testRegex=\"processBuffer.spec\" --testRegex=\"writeLogging\" --testRegex=\"Subcollection\" --detectOpenHandles",
+    "test:rest": "jest --testRegex=\"WithBuffer\"  --testRegex=\"processBuffer.spec\" --testRegex=\"writeLogging\" --testRegex=\"Subcollection\" --detectOpenHandles",
     "typesenseServer": "docker compose up",
     "lint:fix": "eslint . --fix",
     "lint": "eslint .",
