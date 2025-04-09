@@ -58,6 +58,7 @@ const organizeBatchOperations = async (bufferDocs) => {
       upsertBatch.push({
         id: documentId,
         ...data.document,
+        pathParams: data.pathParams,
       });
     } else if (data.type === "delete") {
       deleteBatch.push(documentId);
@@ -132,10 +133,8 @@ const processUpsertOperations = async (upsertBatch, docRefs, typesense) => {
   try {
     const typesenseDocuments = await Promise.all(
       upsertBatch.map(async (doc) => {
-        return await typesenseDocumentFromSnapshot({
-          id: doc.id,
-          data: () => doc,
-        });
+        const {pathParams, ...document} = doc;
+        return await typesenseDocumentFromSnapshot({id: doc.id, data: () => document}, pathParams);
       }),
     );
 
