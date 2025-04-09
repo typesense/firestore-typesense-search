@@ -17,5 +17,5 @@ module.exports = {
   typesenseBufferCollectionInFirestore: process.env.TYPESENSE_BUFFER_COLLECTION_IN_FIRESTORE || "typesense_buffer",
   typesenseBufferBatchSize: process.env.TYPESENSE_BUFFER_BATCH_SIZE || 100,
   typesenseBufferMaxRetries: process.env.TYPESENSE_BUFFER_MAX_RETRIES || 3,
-  typesenseBufferFlushInterval: process.env.TYPESENSE_BUFFER_FLUSH_INTERVAL || 1000 * 60 * 3, // 3 minutes
+  typesenseBufferFlushInterval: process.env.TYPESENSE_BUFFER_FLUSH_INTERVAL || "every 3 minutes",
 };
