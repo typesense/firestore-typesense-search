@@ -12,9 +12,10 @@ module.exports = {
   typesenseCollectionName: process.env.TYPESENSE_COLLECTION_NAME,
   typesenseAPIKey: process.env.TYPESENSE_API_KEY,
   typesenseBackfillTriggerDocumentInFirestore: "typesense_sync/backfill",
-  typesenseBackfillBatchSize: 1000,
-  typesenseBufferCollectionInFirestore: "typesense_buffer",
-  typesenseBufferBatchSize: 100,
-  typesenseBufferMaxRetries: 3,
-  typesenseBufferFlushInterval: 1000 * 60 * 3, // 3 minutes
+  typesenseBackfillBatchSize: process.env.TYPESENSE_BACKFILL_BATCH_SIZE || 1000,
+  typesenseUseBuffer: process.env.TYPESENSE_USE_BUFFER === "true",
+  typesenseBufferCollectionInFirestore: process.env.TYPESENSE_BUFFER_COLLECTION_IN_FIRESTORE || "typesense_buffer",
+  typesenseBufferBatchSize: process.env.TYPESENSE_BUFFER_BATCH_SIZE || 100,
+  typesenseBufferMaxRetries: process.env.TYPESENSE_BUFFER_MAX_RETRIES || 3,
+  typesenseBufferFlushInterval: process.env.TYPESENSE_BUFFER_FLUSH_INTERVAL || 1000 * 60 * 3, // 3 minutes
 };
