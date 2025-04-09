@@ -20,7 +20,7 @@
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.2.0",
     "lodash.get": "^4.4.2",
-    "typesense": "^2.1.0-2"
+    "typesense": "^2.1.0-3"
   },
   "devDependencies": {
     "eslint": "^8.52.0",
