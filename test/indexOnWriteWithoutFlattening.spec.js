@@ -16,7 +16,7 @@ describe("indexOnWriteWithoutFlattening", () => {
 
     // delete the Typesense collection
     try {
-      await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
+      await typesense.collections(config.typesenseCollectionName).delete();
     } catch (e) {
       console.info(`${config.typesenseCollectionName} collection not found, proceeding...`);
     }
@@ -56,7 +56,7 @@ describe("indexOnWriteWithoutFlattening", () => {
       await new Promise((r) => setTimeout(r, 2500));
 
       // check that the document was indexed
-      let typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export();
+      let typesenseDocsStr = await typesense.collections(config.typesenseCollectionName).documents().export();
       let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
       expect(typesenseDocs.length).toBe(1);
@@ -74,7 +74,7 @@ describe("indexOnWriteWithoutFlattening", () => {
       await new Promise((r) => setTimeout(r, 2500));
 
       // check that the document was updated
-      typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export({exclude_fields: ""});
+      typesenseDocsStr = await typesense.collections(config.typesenseCollectionName).documents().export({exclude_fields: ""});
       typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
       expect(typesenseDocs.length).toBe(1);
@@ -90,7 +90,7 @@ describe("indexOnWriteWithoutFlattening", () => {
       await new Promise((r) => setTimeout(r, 2500));
 
       // check that the document was deleted
-      typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export();
+      typesenseDocsStr = await typesense.collections(config.typesenseCollectionName).documents().export();
 
       expect(typesenseDocsStr).toBe("");
     });

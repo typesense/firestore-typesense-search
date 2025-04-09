@@ -11,7 +11,7 @@ exports.indexOnWrite = onDocumentWritten(`${config.firestoreCollectionPath}/{doc
     // Delete
     const documentId = snapshot.data.before.id;
     debug(`Deleting document ${documentId}`);
-    return await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents(encodeURIComponent(documentId)).delete();
+    return await typesense.collections(config.typesenseCollectionName).documents(documentId).delete();
   } else {
     // Create / update
 
@@ -24,6 +24,6 @@ exports.indexOnWrite = onDocumentWritten(`${config.firestoreCollectionPath}/{doc
     } else {
       debug(`Upserting document ${typesenseDocument.id}`);
     }
-    return await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().upsert(typesenseDocument);
+    return await typesense.collections(config.typesenseCollectionName).documents().upsert(typesenseDocument);
   }
 });
