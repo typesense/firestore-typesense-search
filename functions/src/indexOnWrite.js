@@ -17,7 +17,13 @@ exports.indexOnWrite = onDocumentWritten(`${config.firestoreCollectionPath}/{doc
 
     // snapshot.after.ref.get() will refetch the latest version of the document
     const latestSnapshot = await snapshot.data.after.ref.get();
-    const typesenseDocument = await utils.typesenseDocumentFromSnapshot(latestSnapshot, snapshot.params);
+    let typesenseDocument;
+    if (config.transformFunctionName) {
+      const transformedDocument = await utils.transformDocument(latestSnapshot);
+      typesenseDocument = await utils.typesenseDocumentFromSnapshot(transformedDocument, snapshot.params);
+    } else {
+      typesenseDocument = await utils.typesenseDocumentFromSnapshot(latestSnapshot, snapshot.params);
+    }
 
     if (config.shouldLogTypesenseInserts) {
       debug(`Upserting document ${JSON.stringify(typesenseDocument)}`);
