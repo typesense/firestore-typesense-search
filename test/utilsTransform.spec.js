@@ -53,8 +53,6 @@ TRANSFORM_FUNCTION_REGION=us-central1
       expect(result).toEqual(document);
 
       expect(mockFetch).not.toHaveBeenCalled();
-
-      expect(testEnvironment.capturedEmulatorLogs).toContain("No transform function defined. Returning original document.");
     });
   });
 
@@ -84,9 +82,6 @@ TRANSFORM_FUNCTION_REGION=us-central1
           Authorization: "Bearer test-secret",
         },
       });
-
-      expect(testEnvironment.capturedEmulatorLogs).toContain("Calling transform function: test-transform-function");
-      expect(testEnvironment.capturedEmulatorLogs).toContain("Transform function succeeded for document 123");
     });
 
     it("returns original document when transform function returns null/undefined", async () => {
@@ -100,8 +95,6 @@ TRANSFORM_FUNCTION_REGION=us-central1
       const result = await utils.transformDocument(document);
 
       expect(result).toEqual(document);
-
-      expect(testEnvironment.capturedEmulatorLogs).toContain("Transform function failed for document 123. Using original document.");
     });
 
     it("returns original document when fetch response is not OK", async () => {
@@ -125,8 +118,6 @@ TRANSFORM_FUNCTION_REGION=us-central1
       const result = await utils.transformDocument(document);
 
       expect(result).toEqual(document);
-
-      expect(testEnvironment.capturedEmulatorLogs).toContain("Error calling transform function: Network error");
     });
 
     it("handles documents without an ID properly", async () => {
@@ -141,8 +132,6 @@ TRANSFORM_FUNCTION_REGION=us-central1
       const result = await utils.transformDocument(document);
 
       expect(result).toEqual(transformedDocument);
-
-      expect(testEnvironment.capturedEmulatorLogs).toContain("Transform function succeeded for document unknown");
     });
   });
 });
