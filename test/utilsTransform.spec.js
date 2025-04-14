@@ -115,7 +115,6 @@ TRANSFORM_FUNCTION_REGION=us-central1
       const result = await utils.transformDocument(document);
 
       expect(result).toEqual(document);
-
     });
 
     it("returns original document when fetch throws an exception", async () => {
