@@ -133,7 +133,7 @@ function flattenDocument(obj, prefix = "") {
  * @param {DocumentSnapshot} firestoreDocumentSnapshot
  * @param {Object} contextParams
  * @param {Array} fieldsToExtract
- * @return {Object} typesenseDocument
+ * @return {Promise<Object>} typesenseDocument
  */
 exports.typesenseDocumentFromSnapshot = async (firestoreDocumentSnapshot, contextParams = {}, fieldsToExtract = config.firestoreCollectionFields) => {
   const data = firestoreDocumentSnapshot.data();
