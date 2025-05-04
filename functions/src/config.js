@@ -13,4 +13,8 @@ module.exports = {
   typesenseAPIKey: process.env.TYPESENSE_API_KEY,
   typesenseBackfillTriggerDocumentInFirestore: "typesense_sync/backfill",
   typesenseBackfillBatchSize: 1000,
+  transformFunctionName: process.env.TRANSFORM_FUNCTION_NAME,
+  transformFunctionSecret: process.env.TRANSFORM_FUNCTION_SECRET,
+  transformFunctionProjectId: process.env.TRANSFORM_FUNCTION_PROJECT_ID || process.env.GCLOUD_PROJECT,
+  transformFunctionRegion: process.env.TRANSFORM_FUNCTION_REGION || process.env.REGION,
 };
