@@ -50,7 +50,7 @@ describe("indexOnWriteLogging - when shouldLogTypesenseInserts is false", () => 
 
       // The above will automatically add the document to Typesense,
       // so delete it so we can test backfill
-      await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).delete();
+      await testEnvironment.typesense.collections(testEnvironment.config.typesenseCollectionName).delete();
       await testEnvironment.typesense.collections().create({
         name: testEnvironment.config.typesenseCollectionName,
         fields: [{name: ".*", type: "auto"}],
@@ -61,7 +61,7 @@ describe("indexOnWriteLogging - when shouldLogTypesenseInserts is false", () => 
       await new Promise((r) => setTimeout(r, 2000));
 
       // Check that the data was backfilled
-      const typesenseDocsStr = await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).documents().export();
+      const typesenseDocsStr = await testEnvironment.typesense.collections(testEnvironment.config.typesenseCollectionName).documents().export();
       const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
       expect(typesenseDocs.length).toBe(1);
       expect(typesenseDocs[0]).toStrictEqual({
@@ -136,7 +136,7 @@ TYPESENSE_API_KEY=xyz
 
       // The above will automatically add the document to Typesense,
       // so delete it so we can test backfill
-      await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).delete();
+      await testEnvironment.typesense.collections(testEnvironment.config.typesenseCollectionName).delete();
       await testEnvironment.typesense.collections().create({
         name: testEnvironment.config.typesenseCollectionName,
         fields: [{name: ".*", type: "auto"}],
@@ -147,7 +147,7 @@ TYPESENSE_API_KEY=xyz
       await new Promise((r) => setTimeout(r, 2000));
 
       // Check that the data was backfilled
-      const typesenseDocsStr = await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).documents().export();
+      const typesenseDocsStr = await testEnvironment.typesense.collections(testEnvironment.config.typesenseCollectionName).documents().export();
       const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
       expect(typesenseDocs.length).toBe(1);
       const expectedResult = {

@@ -78,7 +78,7 @@ describe("indexOnWriteSubcollection", () => {
       await new Promise((r) => setTimeout(r, 2500));
 
       // check that the document was indexed
-      let typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export({exclude_fields: ""});
+      let typesenseDocsStr = await typesense.collections(config.typesenseCollectionName).documents().export({exclude_fields: ""});
       let typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
       expect(typesenseDocs.length).toBe(1);
@@ -97,7 +97,7 @@ describe("indexOnWriteSubcollection", () => {
       await new Promise((r) => setTimeout(r, 2500));
 
       // check that the document was updated
-      typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export({exclude_fields: ""});
+      typesenseDocsStr = await typesense.collections(config.typesenseCollectionName).documents().export({exclude_fields: ""});
       typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
 
       expect(typesenseDocs.length).toBe(1);
@@ -115,7 +115,7 @@ describe("indexOnWriteSubcollection", () => {
       await new Promise((r) => setTimeout(r, 2500));
 
       // check that the subcollection document was deleted
-      typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export({exclude_fields: ""});
+      typesenseDocsStr = await typesense.collections(config.typesenseCollectionName).documents().export({exclude_fields: ""});
 
       expect(typesenseDocsStr).toBe("");
     });

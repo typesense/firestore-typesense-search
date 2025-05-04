@@ -349,3 +349,48 @@ params:
         value: true
     default: false
     required: false
+  - param: TYPESENSE_USE_BUFFER
+    label: Use Buffer for Typesense Operations
+    description: >-
+      Enable buffering for Typesense operations. Buffering can improve performance by batching operations
+      and providing retry capabilities for failed requests.
+    type: select
+    options:
+      - label: No
+        value: false
+      - label: Yes
+        value: true
+    default: false
+    required: false
+  - param: TYPESENSE_BUFFER_COLLECTION_IN_FIRESTORE
+    label: Typesense Buffer Collection in Firestore
+    description: >-
+      The Firestore collection name to use for buffering Typesense operations.
+      Only applicable if buffering is enabled.
+    example: typesense_buffer
+    default: typesense_buffer
+    required: false
+  - param: TYPESENSE_BUFFER_BATCH_SIZE
+    label: Typesense Buffer Batch Size
+    description: >-
+      The number of documents to process in a single batch when flushing the buffer.
+      Only applicable if buffering is enabled.
+    example: 100
+    default: 100
+    required: false
+  - param: TYPESENSE_BUFFER_MAX_RETRIES
+    label: Typesense Buffer Maximum Retries
+    description: >-
+      The maximum number of retry attempts for failed Typesense operations.
+      Only applicable if buffering is enabled.
+    example: 3
+    default: 3
+    required: false
+  - param: TYPESENSE_BUFFER_FLUSH_INTERVAL
+    label: Typesense Buffer Flush Interval
+    description: >-
+      The time interval in cron-style format at which the buffer should be automatically flushed.
+      Default is "every 3 minutes". Syntax is documented [here](https://cloud.google.com/appengine/docs/flexible/scheduling-jobs-with-cron-yaml#formatting_the_schedule). [Unix crontab](http://man7.org/linux/man-pages/man5/crontab.5.html) is also supported. Only applicable if buffering is enabled.
+    example: every 5 minutes
+    default: every 3 minutes
+    required: false

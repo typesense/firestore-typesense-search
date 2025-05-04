@@ -67,3 +67,4 @@ node_modules/
 test-params.env
 extensions/test-params.env
 /typesense-server-data/
+typesense-data
