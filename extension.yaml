@@ -352,27 +352,10 @@ params:
     label: Transform Function Name
     description: >-
       Optional: Name of a Cloud Function to transform Firestore documents before indexing them into Typesense.
+      The function must be deployed in the same project and region as this extension.
       If specified, this extension will call this function with each document before indexing.
       Leave empty to skip transformation.
     example: transformDoc
-    default: ""
-    required: false
-  - param: TRANSFORM_FUNCTION_PROJECT_ID
-    label: Transform Function Project ID
-    description: >-
-      Project ID where the transform function is deployed. 
-      Only required if TRANSFORM_FUNCTION_NAME is set.
-      Defaults to the current project ID if not specified.
-    example: my-project
-    default: ""
-    required: false
-  - param: TRANSFORM_FUNCTION_REGION
-    label: Transform Function Region
-    description: >-
-      Region where the transform function is deployed.
-      Only required if TRANSFORM_FUNCTION_NAME is set.
-      Defaults to the same region as this extension if not specified.
-    example: us-central1
     default: ""
     required: false
   - param: TRANSFORM_FUNCTION_SECRET
