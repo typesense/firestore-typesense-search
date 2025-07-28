@@ -348,3 +348,19 @@ params:
         value: true
     default: false
     required: false
+  - param: TYPESENSE_CONNECTION_TIMEOUT_SECONDS
+    label: Typesense Connection Timeout (seconds)
+    description: >-
+      The timeout in seconds for connections to Typesense. This applies to both connection timeout.
+    type: string
+    example: "60"
+    default: "60"
+    required: false
+  - param: TYPESENSE_RETRY_INTERVAL_SECONDS
+    label: Typesense Retry Interval (seconds)
+    description: >-
+      The retry interval in seconds for connections to Typesense. This applies to both connection timeout.
+    type: string
+    example: "60"
+    default: "60"
+    required: false
