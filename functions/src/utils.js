@@ -187,6 +187,44 @@ exports.parseFirestorePath = function (firestorePath) {
 };
 
 /**
+ * Create a Typesense document from Firestore snapshot with collection-specific settings
+ * @param {DocumentSnapshot} snapshot - Firestore document snapshot
+ * @param {Object} collectionConfig - Collection-specific configuration
+ * @param {Object} contextParams - Context parameters from the trigger
+ * @return {Promise<Object>} Typesense document
+ */
+exports.createTypesenseDocument = async (snapshot, collectionConfig, contextParams) => {
+  const data = snapshot.data();
+
+  if (!data) {
+    throw new Error("Document data is null");
+  }
+
+  const extractedData = collectionConfig.fields.length === 0 ? data : collectionConfig.fields.reduce((acc, field) => extractField(data, acc, field), {});
+
+  const mappedDocument = Object.fromEntries(Object.entries(extractedData).map(([key, value]) => [key, mapValue(value)]));
+
+  const typesenseDocument = collectionConfig.flattenNested ? flattenDocument(mappedDocument) : mappedDocument;
+
+  typesenseDocument.id = snapshot.id;
+
+  // Add context parameters (e.g., path placeholders)
+  if (contextParams && Object.entries(contextParams).length) {
+    Object.entries(contextParams).forEach(([key, value]) => {
+      if (key !== "docId") {
+        typesenseDocument[key] = value;
+      }
+    });
+  }
+
+  return typesenseDocument;
+};
+
+exports.mapValue = mapValue;
+exports.extractField = extractField;
+exports.flattenDocument = flattenDocument;
+
+/**
  * Verifies if a given Firestore path matches a selector and extracts placeholder values.
  * @param {string} path - The static Firestore path (e.g., "users/123/library/456/books/789").
  * @param {string} selector - The path selector with placeholders (e.g., "users/{userId}/library/{libraryId}/books").
