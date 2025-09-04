@@ -48,11 +48,14 @@ describe("indexOnWriteLogging - when shouldLogTypesenseInserts is false", () => 
       // Wait for firestore cloud function to write to Typesense
       await new Promise((r) => setTimeout(r, 2000));
 
+      // Get the first collection from the multi-collection config
+      const firstCollection = Object.values(testEnvironment.config.collections)[0];
+
       // The above will automatically add the document to Typesense,
       // so delete it so we can test backfill
-      await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).delete();
+      await testEnvironment.typesense.collections(encodeURIComponent(firstCollection.typesenseCollection)).delete();
       await testEnvironment.typesense.collections().create({
-        name: testEnvironment.config.typesenseCollectionName,
+        name: firstCollection.typesenseCollection,
         fields: [{name: ".*", type: "auto"}],
       });
 
@@ -61,7 +64,7 @@ describe("indexOnWriteLogging - when shouldLogTypesenseInserts is false", () => 
       await new Promise((r) => setTimeout(r, 2000));
 
       // Check that the data was backfilled
-      const typesenseDocsStr = await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).documents().export();
+      const typesenseDocsStr = await testEnvironment.typesense.collections(encodeURIComponent(firstCollection.typesenseCollection)).documents().export();
       const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
       expect(typesenseDocs.length).toBe(1);
       expect(typesenseDocs[0]).toStrictEqual({
@@ -73,7 +76,7 @@ describe("indexOnWriteLogging - when shouldLogTypesenseInserts is false", () => 
       // Check that the backfill log was written
       expect(testEnvironment.capturedEmulatorLogs).not.toContain("Backfilling document");
 
-      expect(testEnvironment.capturedEmulatorLogs).toContain("Imported 1 documents into Typesense");
+      expect(testEnvironment.capturedEmulatorLogs).toContain("Completed backfill for all collections");
     });
   });
 });
@@ -86,14 +89,14 @@ describe("indexOnWriteLogging - when shouldLogTypesenseInserts is true", () => {
       dotenvConfig: `
 LOCATION=us-central1
 FIRESTORE_DATABASE_REGION=nam5
-FIRESTORE_COLLECTION_PATH=books
-FIRESTORE_COLLECTION_FIELDS=author,title,rating,isAvailable,location,createdAt,nested_field,tags,nullField,ref
-FLATTEN_NESTED_DOCUMENTS=true
+FIRESTORE_COLLECTION_PATHS=books
+TYPESENSE_COLLECTION_NAMES=books_firestore/1
+FIRESTORE_COLLECTION_FIELDS_LIST=author,title,rating,isAvailable,location,createdAt,nested_field,tags,nullField,ref
+FLATTEN_NESTED_DOCUMENTS_LIST=true
 LOG_TYPESENSE_INSERTS=true
 TYPESENSE_HOSTS=localhost
 TYPESENSE_PORT=8108
 TYPESENSE_PROTOCOL=http
-TYPESENSE_COLLECTION_NAME=books_firestore/1
 TYPESENSE_API_KEY=xyz
 `,
     });
@@ -134,11 +137,14 @@ TYPESENSE_API_KEY=xyz
       // Wait for firestore cloud function to write to Typesense
       await new Promise((r) => setTimeout(r, 2000));
 
+      // Get the first collection from the multi-collection config
+      const firstCollection = Object.values(testEnvironment.config.collections)[0];
+
       // The above will automatically add the document to Typesense,
       // so delete it so we can test backfill
-      await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).delete();
+      await testEnvironment.typesense.collections(encodeURIComponent(firstCollection.typesenseCollection)).delete();
       await testEnvironment.typesense.collections().create({
-        name: testEnvironment.config.typesenseCollectionName,
+        name: firstCollection.typesenseCollection,
         fields: [{name: ".*", type: "auto"}],
       });
 
@@ -147,7 +153,7 @@ TYPESENSE_API_KEY=xyz
       await new Promise((r) => setTimeout(r, 2000));
 
       // Check that the data was backfilled
-      const typesenseDocsStr = await testEnvironment.typesense.collections(encodeURIComponent(testEnvironment.config.typesenseCollectionName)).documents().export();
+      const typesenseDocsStr = await testEnvironment.typesense.collections(encodeURIComponent(firstCollection.typesenseCollection)).documents().export();
       const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
       expect(typesenseDocs.length).toBe(1);
       const expectedResult = {
@@ -160,7 +166,7 @@ TYPESENSE_API_KEY=xyz
       // Check that the backfill log was written
       expect(testEnvironment.capturedEmulatorLogs).toContain(`Backfilling document ${JSON.stringify(expectedResult)}`);
 
-      expect(testEnvironment.capturedEmulatorLogs).toContain("Imported 1 documents into Typesense");
+      expect(testEnvironment.capturedEmulatorLogs).toContain("Completed backfill for all collections");
     });
   });
 });
