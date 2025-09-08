@@ -100,7 +100,7 @@ describe("backfillMultiCollection", () => {
       }
 
       await firestore.collection(config.typesenseBackfillTriggerDocumentInFirestore.split("/")[0]).doc("backfill").set({trigger: true});
-      await new Promise((r) => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 5000));
 
       const usersDocsStr = await typesense.collections(encodeURIComponent("users")).documents().export();
       const usersDocs = usersDocsStr
@@ -285,7 +285,7 @@ describe("backfillMultiCollection", () => {
             trigger: true,
             firestore_collections: ["some/other/collection", "another/unrelated/collection"],
           });
-        await new Promise((r) => setTimeout(r, 2000));
+        await new Promise((r) => setTimeout(r, 5000));
 
         for (const collectionName of Object.values(config.collections).map((c) => c.typesenseCollection)) {
           const docsStr = await typesense.collections(encodeURIComponent(collectionName)).documents().export();
