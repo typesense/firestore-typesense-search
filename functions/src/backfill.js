@@ -60,6 +60,7 @@ module.exports = onDocumentWritten("typesense_sync/backfill", async (snapshot, c
   } else {
     querySnapshot = admin.firestore().collection(config.firestoreCollectionPath);
   }
+  querySnapshot = querySnapshot.orderBy(admin.firestore.FieldPath.documentId(), "asc");
 
   let lastDoc = null;
 
