@@ -1,4 +1,5 @@
 const firebase = require("firebase-admin");
+
 const config = require("../functions/src/config.js");
 const typesense = require("../functions/src/createTypesenseClient.js")();
 
@@ -16,7 +17,7 @@ describe("backfill", () => {
 
     // Clear any previously created collections
     try {
-      await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
+      await typesense.collections(config.typesenseCollectionName).delete();
     } catch (e) {
       console.info(`${config.typesenseCollectionName} collection not found, proceeding...`);
     }
@@ -46,7 +47,7 @@ describe("backfill", () => {
 
       // The above will automatically add the document to Typesense,
       // so delete it so we can test backfill
-      await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
+      await typesense.collections(config.typesenseCollectionName).delete();
       await typesense.collections().create({
         name: config.typesenseCollectionName,
         fields: [{name: ".*", type: "auto"}],
@@ -57,7 +58,7 @@ describe("backfill", () => {
       await new Promise((r) => setTimeout(r, 2000));
 
       // Check that the data was backfilled
-      const typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export();
+      const typesenseDocsStr = await typesense.collections(config.typesenseCollectionName).documents().export();
       const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
       expect(typesenseDocs.length).toBe(1);
       expect(typesenseDocs[0]).toStrictEqual({
@@ -82,7 +83,7 @@ describe("backfill", () => {
 
         // The above will automatically add the document to Typesense,
         // so delete it so we can test backfill
-        await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
+        await typesense.collections(config.typesenseCollectionName).delete();
         await typesense.collections().create({
           name: config.typesenseCollectionName,
           fields: [{name: ".*", type: "auto"}],
@@ -99,7 +100,7 @@ describe("backfill", () => {
         await new Promise((r) => setTimeout(r, 2000));
 
         // Check that the data was backfilled
-        const typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export();
+        const typesenseDocsStr = await typesense.collections(config.typesenseCollectionName).documents().export();
         const typesenseDocs = typesenseDocsStr.split("\n").map((s) => JSON.parse(s));
         expect(typesenseDocs.length).toBe(1);
         expect(typesenseDocs[0]).toStrictEqual({
@@ -124,7 +125,7 @@ describe("backfill", () => {
 
           // The above will automatically add the document to Typesense,
           // so delete it so we can test backfill
-          await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).delete();
+          await typesense.collections(config.typesenseCollectionName).delete();
           await typesense.collections().create({
             name: config.typesenseCollectionName,
             fields: [{name: ".*", type: "auto"}],
@@ -141,7 +142,7 @@ describe("backfill", () => {
           await new Promise((r) => setTimeout(r, 2000));
 
           // Check that the data was not backfilled
-          const typesenseDocsStr = await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().export();
+          const typesenseDocsStr = await typesense.collections(config.typesenseCollectionName).documents().export();
           expect(typesenseDocsStr).toEqual("");
         },
       );
