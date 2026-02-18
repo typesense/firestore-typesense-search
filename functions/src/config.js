@@ -11,6 +11,8 @@ module.exports = {
   typesenseProtocol: process.env.TYPESENSE_PROTOCOL || "https",
   typesenseCollectionName: process.env.TYPESENSE_COLLECTION_NAME,
   typesenseAPIKey: process.env.TYPESENSE_API_KEY,
+  typesenseConnectionTimeoutSeconds: parseInt(process.env.TYPESENSE_CONNECTION_TIMEOUT_SECONDS, 10),
+  typesenseRetryIntervalSeconds: parseInt(process.env.TYPESENSE_RETRY_INTERVAL_SECONDS, 10),
   typesenseBackfillTriggerDocumentInFirestore: "typesense_sync/backfill",
   typesenseBackfillBatchSize: 1000,
 };
