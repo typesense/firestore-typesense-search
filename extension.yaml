@@ -348,3 +348,22 @@ params:
         value: true
     default: false
     required: false
+  - param: TRANSFORM_FUNCTION_NAME
+    label: Transform Function Name
+    description: >-
+      Optional: Name of a Cloud Function to transform Firestore documents before indexing them into Typesense.
+      The function must be deployed in the same project and region as this extension.
+      If specified, this extension will call this function with each document before indexing.
+      Leave empty to skip transformation.
+    example: transformDoc
+    default: ""
+    required: false
+  - param: TRANSFORM_FUNCTION_SECRET
+    label: Transform Function Secret
+    type: secret
+    description: >-
+      Authorization secret for the transform function.
+      This will be sent in the Authorization header as "Bearer [secret]".
+      Only required if TRANSFORM_FUNCTION_NAME is set and the transform function requires authorization.
+    example: ""
+    required: false

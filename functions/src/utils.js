@@ -1,5 +1,5 @@
 const config = require("./config.js");
-
+const {error, debug} = require("firebase-functions/logger");
 const mapValue = (value) => {
   const isObject = typeof value === "object";
   const notNull = value !== null;
@@ -222,4 +222,51 @@ exports.pathMatchesSelector = function (path, selector) {
   }
 
   return extractedValues;
+};
+
+/**
+ * Transforms a document by calling a user-defined transform function
+ * If no transform function is defined, returns the original document
+ * @param {Object} document - The document to transform
+ * @return {Object} The transformed document
+ */
+exports.transformDocument = async function (document) {
+  const transformFunctionName = config.transformFunctionName;
+
+  if (!transformFunctionName) {
+    error("No transform function defined. Returning original document.");
+    return document;
+  }
+
+  try {
+    const projectId = config.transformFunctionProjectId;
+    const region = config.transformFunctionRegion;
+
+    debug(`Calling transform function: ${transformFunctionName}`);
+
+    const url = `https://${region}-${projectId}.cloudfunctions.net/${transformFunctionName}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify({document}),
+      headers: {"Content-Type": "application/json", Authorization: `Bearer ${config.transformFunctionSecret}`},
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error calling transform function: ${response.statusText}`);
+    }
+
+    const responseData = await response.json();
+
+    if (responseData) {
+      debug(`Transform function succeeded for document ${document.id || "unknown"}`);
+      return responseData;
+    }
+
+    debug(`Transform function failed for document ${document.id || "unknown"}. Using original document.`);
+    return document;
+  } catch (err) {
+    error(`Error calling transform function: ${err.message}`);
+    return document;
+  }
 };
