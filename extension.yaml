@@ -34,7 +34,7 @@ resources:
           - attribute: database
             value: ${DATABASE}
           - attribute: document
-            value: ${FIRESTORE_COLLECTION_PATHS}/{documentID}
+            value: "{path=**}/{documentID}"
             operator: match-path-pattern
 
   - name: backfill
@@ -285,27 +285,71 @@ params:
     default: "(default)"
     required: false
 
+  - param: FIRESTORE_COLLECTION_PATH
+    label: Firestore Collection Path
+    description: >-
+      Legacy single-collection configuration. Use this only if you are syncing one Firestore collection.
+      For new installs, prefer FIRESTORE_COLLECTION_PATHS.
+    example: path/to/firestore_collection
+    validationRegex: "^[^/]+(/[^/]+/[^/]+)*$"
+    validationErrorMessage: Firestore collection paths must be an odd number of segments separated by slashes, e.g. "path/to/firestore_collection".
+    default: ""
+    required: false
+
+  - param: FIRESTORE_COLLECTION_FIELDS
+    label: Firestore Collection Fields
+    description: >-
+      Legacy comma-separated list of fields to index from a single Firestore collection.
+      Leave blank to index all fields. For new installs, prefer FIRESTORE_COLLECTION_FIELDS_LIST.
+    example: field1,field2,field3
+    default: ""
+    required: false
+
+  - param: TYPESENSE_COLLECTION_NAME
+    label: Typesense Collection Name
+    description: >-
+      Legacy Typesense collection name for a single Firestore collection.
+      For new installs, prefer TYPESENSE_COLLECTION_NAMES.
+    default: ""
+    required: false
+
+  - param: FLATTEN_NESTED_DOCUMENTS
+    label: Flatten Nested Documents
+    description: >-
+      Legacy flatten setting for a single Firestore collection.
+      Set to "Yes" for Typesense versions 0.23.1 and earlier.
+      For new installs, prefer FLATTEN_NESTED_DOCUMENTS_LIST.
+    type: select
+    options:
+      - label: No
+        value: false
+      - label: Yes
+        value: true
+    required: false
+
   - param: FIRESTORE_COLLECTION_PATHS
     label: Firestore Collection Paths
     description: >-
       Comma-separated list of Firestore collection paths to index into Typesense.
       Supports both regular collections and subcollections with path parameters (e.g., "users/{userId}/books").
+      For existing single-collection installs, this parameter can be left blank.
     example: users,products,users/{userId}/books,stores/{storeId}/products
     validationRegex: "^[^,]+(?:,[^,]+)*$"
     validationErrorMessage: Collection paths must be comma-separated without spaces.
-    default: users,products
-    required: true
+    default: ""
+    required: false
 
   - param: TYPESENSE_COLLECTION_NAMES
     label: Typesense Collection Names
     description: >-
       Comma-separated list of Typesense collection names corresponding to the Firestore collection paths.
       The order must match the FIRESTORE_COLLECTION_PATHS parameter.
+      For existing single-collection installs, this parameter can be left blank.
     example: users,products,user_books,store_products
     validationRegex: "^[^,]+(?:,[^,]+)*$"
     validationErrorMessage: Collection names must be comma-separated without spaces.
-    default: users,products
-    required: true
+    default: ""
+    required: false
 
   - param: FIRESTORE_COLLECTION_FIELDS_LIST
     label: Firestore Collection Fields List

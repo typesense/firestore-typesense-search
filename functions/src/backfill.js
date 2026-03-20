@@ -6,6 +6,7 @@ const admin = require("firebase-admin");
 const config = require("./config.js");
 const createTypesenseClient = require("./createTypesenseClient.js");
 const utils = require("./utils.js");
+const {warnIfUsingLegacyCollectionConfig} = require("./deprecation.js");
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
@@ -115,6 +116,8 @@ async function backfillCollection(firestorePath, collectionConfig, typesense) {
 }
 
 module.exports = onDocumentWritten("typesense_sync/backfill", async (snapshot, context) => {
+  warnIfUsingLegacyCollectionConfig();
+
   if (!snapshot.data) {
     info("No snapshot data, returning");
     return;

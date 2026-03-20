@@ -2,6 +2,7 @@ const {debug} = require("firebase-functions/logger");
 const config = require("./config.js");
 const utils = require("./utils.js");
 const createTypesenseClient = require("./createTypesenseClient.js");
+const {warnIfUsingLegacyCollectionConfig} = require("./deprecation.js");
 const {onDocumentWritten} = require("firebase-functions/v2/firestore");
 
 /**
@@ -34,34 +35,36 @@ async function handleDocumentIndexing(snapshot, collectionConfig, contextParams)
   }
 }
 
-Object.entries(config.collections).forEach(([firestorePath, collectionConfig]) => {
-  const functionName = `indexOnWrite_${firestorePath.replace(/[^a-zA-Z0-9]/g, "_")}`;
-
-  exports[functionName] = onDocumentWritten(`${firestorePath}/{docId}`, async (snapshot, context) => {
-    console.log(`Processing document in collection: ${firestorePath} with ID: ${snapshot.data.after?.id || snapshot.data.before?.id}`);
-    debug(`Processing document in collection: ${firestorePath}`);
-
-    const collectionConfigWithParams = {
-      ...collectionConfig,
-      pathParams: snapshot.params,
-    };
-
-    return await handleDocumentIndexing(snapshot, collectionConfigWithParams, snapshot.params);
-  });
-});
-
-// Legacy single collection support (for backward compatibility)
-if (config.firestoreCollectionPath && config.typesenseCollectionName) {
-  exports.indexOnWrite = onDocumentWritten(`${config.firestoreCollectionPath}/{docId}`, async (snapshot, context) => {
-    debug(`Processing document in legacy collection: ${config.firestoreCollectionPath}`);
-
-    const legacyCollectionConfig = {
-      firestorePath: config.firestoreCollectionPath,
-      typesenseCollection: config.typesenseCollectionName,
-      fields: config.firestoreCollectionFields,
-      flattenNested: config.shouldFlattenNestedDocuments,
-    };
-
-    return await handleDocumentIndexing(snapshot, legacyCollectionConfig, snapshot.params);
-  });
+/**
+ * Find the collection config that matches a Firestore document path.
+ * @param {string} documentPath - Firestore document path.
+ * @return {[string, Object]|undefined} Matching collection entry, if any.
+ */
+function findCollectionConfigForDocumentPath(documentPath) {
+  return Object.entries(config.collections).find(([firestorePath]) => utils.pathMatchesSelector(documentPath, firestorePath) !== null);
 }
+
+exports.indexOnWrite = onDocumentWritten("{path=**}/{docId}", async (snapshot) => {
+  warnIfUsingLegacyCollectionConfig();
+
+  const documentPath = snapshot.data.after?.ref.path || snapshot.data.before?.ref.path;
+  const matchedCollection = documentPath ? findCollectionConfigForDocumentPath(documentPath) : null;
+
+  if (!matchedCollection) {
+    debug(`Skipping write for unconfigured document path: ${documentPath || "unknown"}`);
+    return;
+  }
+
+  const [firestorePath, collectionConfig] = matchedCollection;
+  const pathParams = utils.pathMatchesSelector(documentPath, firestorePath) || {};
+
+  console.log(`Processing document in collection: ${firestorePath} with ID: ${snapshot.data.after?.id || snapshot.data.before?.id}`);
+  debug(`Processing document in collection: ${firestorePath}`);
+
+  const collectionConfigWithParams = {
+    ...collectionConfig,
+    pathParams,
+  };
+
+  return await handleDocumentIndexing(snapshot, collectionConfigWithParams, pathParams);
+});
