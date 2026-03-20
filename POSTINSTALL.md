@@ -1,8 +1,12 @@
 ### Post-installation Notes
 
-Now that you've installed the extension, changes from `${param:FIRESTORE_COLLECTION_PATH}`
-in your Firestore Database will be synced to the Typesense Collection `${param:TYPESENSE_COLLECTION_NAME}`
-on `${param:TYPESENSE_HOSTS}`.
+Now that you've installed the extension, changes from your configured Firestore collection(s)
+will be synced to the configured Typesense collection(s) on `${param:TYPESENSE_HOSTS}`.
+
+If you installed the legacy single-collection params (`${param:FIRESTORE_COLLECTION_PATH}` and
+`${param:TYPESENSE_COLLECTION_NAME}`), the extension will still work, but it will log a deprecation
+warning. Plan to migrate to `FIRESTORE_COLLECTION_PATHS` and `TYPESENSE_COLLECTION_NAMES` in a future
+release.
 
 ### Pre-requisites
 
@@ -25,7 +29,7 @@ This will trigger the backfill background function, which will read data from yo
 
 ### See the Extension in Action
 
-Try adding or updating a Firestore document in `${param:FIRESTORE_COLLECTION_PATH}` through the Firestore UI.
+Try adding or updating a Firestore document in your configured Firestore collection through the Firestore UI.
 You should see the change reflected in your Typesense collection.
 
 ### Monitoring

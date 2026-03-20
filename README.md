@@ -56,6 +56,15 @@ Learn more about installing extensions in the Firebase Extensions documentation:
 > [!TIP]
 > You can install this extension multiple times in your Firebase project by clicking on the installation link above multiple times, and use a different Firestore collection path in each installation instance. [Here](https://github.com/typesense/firestore-typesense-search/issues/9#issuecomment-885940705) is a screenshot of how this looks.
 
+> [!NOTE]
+> This release also supports the legacy single-collection params (`FIRESTORE_COLLECTION_PATH`,
+> `TYPESENSE_COLLECTION_NAME`, `FIRESTORE_COLLECTION_FIELDS`, and `FLATTEN_NESTED_DOCUMENTS`).
+> They are deprecated and will log a warning when used. If both config shapes are fully set, the
+> extension uses the multi-collection params and warns once. If only part of either shape is set,
+> the install fails with a clear error. For new installs, prefer the multi-collection params
+> (`FIRESTORE_COLLECTION_PATHS`, `TYPESENSE_COLLECTION_NAMES`, `FIRESTORE_COLLECTION_FIELDS_LIST`,
+> and `FLATTEN_NESTED_DOCUMENTS_LIST`).
+
 
 #### 🎛️ Configuration Parameters
 
