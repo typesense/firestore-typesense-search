@@ -68,6 +68,46 @@ describe("Multi-Collection Configuration", () => {
       });
     });
 
+    it("should prefer new multi-collection parameters when both config styles are present", () => {
+      process.env.FIRESTORE_COLLECTION_PATH = "books";
+      process.env.TYPESENSE_COLLECTION_NAME = "books";
+      process.env.FIRESTORE_COLLECTION_FIELDS = "title,author";
+      process.env.FLATTEN_NESTED_DOCUMENTS = "true";
+      process.env.FIRESTORE_COLLECTION_PATHS = "users,products";
+      process.env.TYPESENSE_COLLECTION_NAMES = "users,products";
+      process.env.FIRESTORE_COLLECTION_FIELDS_LIST = "name,email|title,description";
+      process.env.FLATTEN_NESTED_DOCUMENTS_LIST = "false,true";
+
+      const collectionMap = config.createCollectionConfigMap();
+
+      expect(collectionMap).toEqual({
+        users: {
+          firestorePath: "users",
+          typesenseCollection: "users",
+          fields: ["name", "email"],
+          flattenNested: false,
+        },
+        products: {
+          firestorePath: "products",
+          typesenseCollection: "products",
+          fields: ["title", "description"],
+          flattenNested: true,
+        },
+      });
+    });
+
+    it("should throw error when legacy config is only partially set", () => {
+      process.env.FIRESTORE_COLLECTION_PATH = "books";
+
+      expect(() => config.createCollectionConfigMap()).toThrow("Incomplete legacy collection config. Set both FIRESTORE_COLLECTION_PATH and TYPESENSE_COLLECTION_NAME");
+    });
+
+    it("should throw error when multi-collection config is only partially set", () => {
+      process.env.FIRESTORE_COLLECTION_PATHS = "users,products";
+
+      expect(() => config.createCollectionConfigMap()).toThrow("Incomplete multi-collection config. Set both FIRESTORE_COLLECTION_PATHS and TYPESENSE_COLLECTION_NAMES");
+    });
+
     it("should create collection map from legacy single collection parameters", () => {
       process.env.FIRESTORE_COLLECTION_PATH = "books";
       process.env.TYPESENSE_COLLECTION_NAME = "books";
@@ -113,6 +153,10 @@ describe("Multi-Collection Configuration", () => {
       process.env.TYPESENSE_COLLECTION_NAMES = "users";
 
       expect(() => config.createCollectionConfigMap()).toThrow("Mismatch in collection counts: 2 Firestore paths vs 1 Typesense names");
+    });
+
+    it("should throw error when no collection config is provided", () => {
+      expect(() => config.createCollectionConfigMap()).toThrow("No Firestore collection config found");
     });
   });
 
