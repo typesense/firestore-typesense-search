@@ -6,6 +6,7 @@ const admin = require("firebase-admin");
 const config = require("./config.js");
 const createTypesenseClient = require("./createTypesenseClient.js");
 const utils = require("./utils.js");
+const {warnIfUsingLegacyCollectionConfig} = require("./deprecation.js");
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
@@ -17,40 +18,39 @@ const validateBackfillRun = (data) => {
     return false;
   }
 
-  // Check if there's a collection specific sync setup
   const collectionsToSync = data.after.get("firestore_collections");
-  if (Array.isArray(collectionsToSync) && !collectionsToSync.includes(config.firestoreCollectionPath)) {
-    error(
-      "Skipping backfill. The `firestore_collections` key in " +
-        `${config.typesenseBackfillTriggerDocumentInFirestore} did not contain collection ${config.firestoreCollectionPath}. ${collectionsToSync}`,
-    );
+
+  // If firestore_collections is not provided, we'll backfill all collections
+  if (collectionsToSync !== undefined && !Array.isArray(collectionsToSync)) {
+    error("Skipping backfill. The `firestore_collections` key in " + `${config.typesenseBackfillTriggerDocumentInFirestore} is not an array.`);
     return false;
+  }
+
+  if (Array.isArray(collectionsToSync) && collectionsToSync.length > 0) {
+    const configuredCollections = Object.keys(config.collections);
+    const hasMatchingCollection = configuredCollections.some((collection) => collectionsToSync.includes(collection));
+
+    if (!hasMatchingCollection) {
+      error(
+        "Skipping backfill. The `firestore_collections` key in " +
+          `${config.typesenseBackfillTriggerDocumentInFirestore} did not contain any of the configured collections: ${configuredCollections}. Requested: ${collectionsToSync}`,
+      );
+      return false;
+    }
   }
 
   return true;
 };
 
-module.exports = onDocumentWritten("typesense_sync/backfill", async (snapshot, context) => {
-  info(
-    "Backfilling " +
-      `${config.firestoreCollectionFields.join(",")} fields in Firestore documents ` +
-      `from ${config.firestoreCollectionPath} ` +
-      `into Typesense Collection ${config.typesenseCollectionName} ` +
-      `on ${config.typesenseHosts.join(",")}`,
-  );
-
-  if (!snapshot.data) {
-    return;
-  }
-
-  if (!validateBackfillRun(snapshot.data)) {
-    return false;
-  }
-
-  const typesense = createTypesenseClient();
-
-  const pathSegments = config.firestoreCollectionPath.split("/").filter(Boolean);
-  const pathPlaceholders = utils.parseFirestorePath(config.firestoreCollectionPath);
+/**
+ * Backfill a single collection
+ * @param {string} firestorePath - Firestore collection path
+ * @param {Object} collectionConfig - Collection-specific configuration
+ * @param {Typesense.Client} typesense - Typesense client
+ */
+async function backfillCollection(firestorePath, collectionConfig, typesense) {
+  const pathSegments = firestorePath.split("/").filter(Boolean);
+  const pathPlaceholders = utils.parseFirestorePath(firestorePath);
   const isGroupQuery = pathSegments.length > 1 && Object.values(pathPlaceholders).length;
 
   let querySnapshot;
@@ -58,25 +58,27 @@ module.exports = onDocumentWritten("typesense_sync/backfill", async (snapshot, c
     const collectionGroup = pathSegments.pop();
     querySnapshot = admin.firestore().collectionGroup(collectionGroup);
   } else {
-    querySnapshot = admin.firestore().collection(config.firestoreCollectionPath);
+    querySnapshot = admin.firestore().collection(firestorePath);
   }
 
   let lastDoc = null;
+  let totalImported = 0;
 
   do {
-    const queryFotThisBatch = lastDoc ? querySnapshot.startAfter(lastDoc) : querySnapshot;
-    const thisBatch = await queryFotThisBatch.limit(config.typesenseBackfillBatchSize).get();
+    const queryForThisBatch = lastDoc ? querySnapshot.startAfter(lastDoc) : querySnapshot;
+    const thisBatch = await queryForThisBatch.limit(config.typesenseBackfillBatchSize).get();
     if (thisBatch.empty) {
       break;
     }
+
     const currentDocumentsBatch = (
       await Promise.all(
         thisBatch.docs.map(async (doc) => {
           const docPath = doc.ref.path;
-          const pathParams = utils.pathMatchesSelector(docPath, config.firestoreCollectionPath);
+          const pathParams = utils.pathMatchesSelector(docPath, firestorePath);
 
           if (!isGroupQuery || (isGroupQuery && pathParams !== null)) {
-            const typesenseDocument = await utils.typesenseDocumentFromSnapshot(doc, pathParams);
+            const typesenseDocument = await utils.createTypesenseDocument(doc, collectionConfig, pathParams);
             if (config.shouldLogTypesenseInserts) {
               debug(`Backfilling document ${JSON.stringify(typesenseDocument)}`);
             }
@@ -89,13 +91,16 @@ module.exports = onDocumentWritten("typesense_sync/backfill", async (snapshot, c
     ).filter((doc) => doc !== null);
 
     lastDoc = thisBatch.docs.at(-1) ?? null;
-    try {
-      await typesense.collections(encodeURIComponent(config.typesenseCollectionName)).documents().import(currentDocumentsBatch, {action: "upsert", return_id: true});
-      info(`Imported ${currentDocumentsBatch.length} documents into Typesense`);
-    } catch (err) {
-      error(`Import error in a batch of documents from ${currentDocumentsBatch[0].id} to ${lastDoc.id}`, err);
-      if ("importResults" in err) {
-        logImportErrors(err.importResults);
+
+    if (currentDocumentsBatch.length > 0) {
+      try {
+        await typesense.collections(encodeURIComponent(collectionConfig.typesenseCollection)).documents().import(currentDocumentsBatch, {action: "upsert", return_id: true});
+        totalImported += currentDocumentsBatch.length;
+      } catch (err) {
+        error(`Import error in a batch of documents from ${currentDocumentsBatch[0].id} to ${lastDoc.id}`, err);
+        if ("importResults" in err) {
+          logImportErrors(err.importResults);
+        }
       }
     }
 
@@ -107,7 +112,48 @@ module.exports = onDocumentWritten("typesense_sync/backfill", async (snapshot, c
     await new Promise((resolve) => process.nextTick(resolve));
   } while (lastDoc);
 
-  info("Done backfilling to Typesense from Firestore");
+  return totalImported;
+}
+
+module.exports = onDocumentWritten("typesense_sync/backfill", async (snapshot, context) => {
+  warnIfUsingLegacyCollectionConfig();
+
+  if (!snapshot.data) {
+    info("No snapshot data, returning");
+    return;
+  }
+
+  if (!validateBackfillRun(snapshot.data)) {
+    info("Backfill validation failed, returning false");
+    return false;
+  }
+
+  const typesense = createTypesenseClient();
+  const collections = config.collections;
+
+  const collectionsToSync = snapshot.data.after.get("firestore_collections");
+  let collectionsToProcess;
+
+  if (Array.isArray(collectionsToSync)) {
+    collectionsToProcess = Object.entries(collections).filter(([path, config]) => collectionsToSync.includes(path));
+    info(`Filtered collections to process: ${collectionsToProcess.map(([path]) => path).join(", ")}`);
+  } else {
+    collectionsToProcess = Object.entries(collections);
+    info(`Processing all collections: ${collectionsToProcess.map(([path]) => path).join(", ")}`);
+  }
+
+  info(`Starting backfill for ${collectionsToProcess.length} collections: ${collectionsToProcess.map(([path]) => path).join(", ")}`);
+
+  for (const [firestorePath, collectionConfig] of collectionsToProcess) {
+    info(`Processing collection: ${firestorePath}`);
+    try {
+      await backfillCollection(firestorePath, collectionConfig, typesense);
+    } catch (err) {
+      error(`Error backfilling collection ${firestorePath}:`, err);
+    }
+  }
+
+  info("Completed backfill for all collections");
 });
 
 /**
