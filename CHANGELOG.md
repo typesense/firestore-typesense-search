@@ -1,3 +1,11 @@
+## Version 3.0.0
+
+- Add support for configuring multiple Firestore-to-Typesense collection mappings in a single extension install via `FIRESTORE_COLLECTION_PATHS` and `TYPESENSE_COLLECTION_NAMES`
+- Add support for subcollection path patterns in multi-collection config, such as `users/{userId}/books`
+- Add per-collection field filtering and flattening config via `FIRESTORE_COLLECTION_FIELDS_LIST` and `FLATTEN_NESTED_DOCUMENTS_LIST`
+- Keep legacy single-collection params working for existing installs, but mark them as deprecated and log a warning when they are used
+- Prefer the new multi-collection config when both legacy and new params are set, and fail installation on partial or inconsistent collection config
+
 ## Version 2.1.0
 
 - Allow region configuration to be mutable
