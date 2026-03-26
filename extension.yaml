@@ -366,14 +366,10 @@ params:
     description: >-
       Comma-separated list of boolean values indicating whether to flatten nested documents for each collection.
       Each value corresponds to a collection in FIRESTORE_COLLECTION_PATHS.
-    type: select
-    options:
-      - label: No
-        value: false
-      - label: Yes
-        value: true
+    validationRegex: "^$|^(true|false)(,(true|false))*$"
+    validationErrorMessage: Flatten Nested Documents List must be empty or a comma-separated list of true/false values.
     example: false,true,false,true
-    default: false,true
+    default: ""
     required: false
 
   - param: TYPESENSE_HOSTS
