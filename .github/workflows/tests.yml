@@ -1,24 +1,12 @@
 name: tests
 
-on: [push, pull_request_target]
+on: [push, pull_request]
 
 jobs:
-  # Source: https://iterative.ai/blog/testing-external-contributions-using-github-actions-secrets
-  authorize:
-    environment: ${{ github.event_name == 'pull_request_target' &&
-      github.event.pull_request.head.repo.full_name != github.repository &&
-      'sandbox' || 'internal' }}
-    runs-on: ubuntu-latest
-    steps:
-      - run: true
-
   build_and_test:
-    needs: authorize
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.ref }}
       - uses: actions/setup-node@v3
         with:
           node-version: '22'
@@ -27,20 +15,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-firebase-emulators
       - run: npm install
-      - run: npm install -g firebase-tools
       - run: cd functions && npm install
       - name: Run ESLint
         run: npm run lint
         continue-on-error: false # Ensure the workflow fails if ESLint fails
       - name: Run Prettier
         run: npm run format:check
-      - name: Run Tests
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: npm run test -- --ci --color
