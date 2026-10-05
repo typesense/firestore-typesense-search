@@ -21,6 +21,7 @@
     {
       "source": ".",
       "codebase": "functions",
+      "runtime": "nodejs22",
       "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", ".secret.local", "*.tsbuildinfo", "test", "scripts", "emulator_data", "typesense-server-data"],
       "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
     }
