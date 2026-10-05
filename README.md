@@ -140,11 +140,32 @@ To install an extension, your project must be on the [Blaze (pay as you go) plan
 
 ## Development Workflow
 
+The functions are written in strict TypeScript (`functions/src`, compiled to `functions/lib`). The repo is a pnpm
+workspace; dependencies younger than 7 days are refused (`minimumReleaseAge` in `pnpm-workspace.yaml`).
+
+#### Setup
+
+With Nix, `nix develop` provides Node 22, pnpm and Java (for the Firestore emulator). Otherwise install those yourself.
+Docker is needed for the local Typesense server.
+
+```shell
+pnpm install
+```
+
+#### Checks
+
+```shell
+pnpm format        # oxfmt (pnpm format:check in CI)
+pnpm typecheck     # tsc, strict
+pnpm lint          # oxlint, type-aware
+pnpm lint:guard    # rejects `any`, @ts-ignore/@ts-expect-error and lint-disable comments
+```
+
 #### Run Emulator
 
 ```shell
-npm run emulator
-npm run typesenseServer
+pnpm emulator
+pnpm typesenseServer
 ```
 
 - Emulator UI will be accessible at http://localhost:4000.
@@ -152,10 +173,12 @@ npm run typesenseServer
 
 Add records in the Firestore UI and they should be created in Typesense.
 
-#### Run Integration Tests
+#### Run Tests
 
 ```shell
-npm run test
+pnpm test:unit         # no emulator needed
+pnpm test:integration  # builds, starts Typesense via docker compose if needed, runs each spec against the emulator
+pnpm test              # both
 ```
 
 #### Generate README
