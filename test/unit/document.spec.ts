@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {GeoPoint, getFirestore, Timestamp} from "firebase-admin/firestore";
 import {initializeApp} from "firebase-admin/app";
-import {createTypesenseDocument} from "../../functions/src/document.js";
+import {createTypesenseDocument} from "../../src/document.js";
 
 describe("Utils", () => {
   describe("createTypesenseDocument", () => {

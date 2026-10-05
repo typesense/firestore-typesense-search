@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it} from "vitest";
-import {assertNoRemovedParams, createCollectionConfigMap, getTypesenseConnectionConfig, parseBooleanList, parseCommaSeparated, parsePipeSeparated} from "../../functions/src/config.js";
+import {assertNoRemovedParams, createCollectionConfigMap, getTypesenseConnectionConfig, parseBooleanList, parseCommaSeparated, parsePipeSeparated} from "../../src/config.js";
 
 const COLLECTION_KEYS = [
   "FIRESTORE_COLLECTION_PATHS",

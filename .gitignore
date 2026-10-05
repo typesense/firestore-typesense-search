@@ -56,8 +56,7 @@ node_modules/
 # Optional REPL history
 .node_repl_history
 
-# Output of 'npm pack' and 'pnpm pack:kit'
-/dist/
+# Output of 'npm pack'
 *.tgz
 
 # Yarn Integrity file
@@ -67,5 +66,7 @@ node_modules/
 .env
 /typesense-server-data/
 
-functions/.secret.local
-functions/.env.local
+/lib/
+/npm-shrinkwrap.json
+.secret.local
+.env.local

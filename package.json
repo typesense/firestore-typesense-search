@@ -1,15 +1,38 @@
 {
-  "name": "firestore-typesense-search-workspace",
-  "private": true,
-  "description": "Workspace for the Firestore → Typesense function kit",
-  "type": "module",
+  "name": "typesense-firestore-search",
+  "version": "4.0.0-rc.0",
+  "description": "Cloud Functions for Firebase (2nd gen) that index Firestore documents into Typesense",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/typesense/firestore-typesense-search.git"
+  },
+  "files": [
+    "lib",
+    "README.md",
+    "CHANGELOG.md",
+    "UPGRADING.md",
+    "npm-shrinkwrap.json"
+  ],
+  "type": "commonjs",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "next"
+  },
   "scripts": {
-    "build": "pnpm --filter ./functions build",
-    "typecheck": "tsc -p tsconfig.json --noEmit && pnpm --filter ./functions typecheck",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "oxlint --type-aware --deny-warnings",
     "lint:fix": "oxlint --type-aware --fix",
     "lint:guard": "node scripts/forbid-escape-hatches.ts",
-    "pack:kit": "node scripts/pack-kit.ts",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "test": "pnpm build && vitest run",
@@ -17,19 +40,27 @@
     "test:integration": "pnpm build && vitest run --project integration",
     "emulator": "pnpm build && firebase emulators:start --import=emulator_data",
     "export": "firebase emulators:export emulator_data",
-    "typesenseServer": "docker compose up"
+    "typesenseServer": "docker compose up",
+    "prepack": "rm -rf lib && pnpm build && tmp=$(mktemp -d) && cp package.json \"$tmp\" && (cd \"$tmp\" && npm pkg delete devDependencies && npm install --package-lock-only --ignore-scripts --no-audit --no-fund) && mv \"$tmp/package-lock.json\" npm-shrinkwrap.json && rm -rf \"$tmp\"",
+    "postpack": "rm -f npm-shrinkwrap.json"
+  },
+  "dependencies": {
+    "@babel/runtime": "7.29.7",
+    "firebase-admin": "14.5.0",
+    "firebase-functions": "7.4.0",
+    "typesense": "3.0.6"
   },
   "devDependencies": {
-    "@babel/runtime": "^7.29.7",
     "@types/node": "^22.20.4",
-    "firebase-admin": "^14.5.0",
     "firebase-tools": "^15.31.0",
     "oxfmt": "^0.70.0",
     "oxlint": "^1.85.0",
     "oxlint-tsgolint": "^7.0.2002",
     "typescript": "^7.0.2",
-    "typesense": "^3.0.6",
     "vitest": "^5.0.1"
+  },
+  "peerDependencies": {
+    "firebase-functions": "^7.4.0"
   },
   "engines": {
     "node": "22"

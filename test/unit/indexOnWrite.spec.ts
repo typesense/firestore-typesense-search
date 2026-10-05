@@ -1,5 +1,5 @@
 import {afterAll, beforeAll, beforeEach, describe, expect, it} from "vitest";
-import {handleDocumentWrite, type DocumentChangeLike} from "../../functions/src/indexOnWrite.js";
+import {handleDocumentWrite, type DocumentChangeLike} from "../../src/indexOnWrite.js";
 import {StubTypesense} from "./support/stubTypesense.js";
 
 function snapshot(id: string, exists: boolean, data: Record<string, unknown> = {}): DocumentChangeLike["after"] {

@@ -6,15 +6,15 @@ import {fileURLToPath} from "node:url";
 import {deleteApp, initializeApp, type App} from "firebase-admin/app";
 import {getFirestore, type DocumentData, type Firestore} from "firebase-admin/firestore";
 import type {Client} from "typesense";
-import {BACKFILL_TRIGGER_DOCUMENT, createCollectionConfigMap, getTypesenseConnectionConfig, type CollectionConfig, type CollectionConfigMap} from "../../../functions/src/config.js";
-import {createTypesenseClient} from "../../../functions/src/typesenseClient.js";
+import {BACKFILL_TRIGGER_DOCUMENT, createCollectionConfigMap, getTypesenseConnectionConfig, type CollectionConfig, type CollectionConfigMap} from "../../../src/config.js";
+import {createTypesenseClient} from "../../../src/typesenseClient.js";
 
 export type TypesenseRecord = Readonly<Record<string, unknown>>;
 
 const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
-const FUNCTIONS_ENV_PATH = path.join(PROJECT_ROOT, "functions/.env");
-const FUNCTIONS_SECRETS_PATH = path.join(PROJECT_ROOT, "functions/.secret.local");
-const FUNCTIONS_EMULATOR_ENV_PATH = path.join(PROJECT_ROOT, "functions/.env.local");
+const FUNCTIONS_ENV_PATH = path.join(PROJECT_ROOT, ".env");
+const FUNCTIONS_SECRETS_PATH = path.join(PROJECT_ROOT, ".secret.local");
+const FUNCTIONS_EMULATOR_ENV_PATH = path.join(PROJECT_ROOT, ".env.local");
 const SECRET_KEYS = new Set(["TYPESENSE_API_KEY"]);
 const CONFIG_KEYS = [
   "LOCATION",

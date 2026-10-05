@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import * as utils from "../../functions/src/paths.js";
+import * as utils from "../../src/paths.js";
 
 describe("paths", () => {
   describe("Parsing static firestore path", () => {
