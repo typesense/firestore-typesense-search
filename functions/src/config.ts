@@ -10,8 +10,6 @@ export interface CollectionConfig {
 
 export type CollectionConfigMap = Readonly<Record<string, CollectionConfig>>;
 
-export type CollectionConfigMode = "none" | "legacy" | "multi" | "both";
-
 export const BACKFILL_TRIGGER_DOCUMENT = "typesense_sync/backfill";
 export const BACKFILL_BATCH_SIZE = 1000;
 
@@ -33,92 +31,53 @@ export function parseBooleanList(value: string | null | undefined): boolean[] {
   return value.split(",").map((item) => item.trim() === "true");
 }
 
-function hasValue(value: string): boolean {
-  return value.trim() !== "";
-}
+const REMOVED_PARAMS = [
+  ["FIRESTORE_COLLECTION_PATH", "FIRESTORE_COLLECTION_PATHS"],
+  ["TYPESENSE_COLLECTION_NAME", "TYPESENSE_COLLECTION_NAMES"],
+  ["FIRESTORE_COLLECTION_FIELDS", "FIRESTORE_COLLECTION_FIELDS_LIST"],
+  ["FLATTEN_NESTED_DOCUMENTS", "FLATTEN_NESTED_DOCUMENTS_LIST"],
+] as const;
 
-export function hasLegacyCollectionConfig(): boolean {
-  return hasValue(params.firestoreCollectionPath.value()) && hasValue(params.typesenseCollectionName.value());
-}
-
-export function hasMultiCollectionConfig(): boolean {
-  return hasValue(params.firestoreCollectionPaths.value()) && hasValue(params.typesenseCollectionNames.value());
-}
-
-export function hasPartialLegacyCollectionConfig(): boolean {
-  return hasValue(params.firestoreCollectionPath.value()) !== hasValue(params.typesenseCollectionName.value());
-}
-
-export function hasPartialMultiCollectionConfig(): boolean {
-  return hasValue(params.firestoreCollectionPaths.value()) !== hasValue(params.typesenseCollectionNames.value());
-}
-
-export function getCollectionConfigMode(): CollectionConfigMode {
-  if (hasPartialLegacyCollectionConfig()) {
-    throw new Error(
-      "Incomplete legacy collection config. Set both FIRESTORE_COLLECTION_PATH and TYPESENSE_COLLECTION_NAME, " +
-        "or remove the legacy params and use FIRESTORE_COLLECTION_PATHS and TYPESENSE_COLLECTION_NAMES instead.",
-    );
-  }
-
-  if (hasPartialMultiCollectionConfig()) {
-    throw new Error(
-      "Incomplete multi-collection config. Set both FIRESTORE_COLLECTION_PATHS and TYPESENSE_COLLECTION_NAMES, " +
-        "or remove the new params and use the legacy FIRESTORE_COLLECTION_PATH and TYPESENSE_COLLECTION_NAME instead.",
-    );
-  }
-
-  const legacyConfigured = hasLegacyCollectionConfig();
-  const multiConfigured = hasMultiCollectionConfig();
-
-  if (legacyConfigured && multiConfigured) return "both";
-  if (multiConfigured) return "multi";
-  if (legacyConfigured) return "legacy";
-  return "none";
+function removedParamReplacements(): string[] {
+  return REMOVED_PARAMS.flatMap(([removed, replacement]) => {
+    const value = process.env[removed]?.trim();
+    return value ? [`${replacement}=${value}`] : [];
+  });
 }
 
 export function createCollectionConfigMap(): CollectionConfigMap {
-  const mode = getCollectionConfigMode();
+  const firestorePaths = parseCommaSeparated(params.firestoreCollectionPaths.value());
+  const typesenseNames = parseCommaSeparated(params.typesenseCollectionNames.value());
 
-  if (mode === "both" || mode === "multi") {
-    const firestorePaths = parseCommaSeparated(params.firestoreCollectionPaths.value());
-    const typesenseNames = parseCommaSeparated(params.typesenseCollectionNames.value());
-    const fieldsList = parsePipeSeparated(params.firestoreCollectionFieldsList.value());
-    const flattenList = parseBooleanList(params.flattenNestedDocumentsList.value());
-
-    if (firestorePaths.length !== typesenseNames.length) {
-      throw new Error(`Mismatch in collection counts: ${firestorePaths.length} Firestore paths vs ${typesenseNames.length} Typesense names`);
+  if (firestorePaths.length === 0 && typesenseNames.length === 0) {
+    const replacements = removedParamReplacements();
+    if (replacements.length > 0) {
+      throw new Error(
+        "The single-collection params FIRESTORE_COLLECTION_PATH, TYPESENSE_COLLECTION_NAME, FIRESTORE_COLLECTION_FIELDS and " +
+          "FLATTEN_NESTED_DOCUMENTS were removed in 4.0.0. Replace them in your configuration with:\n" +
+          replacements.join("\n"),
+      );
     }
-
-    const collectionMap: Record<string, CollectionConfig> = {};
-    firestorePaths.forEach((firestorePath, index) => {
-      collectionMap[firestorePath] = {
-        firestorePath,
-        typesenseCollection: typesenseNames[index] ?? "",
-        fields: fieldsList[index] ?? [],
-        flattenNested: flattenList[index] ?? false,
-      };
-    });
-    return collectionMap;
+    throw new Error("No Firestore collection config found. Set FIRESTORE_COLLECTION_PATHS and TYPESENSE_COLLECTION_NAMES.");
   }
 
-  if (mode === "legacy") {
-    const firestorePath = params.firestoreCollectionPath.value();
-    return {
-      [firestorePath]: {
-        firestorePath,
-        typesenseCollection: params.typesenseCollectionName.value(),
-        fields: parseCommaSeparated(params.firestoreCollectionFields.value()),
-        flattenNested: params.flattenNestedDocuments.value() === "true",
-      },
+  if (firestorePaths.length !== typesenseNames.length) {
+    throw new Error(`Mismatch in collection counts: ${firestorePaths.length} Firestore paths vs ${typesenseNames.length} Typesense names`);
+  }
+
+  const fieldsList = parsePipeSeparated(params.firestoreCollectionFieldsList.value());
+  const flattenList = parseBooleanList(params.flattenNestedDocumentsList.value());
+
+  const collectionMap: Record<string, CollectionConfig> = {};
+  firestorePaths.forEach((firestorePath, index) => {
+    collectionMap[firestorePath] = {
+      firestorePath,
+      typesenseCollection: typesenseNames[index] ?? "",
+      fields: fieldsList[index] ?? [],
+      flattenNested: flattenList[index] ?? false,
     };
-  }
-
-  throw new Error(
-    "No Firestore collection config found. Set either the legacy single-collection params " +
-      "(FIRESTORE_COLLECTION_PATH and TYPESENSE_COLLECTION_NAME) or the new multi-collection params " +
-      "(FIRESTORE_COLLECTION_PATHS and TYPESENSE_COLLECTION_NAMES).",
-  );
+  });
+  return collectionMap;
 }
 
 export function shouldLogTypesenseInserts(): boolean {

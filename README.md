@@ -53,18 +53,44 @@ Learn more about installing extensions in the Firebase Extensions documentation:
 
 #### Syncing Multiple Firestore collections
 
-> [!TIP]
-> You can install this extension multiple times in your Firebase project by clicking on the installation link above multiple times, and use a different Firestore collection path in each installation instance. [Here](https://github.com/typesense/firestore-typesense-search/issues/9#issuecomment-885940705) is a screenshot of how this looks.
+One install can sync any number of Firestore collections, each into its own Typesense collection. List them in
+`FIRESTORE_COLLECTION_PATHS` and `TYPESENSE_COLLECTION_NAMES` (same order), with optional per-collection settings in
+`FIRESTORE_COLLECTION_FIELDS_LIST` and `FLATTEN_NESTED_DOCUMENTS_LIST`. Subcollection paths with placeholders such as
+`users/{userId}/books` are supported; the placeholder values are added to each Typesense document.
 
-> [!NOTE]
-> This release also supports the legacy single-collection params (`FIRESTORE_COLLECTION_PATH`,
-> `TYPESENSE_COLLECTION_NAME`, `FIRESTORE_COLLECTION_FIELDS`, and `FLATTEN_NESTED_DOCUMENTS`).
-> They are deprecated and will log a warning when used. If both config shapes are fully set, the
-> extension uses the multi-collection params and warns once. If only part of either shape is set,
-> the install fails with a clear error. For new installs, prefer the multi-collection params
-> (`FIRESTORE_COLLECTION_PATHS`, `TYPESENSE_COLLECTION_NAMES`, `FIRESTORE_COLLECTION_FIELDS_LIST`,
-> and `FLATTEN_NESTED_DOCUMENTS_LIST`).
+#### Migrating from 3.x single-collection params
 
+Version 4.0.0 removes the single-collection params `FIRESTORE_COLLECTION_PATH`, `TYPESENSE_COLLECTION_NAME`,
+`FIRESTORE_COLLECTION_FIELDS` and `FLATTEN_NESTED_DOCUMENTS`. If you still use them, move each value to its list
+counterpart. A single collection is a list of one, so the values do not change:
+
+| Removed param                 | Replace with                       |
+|-------------------------------|------------------------------------|
+| `FIRESTORE_COLLECTION_PATH`   | `FIRESTORE_COLLECTION_PATHS`       |
+| `TYPESENSE_COLLECTION_NAME`   | `TYPESENSE_COLLECTION_NAMES`       |
+| `FIRESTORE_COLLECTION_FIELDS` | `FIRESTORE_COLLECTION_FIELDS_LIST` |
+| `FLATTEN_NESTED_DOCUMENTS`    | `FLATTEN_NESTED_DOCUMENTS_LIST`    |
+
+For example, this 3.x configuration:
+
+```dotenv
+FIRESTORE_COLLECTION_PATH=books
+TYPESENSE_COLLECTION_NAME=books
+FIRESTORE_COLLECTION_FIELDS=title,author
+FLATTEN_NESTED_DOCUMENTS=false
+```
+
+becomes:
+
+```dotenv
+FIRESTORE_COLLECTION_PATHS=books
+TYPESENSE_COLLECTION_NAMES=books
+FIRESTORE_COLLECTION_FIELDS_LIST=title,author
+FLATTEN_NESTED_DOCUMENTS_LIST=false
+```
+
+If the old params are still set and the new ones are empty, the functions fail on every write with an error that
+prints the replacement lines for your values.
 
 #### 🎛️ Configuration Parameters
 
@@ -74,12 +100,12 @@ When you install this extension, you'll be able to configure the following param
 |-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Cloud Functions location            | Where do you want to deploy the functions created for this extension? You usually want a location close to your database. For help selecting a location, refer to the [location selection guide](https://firebase.google.com/docs/functions/locations).                                        |
 | Firestore Database region           | Where the Firestore Database that holds the Firestore collection you want to sync into Typesense is located. Refer to the [Cloud Firestore locations guide](https://firebase.google.com/docs/firestore/locations).                                                                             |
-| Firestore Collection Path           | The Firestore collection that needs to be indexed into Typesense.                                                                                                                                                                                                                              |
-| Firestore Collection Fields         | A comma separated list of fields that need to be indexed from each Firestore document. Leave blank to index all fields.                                                                                                                                                                        |
+| Firestore Collection Paths          | Comma-separated list of Firestore collection paths to index, e.g. `users,users/{userId}/books`. |
+| Typesense Collection Names          | Comma-separated list of Typesense collection names, in the same order as the Firestore collection paths (you need to create these collections in Typesense yourself). |
+| Firestore Collection Fields List    | Pipe-separated list of comma-separated field lists, one per collection, e.g. `name,email|title`. Leave a list empty to index all fields of that collection. |
+| Flatten Nested Documents List       | Comma-separated list of `true`/`false`, one per collection. Set `true` for Typesense Server v0.23.1 and below, since indexing nested objects is natively supported only in v0.24 and above. |
 | Typesense Hosts                     | A comma-separated list of Typesense Hosts (only domain without https or port number). For single node clusters, a single hostname is sufficient. For multi-node Highly Available or (Search Delivery Network) SDN Clusters, please be sure to mention all hostnames in a comma-separated list. | 
 | Typesense API Key                   | A Typesense API key with admin permissions. Click on "Generate API Key" in cluster dashboard in Typesense Cloud.                                                                                                                                                                               |
-| Typesense Collection Name           | Typesense collection name to index data into (you need to create this collection in Typesense yourself. This extension does not create the Typesense Collection for you).                                                                                                                      |
-| Flatten Nested Documents            | Should nested documents in Firestore be flattened before they are indexed in Typesense? Set to "Yes" for Typesense Server versions v0.23.1 and below, since indexing Nested objects is natively supported only in Typesense Server v0.24 and above.                                            |
 | Log Typesense Inserts for Debugging | Should data inserted into Typesense be logged in Cloud Logging? This can be useful for debugging, but should not be enabled in production.                                                                                                                                                     |
 
 > ⚠️ You'll notice that there is no way to configure the port number or protocol.

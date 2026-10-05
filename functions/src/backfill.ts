@@ -11,7 +11,6 @@ import {
   type CollectionConfig,
   type CollectionConfigMap,
 } from "./config.js";
-import {warnIfUsingLegacyCollectionConfig} from "./deprecation.js";
 import {getDefaultApp} from "./firebaseApp.js";
 import {createTypesenseDocument, type TypesenseDocument} from "./document.js";
 import * as params from "./params.js";
@@ -113,8 +112,6 @@ async function backfillCollection(firestore: Firestore, collectionConfig: Collec
 }
 
 export async function handleBackfillTrigger(trigger: Pick<DocumentSnapshot, "get">, firestore: Firestore): Promise<void> {
-  warnIfUsingLegacyCollectionConfig();
-
   const collections = createCollectionConfigMap();
   const request = parseBackfillRequest(trigger, collections);
   if (request === undefined) {

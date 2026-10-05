@@ -3,11 +3,6 @@
 Now that you've installed the extension, changes from your configured Firestore collection(s)
 will be synced to the configured Typesense collection(s) on `${param:TYPESENSE_HOSTS}`.
 
-If you installed the legacy single-collection params (`${param:FIRESTORE_COLLECTION_PATH}` and
-`${param:TYPESENSE_COLLECTION_NAME}`), the extension will still work, but it will log a deprecation
-warning. Plan to migrate to `FIRESTORE_COLLECTION_PATHS` and `TYPESENSE_COLLECTION_NAMES` in a future
-release.
-
 ### Pre-requisites
 
 As a reminder in case you haven't already done this, make sure that you have setup a Typesense Collection in one of the following ways:

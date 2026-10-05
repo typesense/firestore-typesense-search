@@ -4,12 +4,10 @@ do full-text fuzzy search on your Firestore data.
 This extension listens to your specified Firestore collection and syncs Firestore documents to Typesense 
 on creation, updates and deletes. It also provides a function to help you backfill data.
 
-This release supports both the legacy single-collection params and the newer 1-n collection params.
-The legacy single-collection params are deprecated and will emit a warning in the function logs when used.
-If both config shapes are fully set, the extension will use the newer multi-collection params and warn once.
-If only part of either config shape is set, installation will fail with a clear error.
-For new installs, use `FIRESTORE_COLLECTION_PATHS`, `TYPESENSE_COLLECTION_NAMES`,
-`FIRESTORE_COLLECTION_FIELDS_LIST`, and `FLATTEN_NESTED_DOCUMENTS_LIST`.
+Configure one or more collections with `FIRESTORE_COLLECTION_PATHS`, `TYPESENSE_COLLECTION_NAMES`,
+`FIRESTORE_COLLECTION_FIELDS_LIST` and `FLATTEN_NESTED_DOCUMENTS_LIST`. Version 4.0.0 removed the single-collection
+params (`FIRESTORE_COLLECTION_PATH`, `TYPESENSE_COLLECTION_NAME`, `FIRESTORE_COLLECTION_FIELDS` and
+`FLATTEN_NESTED_DOCUMENTS`); see the README for how to move their values over.
 
 #### Additional setup
 

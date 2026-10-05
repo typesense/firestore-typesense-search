@@ -3,7 +3,6 @@ import {debug, info} from "firebase-functions/logger";
 import {Errors} from "typesense";
 import {createCollectionConfigMap, getTypesenseConnectionConfig, shouldLogTypesenseInserts, type CollectionConfig} from "./config.js";
 import {createTypesenseDocument, type DocumentSnapshotLike} from "./document.js";
-import {warnIfUsingLegacyCollectionConfig} from "./deprecation.js";
 import {getDefaultApp} from "./firebaseApp.js";
 import * as params from "./params.js";
 import {pathMatchesSelector, type PathParams} from "./paths.js";
@@ -39,8 +38,6 @@ function findCollectionForDocumentPath(documentPath: string): MatchedCollection 
 }
 
 export async function handleDocumentWrite(change: DocumentChangeLike): Promise<void> {
-  warnIfUsingLegacyCollectionConfig();
-
   const documentPath = change.after.ref.path || change.before.ref.path;
   const matched = findCollectionForDocumentPath(documentPath);
   if (matched === undefined) {

@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it} from "vitest";
-import {createCollectionConfigMap, getCollectionConfigMode, getTypesenseConnectionConfig, parseBooleanList, parseCommaSeparated, parsePipeSeparated} from "../../functions/src/config.js";
+import {createCollectionConfigMap, getTypesenseConnectionConfig, parseBooleanList, parseCommaSeparated, parsePipeSeparated} from "../../functions/src/config.js";
 
 const COLLECTION_KEYS = [
   "FIRESTORE_COLLECTION_PATHS",
@@ -91,56 +91,34 @@ describe("Multi-Collection Configuration", () => {
     });
 
     it("should throw error when no collection config is provided", () => {
-      expect(getCollectionConfigMode()).toBe("none");
-      expect(() => createCollectionConfigMap()).toThrow("No Firestore collection config found");
+      expect(() => createCollectionConfigMap()).toThrow("No Firestore collection config found. Set FIRESTORE_COLLECTION_PATHS and TYPESENSE_COLLECTION_NAMES.");
     });
 
-    it("should prefer new multi-collection parameters when both config styles are present", () => {
-      process.env["FIRESTORE_COLLECTION_PATH"] = "books";
-      process.env["TYPESENSE_COLLECTION_NAME"] = "books";
-      process.env["FIRESTORE_COLLECTION_FIELDS"] = "title,author";
-      process.env["FLATTEN_NESTED_DOCUMENTS"] = "true";
-      process.env["FIRESTORE_COLLECTION_PATHS"] = "users,products";
-      process.env["TYPESENSE_COLLECTION_NAMES"] = "users,products";
-      process.env["FIRESTORE_COLLECTION_FIELDS_LIST"] = "name,email|title,description";
-      process.env["FLATTEN_NESTED_DOCUMENTS_LIST"] = "false,true";
-
-      expect(getCollectionConfigMode()).toBe("both");
-      expect(createCollectionConfigMap()).toEqual({
-        users: {firestorePath: "users", typesenseCollection: "users", fields: ["name", "email"], flattenNested: false},
-        products: {firestorePath: "products", typesenseCollection: "products", fields: ["title", "description"], flattenNested: true},
-      });
-    });
-
-    it("should throw error when legacy config is only partially set", () => {
-      process.env["FIRESTORE_COLLECTION_PATH"] = "books";
-
-      expect(() => createCollectionConfigMap()).toThrow("Incomplete legacy collection config. Set both FIRESTORE_COLLECTION_PATH and TYPESENSE_COLLECTION_NAME");
-    });
-
-    it("should throw error when multi-collection config is only partially set", () => {
+    it("should throw error when only one of the collection params is set", () => {
       process.env["FIRESTORE_COLLECTION_PATHS"] = "users,products";
 
-      expect(() => createCollectionConfigMap()).toThrow("Incomplete multi-collection config. Set both FIRESTORE_COLLECTION_PATHS and TYPESENSE_COLLECTION_NAMES");
+      expect(() => createCollectionConfigMap()).toThrow("Mismatch in collection counts: 2 Firestore paths vs 0 Typesense names");
     });
 
-    it("should create collection map from legacy single collection parameters", () => {
+    it("should explain how to replace the removed single-collection params", () => {
+      process.env["FIRESTORE_COLLECTION_PATH"] = "books";
+      process.env["TYPESENSE_COLLECTION_NAME"] = "books_firestore";
+      process.env["FIRESTORE_COLLECTION_FIELDS"] = "title,author";
+      process.env["FLATTEN_NESTED_DOCUMENTS"] = "";
+
+      expect(() => createCollectionConfigMap()).toThrow(
+        "were removed in 4.0.0. Replace them in your configuration with:\n" +
+          "FIRESTORE_COLLECTION_PATHS=books\nTYPESENSE_COLLECTION_NAMES=books_firestore\nFIRESTORE_COLLECTION_FIELDS_LIST=title,author",
+      );
+    });
+
+    it("should ignore the removed single-collection params when the collection params are set", () => {
       process.env["FIRESTORE_COLLECTION_PATH"] = "books";
       process.env["TYPESENSE_COLLECTION_NAME"] = "books";
-      process.env["FIRESTORE_COLLECTION_FIELDS"] = "title,author";
-      process.env["FLATTEN_NESTED_DOCUMENTS"] = "true";
+      process.env["FIRESTORE_COLLECTION_PATHS"] = "users";
+      process.env["TYPESENSE_COLLECTION_NAMES"] = "users";
 
-      expect(getCollectionConfigMode()).toBe("legacy");
-      expect(createCollectionConfigMap()).toEqual({
-        books: {firestorePath: "books", typesenseCollection: "books", fields: ["title", "author"], flattenNested: true},
-      });
-    });
-
-    it("should treat whitespace-only values as unset", () => {
-      process.env["FIRESTORE_COLLECTION_PATH"] = "  ";
-      process.env["TYPESENSE_COLLECTION_NAME"] = "";
-
-      expect(getCollectionConfigMode()).toBe("none");
+      expect(Object.keys(createCollectionConfigMap())).toEqual(["users"]);
     });
   });
 
