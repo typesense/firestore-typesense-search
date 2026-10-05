@@ -67,3 +67,6 @@ node_modules/
 test-params.env
 extensions/test-params.env
 /typesense-server-data/
+
+functions/.secret.local
+functions/.env.local

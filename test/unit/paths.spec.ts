@@ -1,8 +1,9 @@
-const utils = require("../functions/src/utils");
+import {describe, expect, it} from "vitest";
+import * as utils from "../../functions/src/paths.js";
 
-describe("Utils", () => {
+describe("paths", () => {
   describe("Parsing static firestore path", () => {
-    it("Static firestore path should do nothing", async () => {
+    it("Static firestore path should do nothing", () => {
       const staticPathVars1 = utils.parseFirestorePath("books");
       expect(staticPathVars1).toEqual({});
 
@@ -13,7 +14,7 @@ describe("Utils", () => {
       expect(staticPathVars5).toEqual({});
     });
 
-    it("Throws an exception if placeholders are empty but fullPath has segments", async () => {
+    it("Returns null when the selector is longer than the path", () => {
       const fullPath = "/users/123/books/456/author";
       const selector = "/users/123/books/456/author/{authorId}/email";
 
@@ -23,7 +24,7 @@ describe("Utils", () => {
   });
 
   describe("Parsing dynamic firestore path", () => {
-    it("Dynamic firestore path should return placeholders", async () => {
+    it("Dynamic firestore path should return placeholders", () => {
       const dynamicPath2 = "books/{bookId}/chapter";
       const dynamicPathVars2 = utils.parseFirestorePath(dynamicPath2);
       expect(dynamicPathVars2).toEqual({bookId: 1});
@@ -104,6 +105,16 @@ describe("Utils", () => {
       const selector = "users/{userId}/library";
       const result = utils.pathMatchesSelector(path, selector);
       expect(result).toEqual({userId: "123"});
+    });
+  });
+
+  describe("parseFirestorePath validation", () => {
+    it("throws on an empty path", () => {
+      expect(() => utils.parseFirestorePath("")).toThrow("Invalid Firestore path: Path must be a non-empty string.");
+    });
+
+    it("throws on duplicate placeholders, including one in the first segment", () => {
+      expect(() => utils.parseFirestorePath("{a}/x/{a}")).toThrow("Duplicate placeholder detected: a");
     });
   });
 });

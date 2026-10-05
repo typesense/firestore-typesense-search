@@ -1,9 +1,12 @@
-const {createTypesenseDocument} = require("../functions/src/utils.js");
+import {describe, expect, it} from "vitest";
+import {GeoPoint, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {initializeApp} from "firebase-admin/app";
+import {createTypesenseDocument} from "../../functions/src/document.js";
 
 describe("Utils", () => {
   describe("createTypesenseDocument", () => {
     describe("Basic functionality", () => {
-      it("creates a Typesense document with all fields when no fields specified", async () => {
+      it("creates a Typesense document with all fields when no fields specified", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -20,7 +23,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -30,7 +33,7 @@ describe("Utils", () => {
         });
       });
 
-      it("creates a Typesense document with only specified fields", async () => {
+      it("creates a Typesense document with only specified fields", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -48,7 +51,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -57,7 +60,7 @@ describe("Utils", () => {
         });
       });
 
-      it("adds context parameters to the document", async () => {
+      it("adds context parameters to the document", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -77,7 +80,7 @@ describe("Utils", () => {
           category: "fiction",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, contextParams);
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, contextParams);
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -87,7 +90,7 @@ describe("Utils", () => {
         });
       });
 
-      it("excludes docId from context parameters", async () => {
+      it("excludes docId from context parameters", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -107,7 +110,7 @@ describe("Utils", () => {
           userId: "user123",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, contextParams);
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, contextParams);
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -117,7 +120,7 @@ describe("Utils", () => {
         expect(result).not.toHaveProperty("docId");
       });
 
-      it("throws error when document data is null", async () => {
+      it("throws error when document data is null", () => {
         const documentSnapshot = {
           data: () => null,
           id: "doc123",
@@ -129,12 +132,12 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        await expect(createTypesenseDocument(documentSnapshot, collectionConfig, {})).rejects.toThrow("Document data is null");
+        expect(() => createTypesenseDocument(documentSnapshot, collectionConfig, {})).toThrow("Document data is null");
       });
     });
 
     describe("Nested fields handling without flattening", () => {
-      it("extracts nested fields using dot notation", async () => {
+      it("extracts nested fields using dot notation", () => {
         const documentSnapshot = {
           data: () => ({
             user: {
@@ -155,7 +158,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           user: {name: "John Doe", address: {city: "New York"}},
@@ -163,7 +166,7 @@ describe("Utils", () => {
         });
       });
 
-      it("handles missing nested fields gracefully", async () => {
+      it("handles missing nested fields gracefully", () => {
         const documentSnapshot = {
           data: () => ({
             user: {
@@ -179,7 +182,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           user: {
@@ -188,7 +191,7 @@ describe("Utils", () => {
         });
       });
 
-      it("handles array indexing in dot notation", async () => {
+      it("handles array indexing in dot notation", () => {
         const documentSnapshot = {
           data: () => ({
             comments: [
@@ -205,7 +208,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           comments: [
@@ -217,7 +220,7 @@ describe("Utils", () => {
     });
 
     describe("Flattened document handling", () => {
-      it("creates a flattened Typesense document with all fields when no fields specified", async () => {
+      it("creates a flattened Typesense document with all fields when no fields specified", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -237,7 +240,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -248,7 +251,7 @@ describe("Utils", () => {
         });
       });
 
-      it("creates a flattened Typesense document with only specified fields", async () => {
+      it("creates a flattened Typesense document with only specified fields", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -269,7 +272,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -277,7 +280,7 @@ describe("Utils", () => {
         });
       });
 
-      it("adds context parameters to flattened document", async () => {
+      it("adds context parameters to flattened document", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -299,7 +302,7 @@ describe("Utils", () => {
           category: "fiction",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, contextParams);
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, contextParams);
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -309,7 +312,7 @@ describe("Utils", () => {
         });
       });
 
-      it("handles nested fields using dot notation with flattening", async () => {
+      it("handles nested fields using dot notation with flattening", () => {
         const documentSnapshot = {
           data: () => ({
             user: {
@@ -330,7 +333,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           "user.name": "John Doe",
@@ -339,7 +342,7 @@ describe("Utils", () => {
         });
       });
 
-      it("handles missing nested fields gracefully with flattening", async () => {
+      it("handles missing nested fields gracefully with flattening", () => {
         const documentSnapshot = {
           data: () => ({
             user: {
@@ -355,14 +358,14 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           "user.name": "John Doe",
         });
       });
 
-      it("handles array indexing in dot notation with flattening", async () => {
+      it("handles array indexing in dot notation with flattening", () => {
         const documentSnapshot = {
           data: () => ({
             comments: [
@@ -379,7 +382,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           "comments.author": ["Alice", "Bob"],
@@ -388,7 +391,7 @@ describe("Utils", () => {
         });
       });
 
-      it("handles nested objects with arrays", async () => {
+      it("handles nested objects with arrays", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -406,7 +409,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -416,7 +419,7 @@ describe("Utils", () => {
         });
       });
 
-      it("handles complex nested structures", async () => {
+      it("handles complex nested structures", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -444,7 +447,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -459,7 +462,7 @@ describe("Utils", () => {
     });
 
     describe("Field filtering with flattening", () => {
-      it("filters fields and flattens nested objects", async () => {
+      it("filters fields and flattens nested objects", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -485,7 +488,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -496,7 +499,7 @@ describe("Utils", () => {
     });
 
     describe("Data type mapping", () => {
-      it("maps Firestore timestamps to Unix timestamps", async () => {
+      it("maps Firestore timestamps to Unix timestamps", () => {
         const timestamp = {
           seconds: 1672531200,
           nanoseconds: 0,
@@ -518,7 +521,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -527,7 +530,7 @@ describe("Utils", () => {
         });
       });
 
-      it("maps geopoint objects to arrays", async () => {
+      it("maps geopoint objects to arrays", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -554,7 +557,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -564,7 +567,7 @@ describe("Utils", () => {
         });
       });
 
-      it("does not map objects with additional fields to geopoints", async () => {
+      it("does not map objects with additional fields to geopoints", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -584,7 +587,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -597,7 +600,7 @@ describe("Utils", () => {
         });
       });
 
-      it("maps Firestore references to path objects", async () => {
+      it("maps Firestore references to path objects", () => {
         const documentSnapshot = {
           data: () => ({
             title: "Book Title",
@@ -619,7 +622,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -628,7 +631,7 @@ describe("Utils", () => {
         });
       });
 
-      it("maps arrays recursively", async () => {
+      it("maps arrays recursively", () => {
         const timestamp = {
           seconds: 1672531200,
           nanoseconds: 0,
@@ -654,7 +657,7 @@ describe("Utils", () => {
           typesenseCollection: "books",
         };
 
-        const result = await createTypesenseDocument(documentSnapshot, collectionConfig, {});
+        const result = createTypesenseDocument(documentSnapshot, collectionConfig, {});
         expect(result).toEqual({
           id: "doc123",
           title: "Book Title",
@@ -665,6 +668,82 @@ describe("Utils", () => {
           ],
           timestamps: [1672531200, 1672531200],
         });
+      });
+    });
+  });
+
+  describe("createTypesenseDocument with Firestore SDK types", () => {
+    const firestore = getFirestore(initializeApp({projectId: "demo-unit"}, "document-spec"));
+    const collectionConfig = {fields: [], flattenNested: false};
+
+    it("maps Timestamp, GeoPoint and DocumentReference instances", () => {
+      const documentSnapshot = {
+        id: "doc123",
+        data: () => ({
+          createdAt: Timestamp.fromDate(new Date("2023-01-01T00:00:00.999Z")),
+          location: new GeoPoint(40.7128, -74.006),
+          author: firestore.doc("users/author123"),
+          history: [Timestamp.fromMillis(1_000), {at: new GeoPoint(1, 2)}],
+        }),
+      };
+
+      expect(createTypesenseDocument(documentSnapshot, collectionConfig, {})).toStrictEqual({
+        createdAt: 1672531200,
+        location: [40.7128, -74.006],
+        author: {path: "users/author123"},
+        history: [1, {at: [1, 2]}],
+        id: "doc123",
+      });
+    });
+
+    it("flattens nested SDK types", () => {
+      const documentSnapshot = {
+        id: "doc123",
+        data: () => ({meta: {createdAt: Timestamp.fromMillis(5_000), where: new GeoPoint(3, 4)}}),
+      };
+
+      expect(createTypesenseDocument(documentSnapshot, {fields: [], flattenNested: true}, {})).toStrictEqual({
+        "meta.createdAt": 5,
+        "meta.where": [3, 4],
+        id: "doc123",
+      });
+    });
+  });
+
+  describe("createTypesenseDocument document shape", () => {
+    it("overwrites an `id` field in place with the document id", () => {
+      const documentSnapshot = {id: "doc123", data: () => ({title: "Book", id: "stale", rating: 5})};
+
+      const result = createTypesenseDocument(documentSnapshot, {fields: [], flattenNested: false}, {});
+      expect(JSON.stringify(result)).toBe('{"title":"Book","id":"doc123","rating":5}');
+    });
+
+    it("appends the document id and path params after the document fields", () => {
+      const documentSnapshot = {id: "doc123", data: () => ({author: "A", title: "T"})};
+
+      const result = createTypesenseDocument(documentSnapshot, {fields: ["author", "title"], flattenNested: false}, {userId: "u1"});
+      expect(JSON.stringify(result)).toBe('{"author":"A","title":"T","id":"doc123","userId":"u1"}');
+    });
+
+    it("keeps a key that is missing from the first array element when flattening", () => {
+      const documentSnapshot = {
+        id: "doc123",
+        data: () => ({comments: [{author: "Alice"}, {author: "Bob", likes: 5}]}),
+      };
+
+      expect(createTypesenseDocument(documentSnapshot, {fields: ["comments.author", "comments.likes"], flattenNested: true}, {})).toStrictEqual({
+        "comments.author": ["Alice", "Bob"],
+        "comments.likes": [5],
+        id: "doc123",
+      });
+    });
+
+    it("does not throw on a dotted field that crosses a null value", () => {
+      const documentSnapshot = {id: "doc123", data: () => ({title: "T", nullField: null})};
+
+      expect(createTypesenseDocument(documentSnapshot, {fields: ["title", "nullField.inner"], flattenNested: false}, {})).toStrictEqual({
+        title: "T",
+        id: "doc123",
       });
     });
   });
