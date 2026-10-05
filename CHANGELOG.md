@@ -7,7 +7,8 @@
 
 ### Changes
 
-- Rewrite the functions in strict TypeScript; the same source builds the Firebase extension and an npm function kit (`@typesense/firestore-typesense-search`, unpublished) for `firebase ext:migrate`
+- Ship as a function kit, the npm package `typesense-firestore-search`, instead of a Firebase extension. Installed extensions move to it with `firebase ext:migrate`; 3.0.0 is the last extension release
+- Rewrite the functions in strict TypeScript
 - Declare every param as a Cloud Functions param with the same name as in the extension, so migrated installs keep their values
 - Treat deleting a document that is already missing from Typesense as success
 - Backfill reads from the database set in `DATABASE` instead of always reading `(default)`

@@ -1,7 +1,7 @@
 {
   "name": "firestore-typesense-search-workspace",
   "private": true,
-  "description": "Workspace for the Firestore → Typesense function kit and Firebase extension",
+  "description": "Workspace for the Firestore → Typesense function kit",
   "type": "module",
   "scripts": {
     "build": "pnpm --filter ./functions build",
@@ -9,6 +9,7 @@
     "lint": "oxlint --type-aware --deny-warnings",
     "lint:fix": "oxlint --type-aware --fix",
     "lint:guard": "node scripts/forbid-escape-hatches.ts",
+    "pack:kit": "node scripts/pack-kit.ts",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "test": "pnpm build && vitest run",

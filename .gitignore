@@ -56,7 +56,8 @@ node_modules/
 # Optional REPL history
 .node_repl_history
 
-# Output of 'npm pack'
+# Output of 'npm pack' and 'pnpm pack:kit'
+/dist/
 *.tgz
 
 # Yarn Integrity file

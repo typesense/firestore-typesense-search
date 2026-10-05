@@ -1,6 +1,6 @@
 {
-  "name": "@typesense/firestore-typesense-search",
-  "version": "0.1.0",
+  "name": "typesense-firestore-search",
+  "version": "4.0.0-rc.0",
   "description": "Cloud Functions for Firebase (2nd gen) that index Firestore documents into Typesense",
   "license": "Apache-2.0",
   "repository": {
@@ -11,7 +11,9 @@
   "files": [
     "lib",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "UPGRADING.md",
+    "npm-shrinkwrap.json"
   ],
   "type": "commonjs",
   "main": "lib/index.js",
@@ -28,9 +30,8 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "gcp-build": "tsc -b",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "prepublishOnly": "rm -rf lib tsconfig.tsbuildinfo && pnpm run build && pnpm --dir .. test"
+    "prepublishOnly": "echo 'Publish dist/package from pnpm pack:kit instead' && exit 1"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.7",

@@ -1,5 +1,5 @@
 {
-  description = "Firestore → Typesense function kit and Firebase extension";
+  description = "Firestore → Typesense function kit";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
