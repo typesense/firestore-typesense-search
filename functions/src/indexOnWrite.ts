@@ -1,5 +1,6 @@
 import {onDocumentWritten} from "firebase-functions/firestore";
 import {debug, info} from "firebase-functions/logger";
+import {Errors} from "typesense";
 import {createCollectionConfigMap, getTypesenseConnectionConfig, shouldLogTypesenseInserts, type CollectionConfig} from "./config.js";
 import {createTypesenseDocument, type DocumentSnapshotLike} from "./document.js";
 import {warnIfUsingLegacyCollectionConfig} from "./deprecation.js";
@@ -56,7 +57,15 @@ export async function handleDocumentWrite(change: DocumentChangeLike): Promise<v
   if (!change.after.exists) {
     const documentId = change.before.id;
     debug(`Deleting document ${documentId} from collection ${config.typesenseCollection}`);
-    await collection.documents(documentId).delete();
+    try {
+      await collection.documents(documentId).delete();
+    } catch (err: unknown) {
+      if (err instanceof Errors.ObjectNotFound) {
+        debug(`Document ${documentId} was not in collection ${config.typesenseCollection}; nothing to delete`);
+        return;
+      }
+      throw err;
+    }
     return;
   }
 
