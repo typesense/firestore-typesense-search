@@ -3,7 +3,7 @@ import {TestEnvironment, waitForFunctions} from "./support/testEnvironment.js";
 
 describe("backfillMultiCollectionSubcollections", () => {
   const env = new TestEnvironment({
-    dotenvPath: "extensions/test-params-multi-collection-subcollections.local.env",
+    dotenvPath: "test/integration/fixtures/multi-collection-subcollections.env",
     outputAllEmulatorLogs: true,
   });
 

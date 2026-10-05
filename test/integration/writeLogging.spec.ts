@@ -20,7 +20,7 @@ async function expectBackfillOfOneBook(env: TestEnvironment): Promise<Readonly<R
 
 describe("indexOnWriteLogging - when shouldLogTypesenseInserts is false", () => {
   const env = new TestEnvironment({
-    dotenvPath: "extensions/test-params-flatten-nested-true.local.env",
+    dotenvPath: "test/integration/fixtures/flatten-nested-true.env",
   });
 
   beforeAll(async () => {

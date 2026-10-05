@@ -3,7 +3,7 @@ import {TestEnvironment, waitForFunctions} from "./support/testEnvironment.js";
 
 describe("indexOnWriteMultiCollection", () => {
   const env = new TestEnvironment({
-    dotenvPath: "extensions/test-params-multi-collection.local.env",
+    dotenvPath: "test/integration/fixtures/multi-collection.env",
     outputAllEmulatorLogs: false,
   });
 
