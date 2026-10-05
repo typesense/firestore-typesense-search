@@ -1,4 +1,4 @@
-import {getFirestore, type DocumentSnapshot, type Firestore, type Query, type QueryDocumentSnapshot} from "firebase-admin/firestore";
+import {getFirestore, type DocumentSnapshot} from "firebase-admin/firestore";
 import {onDocumentWritten} from "firebase-functions/firestore";
 import {debug, error, info} from "firebase-functions/logger";
 import {Errors, type Client} from "typesense";
@@ -12,10 +12,31 @@ import {
   type CollectionConfigMap,
 } from "./config.js";
 import {getDefaultApp} from "./firebaseApp.js";
-import {createTypesenseDocument, type TypesenseDocument} from "./document.js";
+import {createTypesenseDocument, type DocumentSnapshotLike, type TypesenseDocument} from "./document.js";
 import * as params from "./params.js";
 import {parseFirestorePath, pathMatchesSelector} from "./paths.js";
 import {createTypesenseClient} from "./typesenseClient.js";
+
+interface QueryDocumentLike extends DocumentSnapshotLike {
+  readonly ref: {readonly path: string};
+}
+
+interface QuerySnapshotLike {
+  readonly empty: boolean;
+  readonly size: number;
+  readonly docs: readonly QueryDocumentLike[];
+}
+
+interface QueryLike {
+  startAfter(document: QueryDocumentLike): QueryLike;
+  limit(limit: number): QueryLike;
+  get(): Promise<QuerySnapshotLike>;
+}
+
+export interface FirestoreLike {
+  collection(collectionPath: string): QueryLike;
+  collectionGroup(collectionId: string): QueryLike;
+}
 
 type BackfillRequest = {readonly kind: "all"} | {readonly kind: "only"; readonly firestorePaths: readonly unknown[]};
 
@@ -55,17 +76,17 @@ function logImportErrors(err: InstanceType<typeof Errors.ImportError>): void {
   }
 }
 
-async function backfillCollection(firestore: Firestore, collectionConfig: CollectionConfig, typesense: Client): Promise<number> {
+async function backfillCollection(firestore: FirestoreLike, collectionConfig: CollectionConfig, typesense: Client): Promise<number> {
   const {firestorePath} = collectionConfig;
   const pathSegments = firestorePath.split("/").filter((segment) => segment !== "");
   const collectionGroupId = pathSegments.at(-1);
   const isGroupQuery = pathSegments.length > 1 && Object.keys(parseFirestorePath(firestorePath)).length > 0;
 
-  const query: Query = isGroupQuery && collectionGroupId !== undefined ? firestore.collectionGroup(collectionGroupId) : firestore.collection(firestorePath);
+  const query: QueryLike = isGroupQuery && collectionGroupId !== undefined ? firestore.collectionGroup(collectionGroupId) : firestore.collection(firestorePath);
   const shouldLog = shouldLogTypesenseInserts();
   const documents = typesense.collections<TypesenseDocument>(collectionConfig.typesenseCollection).documents();
 
-  let lastDoc: QueryDocumentSnapshot | undefined;
+  let lastDoc: QueryDocumentLike | undefined;
   let totalImported = 0;
 
   for (;;) {
@@ -99,7 +120,7 @@ async function backfillCollection(firestore: Firestore, collectionConfig: Collec
       }
     }
 
-    if (typesenseDocuments.length < BACKFILL_BATCH_SIZE) break;
+    if (batch.size < BACKFILL_BATCH_SIZE) break;
 
     // Recurse on the next process tick, to avoid
     // issues with the event loop on firebase functions related to resource release
@@ -111,7 +132,7 @@ async function backfillCollection(firestore: Firestore, collectionConfig: Collec
   return totalImported;
 }
 
-export async function handleBackfillTrigger(trigger: Pick<DocumentSnapshot, "get">, firestore: Firestore): Promise<void> {
+export async function handleBackfillTrigger(trigger: Pick<DocumentSnapshot, "get">, firestore: FirestoreLike): Promise<void> {
   const collections = createCollectionConfigMap();
   const request = parseBackfillRequest(trigger, collections);
   if (request === undefined) {

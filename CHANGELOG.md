@@ -11,6 +11,7 @@
 - Declare every param as a Cloud Functions param with the same name as in the extension, so migrated installs keep their values
 - Treat deleting a document that is already missing from Typesense as success
 - Backfill reads from the database set in `DATABASE` instead of always reading `(default)`
+- Backfill no longer stops early when a page of a subcollection query contains documents outside the configured path
 - Upgrade the Typesense client to v3
 - Switch tooling to pnpm (with a 7-day minimum release age), oxlint, oxfmt and vitest, and add a Nix flake for the dev shell
 
