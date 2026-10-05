@@ -1,6 +1,3 @@
-packages:
-  - functions
-
 minimumReleaseAge: 10080
 
 allowBuilds:

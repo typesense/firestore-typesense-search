@@ -147,8 +147,9 @@ To deploy Cloud Functions, your project must be on the [Blaze (pay as you go) pl
 
 ## Development Workflow
 
-The functions are written in strict TypeScript (`functions/src`, compiled to `functions/lib`). The repo is a pnpm
-workspace; dependencies younger than 7 days are refused (`minimumReleaseAge` in `pnpm-workspace.yaml`).
+The functions are written in strict TypeScript (`src`, compiled to `lib`); the repository root is the published
+package. Dependencies are managed with pnpm, which refuses versions younger than 7 days (`minimumReleaseAge` in
+`pnpm-workspace.yaml`).
 
 #### Setup
 
@@ -192,24 +193,18 @@ The integration specs read their configuration from `test/integration/fixtures/*
 
 #### Publish
 
-- Update the version in `functions/package.json`
+- Update the version in `package.json`
 - Add entry to CHANGELOG.md
 - Run `pnpm test`
-- Build the package:
+- Publish (prereleases with `--tag next`):
 
     ```shell
-    pnpm pack:kit
+    pnpm publish --tag next
     ```
 
-  This writes `dist/package`: a clean build of `functions/` with README.md, CHANGELOG.md and UPGRADING.md, without
-  dev dependencies, with `engines.node` relaxed to `>=22` (the kit wrapper runs on newer Node versions), and with an `npm-shrinkwrap.json` that pins the direct dependencies to the versions the tests ran
-  against.
-- Publish it (prereleases with `--tag next`):
-
-    ```shell
-    npm publish dist/package --tag next
-    ```
-
+  The `prepack` hook rebuilds `lib` and adds an `npm-shrinkwrap.json` without dev dependencies, since kits are
+  installed with npm. The direct dependencies use exact versions, so the shrinkwrap pins the same versions the tests
+  ran against.
 - Create release in GitHub
 
 ## ℹ️ Support

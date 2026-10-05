@@ -1,10 +1,10 @@
 {
-  "extends": "./functions/tsconfig.json",
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
     "rootDir": ".",
     "noEmit": true,
     "declaration": false,
     "sourceMap": false
   },
-  "include": ["test", "scripts", "vitest.config.ts"]
+  "include": ["src", "test", "scripts", "vitest.config.mts"]
 }

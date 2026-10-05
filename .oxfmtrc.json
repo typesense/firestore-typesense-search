@@ -8,5 +8,5 @@
   "trailingComma": "all",
   "bracketSpacing": false,
   "endOfLine": "lf",
-  "ignorePatterns": ["functions/lib/**", "emulator_data/**", "typesense-server-data/**", "pnpm-lock.yaml", "**/*.md", "**/*.yaml", "**/*.yml"]
+  "ignorePatterns": ["lib/**", "emulator_data/**", "typesense-server-data/**", "pnpm-lock.yaml", "**/*.md", "**/*.yaml", "**/*.yml"]
 }

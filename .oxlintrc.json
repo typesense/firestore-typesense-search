@@ -15,7 +15,7 @@
     "node": true,
     "es2024": true
   },
-  "ignorePatterns": ["functions/lib/**", "emulator_data/**", "typesense-server-data/**"],
+  "ignorePatterns": ["lib/**", "emulator_data/**", "typesense-server-data/**"],
   "rules": {
     "eqeqeq": ["error", "always", {"null": "ignore"}],
     "no-console": "error",

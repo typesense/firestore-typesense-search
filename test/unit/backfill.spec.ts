@@ -1,5 +1,5 @@
 import {afterAll, beforeAll, beforeEach, describe, expect, it} from "vitest";
-import {handleBackfillTrigger, type FirestoreLike} from "../../functions/src/backfill.js";
+import {handleBackfillTrigger, type FirestoreLike} from "../../src/backfill.js";
 import {StubTypesense} from "./support/stubTypesense.js";
 
 type FakeQuery = ReturnType<FirestoreLike["collectionGroup"]>;
