@@ -10,6 +10,7 @@
 - Rewrite the functions in strict TypeScript; the same source builds the Firebase extension and an npm function kit (`@typesense/firestore-typesense-search`, unpublished) for `firebase ext:migrate`
 - Declare every param as a Cloud Functions param with the same name as in the extension, so migrated installs keep their values
 - Treat deleting a document that is already missing from Typesense as success
+- Backfill reads from the database set in `DATABASE` instead of always reading `(default)`
 - Upgrade the Typesense client to v3
 - Switch tooling to pnpm (with a 7-day minimum release age), oxlint, oxfmt and vitest, and add a Nix flake for the dev shell
 

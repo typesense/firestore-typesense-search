@@ -152,6 +152,6 @@ export const backfill = onDocumentWritten(
       info("No snapshot data, returning");
       return;
     }
-    await handleBackfillTrigger(event.data.after, getFirestore(getDefaultApp()));
+    await handleBackfillTrigger(event.data.after, getFirestore(getDefaultApp(), params.database.value()));
   },
 );

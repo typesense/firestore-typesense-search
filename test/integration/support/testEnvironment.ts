@@ -99,6 +99,11 @@ export class TestEnvironment {
     this.#outputAllEmulatorLogs = outputAllEmulatorLogs;
   }
 
+  get app(): App {
+    if (this.#app === undefined) throw new Error("Test environment is not set up");
+    return this.#app;
+  }
+
   get firestore(): Firestore {
     if (this.#firestore === undefined) throw new Error("Test environment is not set up");
     return this.#firestore;
@@ -137,7 +142,7 @@ export class TestEnvironment {
     await this.#startEmulator();
 
     this.#app = initializeApp({projectId}, `test-${Date.now()}`);
-    this.#firestore = getFirestore(this.#app);
+    this.#firestore = getFirestore(this.#app, this.#env.get("DATABASE") ?? "(default)");
     this.#typesense = createTypesenseClient(getTypesenseConnectionConfig());
     this.#shouldCaptureLogs = true;
     console.log("Test environment ready");
