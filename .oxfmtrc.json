@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 200,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": false,
+  "trailingComma": "all",
+  "bracketSpacing": false,
+  "endOfLine": "lf",
+  "ignorePatterns": ["functions/lib/**", "emulator_data/**", "typesense-server-data/**", "pnpm-lock.yaml", "**/*.md", "**/*.yaml", "**/*.yml"]
+}

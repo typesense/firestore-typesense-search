@@ -1,3 +1,21 @@
+## Version 4.0.0 (unreleased)
+
+### Breaking
+
+- Remove the single-collection params `FIRESTORE_COLLECTION_PATH`, `TYPESENSE_COLLECTION_NAME`, `FIRESTORE_COLLECTION_FIELDS` and `FLATTEN_NESTED_DOCUMENTS`. Move their values to `FIRESTORE_COLLECTION_PATHS`, `TYPESENSE_COLLECTION_NAMES`, `FIRESTORE_COLLECTION_FIELDS_LIST` and `FLATTEN_NESTED_DOCUMENTS_LIST`; see [UPGRADING.md](UPGRADING.md). If only the removed params are set, the deploy fails with an error listing the replacement lines
+- `FIRESTORE_COLLECTION_PATHS` and `TYPESENSE_COLLECTION_NAMES` are now required
+
+### Changes
+
+- Ship as a function kit, the npm package `typesense-firestore-search`, instead of a Firebase extension. Installed extensions move to it with `firebase ext:migrate`; 3.0.0 is the last extension release
+- Rewrite the functions in strict TypeScript
+- Declare every param as a Cloud Functions param with the same name as in the extension, so migrated installs keep their values
+- Treat deleting a document that is already missing from Typesense as success
+- Backfill reads from the database set in `DATABASE` instead of always reading `(default)`
+- Backfill no longer stops early when a page of a subcollection query contains documents outside the configured path
+- Upgrade the Typesense client to v3
+- Switch tooling to pnpm (with a 7-day minimum release age), oxlint, oxfmt and vitest, and add a Nix flake for the dev shell
+
 ## Version 3.0.0
 
 - Add support for configuring multiple Firestore-to-Typesense collection mappings in a single extension install via `FIRESTORE_COLLECTION_PATHS` and `TYPESENSE_COLLECTION_NAMES`

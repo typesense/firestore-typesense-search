@@ -1,0 +1,10 @@
+{
+  "extends": "./functions/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": ["test", "scripts", "vitest.config.ts"]
+}
