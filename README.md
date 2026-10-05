@@ -127,9 +127,11 @@ This will trigger the backfill background Cloud function, which will read data f
 
 ## 🔑 Access Required
 
-The kit's functions need the following project IAM role, which is granted to the functions' service account at deploy time:
+The kit's functions run as a service account created for the kit, which is granted the following project IAM roles at deploy time:
 
 * datastore.user (Reason: Required to backfill data from your Firestore collection into Typesense)
+* eventarc.eventReceiver (Reason: Required to receive Firestore events)
+* run.invoker (Reason: Required for Eventarc to invoke the functions)
 
 ## 🧾 Billing
 
