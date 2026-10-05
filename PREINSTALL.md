@@ -7,7 +7,7 @@ on creation, updates and deletes. It also provides a function to help you backfi
 Configure one or more collections with `FIRESTORE_COLLECTION_PATHS`, `TYPESENSE_COLLECTION_NAMES`,
 `FIRESTORE_COLLECTION_FIELDS_LIST` and `FLATTEN_NESTED_DOCUMENTS_LIST`. Version 4.0.0 removed the single-collection
 params (`FIRESTORE_COLLECTION_PATH`, `TYPESENSE_COLLECTION_NAME`, `FIRESTORE_COLLECTION_FIELDS` and
-`FLATTEN_NESTED_DOCUMENTS`); see the README for how to move their values over.
+`FLATTEN_NESTED_DOCUMENTS`); see [UPGRADING.md](https://github.com/typesense/firestore-typesense-search/blob/master/UPGRADING.md) for how to move their values over.
 
 #### Additional setup
 

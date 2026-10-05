@@ -58,39 +58,11 @@ One install can sync any number of Firestore collections, each into its own Type
 `FIRESTORE_COLLECTION_FIELDS_LIST` and `FLATTEN_NESTED_DOCUMENTS_LIST`. Subcollection paths with placeholders such as
 `users/{userId}/books` are supported; the placeholder values are added to each Typesense document.
 
-#### Migrating from 3.x single-collection params
+#### Upgrading from 3.x
 
 Version 4.0.0 removes the single-collection params `FIRESTORE_COLLECTION_PATH`, `TYPESENSE_COLLECTION_NAME`,
-`FIRESTORE_COLLECTION_FIELDS` and `FLATTEN_NESTED_DOCUMENTS`. If you still use them, move each value to its list
-counterpart. A single collection is a list of one, so the values do not change:
-
-| Removed param                 | Replace with                       |
-|-------------------------------|------------------------------------|
-| `FIRESTORE_COLLECTION_PATH`   | `FIRESTORE_COLLECTION_PATHS`       |
-| `TYPESENSE_COLLECTION_NAME`   | `TYPESENSE_COLLECTION_NAMES`       |
-| `FIRESTORE_COLLECTION_FIELDS` | `FIRESTORE_COLLECTION_FIELDS_LIST` |
-| `FLATTEN_NESTED_DOCUMENTS`    | `FLATTEN_NESTED_DOCUMENTS_LIST`    |
-
-For example, this 3.x configuration:
-
-```dotenv
-FIRESTORE_COLLECTION_PATH=books
-TYPESENSE_COLLECTION_NAME=books
-FIRESTORE_COLLECTION_FIELDS=title,author
-FLATTEN_NESTED_DOCUMENTS=false
-```
-
-becomes:
-
-```dotenv
-FIRESTORE_COLLECTION_PATHS=books
-TYPESENSE_COLLECTION_NAMES=books
-FIRESTORE_COLLECTION_FIELDS_LIST=title,author
-FLATTEN_NESTED_DOCUMENTS_LIST=false
-```
-
-If the old params are still set and the new ones are empty, the functions fail on every write with an error that
-prints the replacement lines for your values.
+`FIRESTORE_COLLECTION_FIELDS` and `FLATTEN_NESTED_DOCUMENTS`, and moves from a Firebase Extension to a function kit.
+Follow [UPGRADING.md](UPGRADING.md).
 
 #### 🎛️ Configuration Parameters
 

@@ -2,7 +2,7 @@
 
 ### Breaking
 
-- Remove the single-collection params `FIRESTORE_COLLECTION_PATH`, `TYPESENSE_COLLECTION_NAME`, `FIRESTORE_COLLECTION_FIELDS` and `FLATTEN_NESTED_DOCUMENTS`. Move their values to `FIRESTORE_COLLECTION_PATHS`, `TYPESENSE_COLLECTION_NAMES`, `FIRESTORE_COLLECTION_FIELDS_LIST` and `FLATTEN_NESTED_DOCUMENTS_LIST` (see "Migrating from 3.x single-collection params" in the README). If only the removed params are set, the functions fail with an error listing the replacement lines
+- Remove the single-collection params `FIRESTORE_COLLECTION_PATH`, `TYPESENSE_COLLECTION_NAME`, `FIRESTORE_COLLECTION_FIELDS` and `FLATTEN_NESTED_DOCUMENTS`. Move their values to `FIRESTORE_COLLECTION_PATHS`, `TYPESENSE_COLLECTION_NAMES`, `FIRESTORE_COLLECTION_FIELDS_LIST` and `FLATTEN_NESTED_DOCUMENTS_LIST`; see [UPGRADING.md](UPGRADING.md). If only the removed params are set, the deploy fails with an error listing the replacement lines
 - `FIRESTORE_COLLECTION_PATHS` and `TYPESENSE_COLLECTION_NAMES` are now required
 
 ### Changes
