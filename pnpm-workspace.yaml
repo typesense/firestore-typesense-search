@@ -1,0 +1,9 @@
+packages:
+  - functions
+
+minimumReleaseAge: 10080
+
+allowBuilds:
+  "@firebase/util": false
+  protobufjs: false
+  re2: false

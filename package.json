@@ -1,41 +1,37 @@
 {
-  "name": "firebase-typesense-search-extension",
-  "description": "Firebase extension that indexes Firestore documents into Typesense",
+  "name": "firestore-typesense-search-workspace",
+  "private": true,
+  "description": "Workspace for the Firestore → Typesense function kit and Firebase extension",
+  "type": "module",
   "scripts": {
-    "emulator": "cross-env DOTENV_CONFIG=extensions/test-params-flatten-nested-false.local.env firebase emulators:start --import=emulator_data",
+    "build": "pnpm --filter ./functions build",
+    "typecheck": "tsc -p tsconfig.json --noEmit && pnpm --filter ./functions typecheck",
+    "lint": "oxlint --type-aware --deny-warnings",
+    "lint:fix": "oxlint --type-aware --fix",
+    "lint:guard": "node scripts/forbid-escape-hatches.ts",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "test": "pnpm build && vitest run",
+    "test:unit": "vitest run --project unit",
+    "test:integration": "pnpm build && vitest run --project integration",
+    "emulator": "pnpm build && firebase emulators:start --import=emulator_data",
     "export": "firebase emulators:export emulator_data",
-    "test": "jest",
-    "test:flatttened": "cp -f extensions/test-params-flatten-nested-true.local.env functions/.env && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-true.local.env firebase emulators:exec --only functions,firestore,extensions  'jest --testRegex=\"WithFlattening\" --testRegex=\"backfill.spec\"'",
-    "test:unflattened": "cp -f extensions/test-params-flatten-nested-false.local.env functions/.env && cross-env NODE_OPTIONS=--experimental-vm-modules DOTENV_CONFIG=extensions/test-params-flatten-nested-false.local.env firebase emulators:exec --only functions,firestore,extensions 'jest --testRegex=\"WithoutFlattening\"'",
-    "test:subcollection": "jest --testRegex=\"writeLogging\" --testRegex=\"Subcollection\" --detectOpenHandles",
-    "test:config": "jest --testRegex=\"config.spec.js\"",
-    "test:multi": "jest --testRegex=\"indexOnWriteMultiCollection*\"",
-    "test:multi:backfill": "jest --testRegex=\"backfillMultiCollectionSubcollections.spec.js\"",
-    "test:logging": "jest --testRegex=\"writeLogging.spec.js\"",
-    "typesenseServer": "docker compose up",
-    "lint:fix": "eslint . --fix",
-    "lint": "eslint .",
-    "format": "prettier --write \"**/*.{js, cjs, md}\"",
-    "format:check": "prettier --check \"**/*.{js, cjs, md}\""
+    "typesenseServer": "docker compose up"
+  },
+  "devDependencies": {
+    "@babel/runtime": "^7.29.7",
+    "@types/node": "^22.20.4",
+    "firebase-admin": "^14.5.0",
+    "firebase-tools": "^15.31.0",
+    "oxfmt": "^0.70.0",
+    "oxlint": "^1.85.0",
+    "oxlint-tsgolint": "^7.0.2002",
+    "typescript": "^7.0.2",
+    "typesense": "^3.0.6",
+    "vitest": "^5.0.1"
   },
   "engines": {
     "node": "22"
   },
-  "main": "src/index.js",
-  "devDependencies": {
-    "cross-env": "^7.0.3",
-    "dotenv": "^16.4.7",
-    "eslint": "^8.52.0",
-    "eslint-config-google": "^0.14.0",
-    "firebase-admin": "^13.0.2",
-    "firebase-functions": "^6.2.0",
-    "firebase-functions-test": "^3.4.0",
-    "eslint-config-prettier": "^10.0.1",
-    "jest": "^29.7.0",
-    "jest-dev-server": "^10.1.0",
-    "jest-junit": "^16.0.0",
-    "prettier": "^3.4.2",
-    "typesense": "^1.8.2"
-  },
-  "private": true
+  "packageManager": "pnpm@11.24.0"
 }
