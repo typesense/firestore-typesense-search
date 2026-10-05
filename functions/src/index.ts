@@ -1,4 +1,7 @@
 import {requiresRole} from "firebase-functions";
+import {assertNoRemovedParams} from "./config.js";
+
+assertNoRemovedParams();
 
 requiresRole("roles/datastore.user");
 

@@ -38,11 +38,25 @@ const REMOVED_PARAMS = [
   ["FLATTEN_NESTED_DOCUMENTS", "FLATTEN_NESTED_DOCUMENTS_LIST"],
 ] as const;
 
-function removedParamReplacements(): string[] {
-  return REMOVED_PARAMS.flatMap(([removed, replacement]) => {
+function hasEnvValue(name: string): boolean {
+  return (process.env[name]?.trim() ?? "") !== "";
+}
+
+export function assertNoRemovedParams(): void {
+  if (hasEnvValue("FIRESTORE_COLLECTION_PATHS") || hasEnvValue("TYPESENSE_COLLECTION_NAMES")) return;
+
+  const replacements = REMOVED_PARAMS.flatMap(([removed, replacement]) => {
     const value = process.env[removed]?.trim();
     return value ? [`${replacement}=${value}`] : [];
   });
+  if (replacements.length === 0) return;
+
+  throw new Error(
+    "The single-collection params FIRESTORE_COLLECTION_PATH, TYPESENSE_COLLECTION_NAME, FIRESTORE_COLLECTION_FIELDS and " +
+      "FLATTEN_NESTED_DOCUMENTS were removed in 4.0.0. Replace them in your configuration with:\n" +
+      replacements.join("\n") +
+      "\nSee https://github.com/typesense/firestore-typesense-search/blob/master/UPGRADING.md",
+  );
 }
 
 export function createCollectionConfigMap(): CollectionConfigMap {
@@ -50,14 +64,6 @@ export function createCollectionConfigMap(): CollectionConfigMap {
   const typesenseNames = parseCommaSeparated(params.typesenseCollectionNames.value());
 
   if (firestorePaths.length === 0 && typesenseNames.length === 0) {
-    const replacements = removedParamReplacements();
-    if (replacements.length > 0) {
-      throw new Error(
-        "The single-collection params FIRESTORE_COLLECTION_PATH, TYPESENSE_COLLECTION_NAME, FIRESTORE_COLLECTION_FIELDS and " +
-          "FLATTEN_NESTED_DOCUMENTS were removed in 4.0.0. Replace them in your configuration with:\n" +
-          replacements.join("\n"),
-      );
-    }
     throw new Error("No Firestore collection config found. Set FIRESTORE_COLLECTION_PATHS and TYPESENSE_COLLECTION_NAMES.");
   }
 

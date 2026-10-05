@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it} from "vitest";
-import {createCollectionConfigMap, getTypesenseConnectionConfig, parseBooleanList, parseCommaSeparated, parsePipeSeparated} from "../../functions/src/config.js";
+import {assertNoRemovedParams, createCollectionConfigMap, getTypesenseConnectionConfig, parseBooleanList, parseCommaSeparated, parsePipeSeparated} from "../../functions/src/config.js";
 
 const COLLECTION_KEYS = [
   "FIRESTORE_COLLECTION_PATHS",
@@ -99,26 +99,40 @@ describe("Multi-Collection Configuration", () => {
 
       expect(() => createCollectionConfigMap()).toThrow("Mismatch in collection counts: 2 Firestore paths vs 0 Typesense names");
     });
+  });
 
+  describe("assertNoRemovedParams", () => {
     it("should explain how to replace the removed single-collection params", () => {
       process.env["FIRESTORE_COLLECTION_PATH"] = "books";
       process.env["TYPESENSE_COLLECTION_NAME"] = "books_firestore";
       process.env["FIRESTORE_COLLECTION_FIELDS"] = "title,author";
       process.env["FLATTEN_NESTED_DOCUMENTS"] = "";
 
-      expect(() => createCollectionConfigMap()).toThrow(
+      expect(() => {
+        assertNoRemovedParams();
+      }).toThrow(
         "were removed in 4.0.0. Replace them in your configuration with:\n" +
-          "FIRESTORE_COLLECTION_PATHS=books\nTYPESENSE_COLLECTION_NAMES=books_firestore\nFIRESTORE_COLLECTION_FIELDS_LIST=title,author",
+          "FIRESTORE_COLLECTION_PATHS=books\nTYPESENSE_COLLECTION_NAMES=books_firestore\nFIRESTORE_COLLECTION_FIELDS_LIST=title,author\n" +
+          "See https://github.com/typesense/firestore-typesense-search/blob/master/UPGRADING.md",
       );
     });
 
-    it("should ignore the removed single-collection params when the collection params are set", () => {
+    it("should pass when the collection params are set, even if removed params remain", () => {
       process.env["FIRESTORE_COLLECTION_PATH"] = "books";
       process.env["TYPESENSE_COLLECTION_NAME"] = "books";
       process.env["FIRESTORE_COLLECTION_PATHS"] = "users";
       process.env["TYPESENSE_COLLECTION_NAMES"] = "users";
 
+      expect(() => {
+        assertNoRemovedParams();
+      }).not.toThrow();
       expect(Object.keys(createCollectionConfigMap())).toEqual(["users"]);
+    });
+
+    it("should pass when nothing is configured yet, so a first deploy can prompt for the params", () => {
+      expect(() => {
+        assertNoRemovedParams();
+      }).not.toThrow();
     });
   });
 
