@@ -1,7 +1,7 @@
-import {describe, expect, it} from "vitest";
+import {afterEach, describe, expect, it} from "vitest";
 import {GeoPoint, getFirestore, Timestamp} from "firebase-admin/firestore";
 import {initializeApp} from "firebase-admin/app";
-import {createTypesenseDocument} from "../../src/document.js";
+import {createTypesenseDocument, setDocumentMapper} from "../../src/document.js";
 
 describe("Utils", () => {
   describe("createTypesenseDocument", () => {
@@ -674,7 +674,7 @@ describe("Utils", () => {
 
   describe("createTypesenseDocument with Firestore SDK types", () => {
     const firestore = getFirestore(initializeApp({projectId: "demo-unit"}, "document-spec"));
-    const collectionConfig = {fields: [], flattenNested: false};
+    const collectionConfig = {fields: [], flattenNested: false, typesenseCollection: "books"};
 
     it("maps Timestamp, GeoPoint and DocumentReference instances", () => {
       const documentSnapshot = {
@@ -702,7 +702,7 @@ describe("Utils", () => {
         data: () => ({meta: {createdAt: Timestamp.fromMillis(5_000), where: new GeoPoint(3, 4)}}),
       };
 
-      expect(createTypesenseDocument(documentSnapshot, {fields: [], flattenNested: true}, {})).toStrictEqual({
+      expect(createTypesenseDocument(documentSnapshot, {fields: [], flattenNested: true, typesenseCollection: "books"}, {})).toStrictEqual({
         "meta.createdAt": 5,
         "meta.where": [3, 4],
         id: "doc123",
@@ -714,14 +714,14 @@ describe("Utils", () => {
     it("overwrites an `id` field in place with the document id", () => {
       const documentSnapshot = {id: "doc123", data: () => ({title: "Book", id: "stale", rating: 5})};
 
-      const result = createTypesenseDocument(documentSnapshot, {fields: [], flattenNested: false}, {});
+      const result = createTypesenseDocument(documentSnapshot, {fields: [], flattenNested: false, typesenseCollection: "books"}, {});
       expect(JSON.stringify(result)).toBe('{"title":"Book","id":"doc123","rating":5}');
     });
 
     it("appends the document id and path params after the document fields", () => {
       const documentSnapshot = {id: "doc123", data: () => ({author: "A", title: "T"})};
 
-      const result = createTypesenseDocument(documentSnapshot, {fields: ["author", "title"], flattenNested: false}, {userId: "u1"});
+      const result = createTypesenseDocument(documentSnapshot, {fields: ["author", "title"], flattenNested: false, typesenseCollection: "books"}, {userId: "u1"});
       expect(JSON.stringify(result)).toBe('{"author":"A","title":"T","id":"doc123","userId":"u1"}');
     });
 
@@ -731,7 +731,7 @@ describe("Utils", () => {
         data: () => ({comments: [{author: "Alice"}, {author: "Bob", likes: 5}]}),
       };
 
-      expect(createTypesenseDocument(documentSnapshot, {fields: ["comments.author", "comments.likes"], flattenNested: true}, {})).toStrictEqual({
+      expect(createTypesenseDocument(documentSnapshot, {fields: ["comments.author", "comments.likes"], flattenNested: true, typesenseCollection: "books"}, {})).toStrictEqual({
         "comments.author": ["Alice", "Bob"],
         "comments.likes": [5],
         id: "doc123",
@@ -741,9 +741,29 @@ describe("Utils", () => {
     it("does not throw on a dotted field that crosses a null value", () => {
       const documentSnapshot = {id: "doc123", data: () => ({title: "T", nullField: null})};
 
-      expect(createTypesenseDocument(documentSnapshot, {fields: ["title", "nullField.inner"], flattenNested: false}, {})).toStrictEqual({
+      expect(createTypesenseDocument(documentSnapshot, {fields: ["title", "nullField.inner"], flattenNested: false, typesenseCollection: "books"}, {})).toStrictEqual({
         title: "T",
         id: "doc123",
+      });
+    });
+  });
+
+  describe("setDocumentMapper", () => {
+    const collectionConfig = {fields: [], flattenNested: false, typesenseCollection: "books"};
+
+    afterEach(() => {
+      setDocumentMapper((document) => document);
+    });
+
+    it("maps the final document, with the Typesense collection name", () => {
+      setDocumentMapper((document, typesenseCollection) => ({...document, collection: typesenseCollection}));
+      const documentSnapshot = {id: "doc123", data: () => ({title: "T"})};
+
+      expect(createTypesenseDocument(documentSnapshot, collectionConfig, {userId: "u1"})).toStrictEqual({
+        title: "T",
+        id: "doc123",
+        userId: "u1",
+        collection: "books",
       });
     });
   });
