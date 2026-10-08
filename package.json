@@ -29,6 +29,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "prepare": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "oxlint --type-aware --deny-warnings",
     "lint:fix": "oxlint --type-aware --fix",
