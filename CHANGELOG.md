@@ -4,6 +4,7 @@
 
 - Remove the single-collection params `FIRESTORE_COLLECTION_PATH`, `TYPESENSE_COLLECTION_NAME`, `FIRESTORE_COLLECTION_FIELDS` and `FLATTEN_NESTED_DOCUMENTS`. Move their values to `FIRESTORE_COLLECTION_PATHS`, `TYPESENSE_COLLECTION_NAMES`, `FIRESTORE_COLLECTION_FIELDS_LIST` and `FLATTEN_NESTED_DOCUMENTS_LIST`; see [UPGRADING.md](UPGRADING.md). If only the removed params are set, the deploy fails with an error listing the replacement lines
 - `FIRESTORE_COLLECTION_PATHS` and `TYPESENSE_COLLECTION_NAMES` are now required
+- Index a document only into the collection it is directly in. Since 3.0.0, writing a subcollection document such as `users/u1/books/b1` upserted it into the Typesense collection of a configured parent path (`users`) under its own ID, and deleting it deleted that ID from the parent's collection, even when `users/{userId}/books` was configured too. Subcollection documents are no longer indexed into a configured parent collection; configure the subcollection path to index them
 
 ### Changes
 

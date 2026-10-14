@@ -50,3 +50,9 @@ export function pathMatchesSelector(path: string | null | undefined, selector: s
   }
   return extracted;
 }
+
+export function matchDocumentPath(documentPath: string, collectionPath: string): PathParams | null {
+  const pathParams = pathMatchesSelector(documentPath, collectionPath);
+  if (pathParams === null || segmentsOf(documentPath).length !== segmentsOf(collectionPath).length + 1) return null;
+  return pathParams;
+}

@@ -1,4 +1,4 @@
-import {afterAll, beforeAll, beforeEach, describe, expect, it} from "vitest";
+import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it} from "vitest";
 import {handleDocumentWrite, type DocumentChangeLike} from "../../src/indexOnWrite.js";
 import {StubTypesense} from "./support/stubTypesense.js";
 
@@ -75,5 +75,43 @@ describe("handleDocumentWrite", () => {
     await handleDocumentWrite({before: snapshot("magazines/doc1", false), after: snapshot("magazines/doc1", true)});
 
     expect(typesense.requests).toStrictEqual([]);
+  });
+
+  describe.each([
+    {paths: "users,users/{userId}/books", names: "users,books"},
+    {paths: "users/{userId}/books,users", names: "books,users"},
+  ])("with a collection and its subcollection configured as $paths", ({paths, names}) => {
+    beforeEach(() => {
+      process.env["FIRESTORE_COLLECTION_PATHS"] = paths;
+      process.env["TYPESENSE_COLLECTION_NAMES"] = names;
+    });
+
+    afterEach(() => {
+      process.env["FIRESTORE_COLLECTION_PATHS"] = "books";
+      process.env["TYPESENSE_COLLECTION_NAMES"] = "books";
+    });
+
+    it("upserts each document into its own collection", async () => {
+      await handleDocumentWrite({before: snapshot("users/u1", false), after: snapshot("users/u1", true, {name: "U"})});
+      await handleDocumentWrite({before: snapshot("users/u1/books/b1", false), after: snapshot("users/u1/books/b1", true, {title: "T"})});
+
+      expect(typesense.requests).toStrictEqual([
+        {method: "POST", url: "/collections/users/documents?action=upsert", body: '{"name":"U","id":"u1"}'},
+        {method: "POST", url: "/collections/books/documents?action=upsert", body: '{"title":"T","id":"b1","userId":"u1"}'},
+      ]);
+    });
+
+    it("deletes a subcollection document only from its own collection", async () => {
+      await handleDocumentWrite({before: snapshot("users/u1/books/b1", true), after: snapshot("users/u1/books/b1", false)});
+
+      expect(typesense.requests.map(({method, url}) => `${method} ${url}`)).toStrictEqual(["DELETE /collections/books/documents/b1"]);
+    });
+
+    it("ignores documents in an unconfigured subcollection of a configured collection", async () => {
+      await handleDocumentWrite({before: snapshot("users/u1/reviews/r1", false), after: snapshot("users/u1/reviews/r1", true)});
+      await handleDocumentWrite({before: snapshot("users/u1/reviews/r1", true), after: snapshot("users/u1/reviews/r1", false)});
+
+      expect(typesense.requests).toStrictEqual([]);
+    });
   });
 });

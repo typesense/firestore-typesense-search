@@ -108,6 +108,23 @@ describe("paths", () => {
     });
   });
 
+  describe("matchDocumentPath", () => {
+    it("returns the placeholders for a document directly in the collection", () => {
+      expect(utils.matchDocumentPath("users/123/books/456", "users/{userId}/books")).toEqual({userId: "123"});
+      expect(utils.matchDocumentPath("/users/123/", "users")).toEqual({});
+    });
+
+    it("returns null for a document in a subcollection of the collection", () => {
+      expect(utils.matchDocumentPath("users/123/books/456", "users")).toBeNull();
+      expect(utils.matchDocumentPath("users/123/books/456/books/789", "users/{userId}/books")).toBeNull();
+    });
+
+    it("returns null for a path that is not a document of the collection", () => {
+      expect(utils.matchDocumentPath("users", "users")).toBeNull();
+      expect(utils.matchDocumentPath("shelves/1/books/2", "users/{userId}/books")).toBeNull();
+    });
+  });
+
   describe("parseFirestorePath validation", () => {
     it("throws on an empty path", () => {
       expect(() => utils.parseFirestorePath("")).toThrow("Invalid Firestore path: Path must be a non-empty string.");
