@@ -5,7 +5,7 @@ import {createCollectionConfigMap, getTypesenseConnectionConfig, shouldLogTypese
 import {createTypesenseDocument, type DocumentSnapshotLike} from "./document.js";
 import {getDefaultApp} from "./firebaseApp.js";
 import * as params from "./params.js";
-import {pathMatchesSelector, type PathParams} from "./paths.js";
+import {matchDocumentPath, type PathParams} from "./paths.js";
 import {createTypesenseClient} from "./typesenseClient.js";
 
 interface DocumentRefLike {
@@ -31,7 +31,7 @@ interface MatchedCollection {
 
 function findCollectionForDocumentPath(documentPath: string): MatchedCollection | undefined {
   for (const config of Object.values(createCollectionConfigMap())) {
-    const pathParams = pathMatchesSelector(documentPath, config.firestorePath);
+    const pathParams = matchDocumentPath(documentPath, config.firestorePath);
     if (pathParams !== null) return {config, pathParams};
   }
   return undefined;

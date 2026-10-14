@@ -61,7 +61,15 @@ To change the configuration later, edit the kit's `.env` file and deploy again.
 One install can sync any number of Firestore collections, each into its own Typesense collection. List them in
 `FIRESTORE_COLLECTION_PATHS` and `TYPESENSE_COLLECTION_NAMES` (same order), with optional per-collection settings in
 `FIRESTORE_COLLECTION_FIELDS_LIST` and `FLATTEN_NESTED_DOCUMENTS_LIST`. Subcollection paths with placeholders such as
-`users/{userId}/books` are supported; the placeholder values are added to each Typesense document.
+`users/{userId}/books` are supported; the placeholder values are added to each Typesense document. A document is
+synced only into the collection it is directly in: with `FIRESTORE_COLLECTION_PATHS=users`, the documents in
+`users/{userId}/books` are not synced unless that path is listed too.
+
+> [!WARNING]
+> The Typesense document ID is the Firestore document ID, without its parent path. Under a placeholder path such as
+> `users/{userId}/books`, two books with the same ID under different users are the same Typesense document: writing one
+> overwrites the other, and deleting either removes it from Typesense. Auto-generated Firestore IDs don't collide, but
+> IDs you choose yourself (an ISBN, a date, `profile`) can, so keep them unique across all parents.
 
 #### 🎛️ Configuration Parameters
 
