@@ -14,7 +14,7 @@ import {
 import {getDefaultApp} from "./firebaseApp.js";
 import {createTypesenseDocument, type DocumentSnapshotLike, type TypesenseDocument} from "./document.js";
 import * as params from "./params.js";
-import {parseFirestorePath, pathMatchesSelector} from "./paths.js";
+import {matchDocumentPath, parseFirestorePath} from "./paths.js";
 import {createTypesenseClient} from "./typesenseClient.js";
 
 interface QueryDocumentLike extends DocumentSnapshotLike {
@@ -96,7 +96,7 @@ async function backfillCollection(firestore: FirestoreLike, collectionConfig: Co
 
     const typesenseDocuments: TypesenseDocument[] = [];
     for (const doc of batch.docs) {
-      const pathParams = pathMatchesSelector(doc.ref.path, firestorePath);
+      const pathParams = matchDocumentPath(doc.ref.path, firestorePath);
       if (isGroupQuery && pathParams === null) continue;
 
       const typesenseDocument = createTypesenseDocument(doc, collectionConfig, pathParams ?? {});

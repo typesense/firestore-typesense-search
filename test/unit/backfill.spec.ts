@@ -73,4 +73,10 @@ describe("handleBackfillTrigger", () => {
 
     expect(importedBatchSizes()).toStrictEqual([2]);
   });
+
+  it("skips documents of a same-named subcollection nested below the configured path", async () => {
+    await handleBackfillTrigger(trigger, fakeFirestore([...books(2, "users/u1"), ...books(1, "users/u1/books/b1")]));
+
+    expect(importedBatchSizes()).toStrictEqual([2]);
+  });
 });
