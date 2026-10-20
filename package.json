@@ -1,6 +1,6 @@
 {
   "name": "typesense-firestore-search",
-  "version": "4.0.0-rc.1",
+  "version": "4.0.0-rc.2",
   "description": "Cloud Functions for Firebase (2nd gen) that index Firestore documents into Typesense",
   "license": "Apache-2.0",
   "repository": {
