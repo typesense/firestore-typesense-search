@@ -8,6 +8,15 @@ export interface TypesenseDocument {
   [field: string]: TypesenseFieldValue;
 }
 
+/** Runs last, on every document sent to Typesense: backfill and writes alike. */
+export type DocumentMapper = (document: TypesenseDocument, typesenseCollection: string) => TypesenseDocument;
+
+let documentMapper: DocumentMapper = (document) => document;
+
+export function setDocumentMapper(mapper: DocumentMapper): void {
+  documentMapper = mapper;
+}
+
 export interface DocumentSnapshotLike {
   readonly id: string;
   data(): unknown;
@@ -205,7 +214,11 @@ function toFieldObject(obj: MappedObject): Record<string, TypesenseFieldValue> {
   return result;
 }
 
-export function createTypesenseDocument(snapshot: DocumentSnapshotLike, collectionConfig: Pick<CollectionConfig, "fields" | "flattenNested">, contextParams: PathParams): TypesenseDocument {
+export function createTypesenseDocument(
+  snapshot: DocumentSnapshotLike,
+  collectionConfig: Pick<CollectionConfig, "typesenseCollection" | "fields" | "flattenNested">,
+  contextParams: PathParams,
+): TypesenseDocument {
   const data = snapshot.data();
   if (!isObjectLike(data)) {
     throw new Error("Document data is null");
@@ -222,5 +235,5 @@ export function createTypesenseDocument(snapshot: DocumentSnapshotLike, collecti
   for (const [key, value] of Object.entries(contextParams)) {
     if (key !== "docId") typesenseDocument[key] = value;
   }
-  return typesenseDocument;
+  return documentMapper(typesenseDocument, collectionConfig.typesenseCollection);
 }

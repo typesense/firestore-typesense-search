@@ -9,3 +9,4 @@ requiresRole("roles/run.invoker");
 
 export {indexOnWrite} from "./indexOnWrite.js";
 export {backfill} from "./backfill.js";
+export {setDocumentMapper, type DocumentMapper, type TypesenseDocument} from "./document.js";
