@@ -1,9 +1,37 @@
+import type {Brand} from "./brand.js";
+import {err, ok, type Result} from "./result.js";
+
 export type PathParams = Readonly<Record<string, string>>;
+export type DocumentPath = Brand<string, "DocumentPath">;
+export type CollectionPath = Brand<string, "CollectionPath">;
+
+export const KIT_STATE_COLLECTION = "typesense_sync";
 
 const PLACEHOLDER = /^{([^}]+)}$/;
 
 function segmentsOf(path: string): string[] {
   return path.split("/").filter((segment) => segment !== "");
+}
+
+function isDocumentPath(path: string): path is DocumentPath {
+  const count = segmentsOf(path).length;
+  return count > 0 && count % 2 === 0;
+}
+
+function isCollectionPath(path: string): path is CollectionPath {
+  return segmentsOf(path).length % 2 === 1;
+}
+
+export function parseDocumentPath(path: string): DocumentPath | undefined {
+  return isDocumentPath(path) ? path : undefined;
+}
+
+export function documentIdOf(path: DocumentPath): string {
+  return segmentsOf(path).at(-1) ?? path;
+}
+
+export function isUnderKitState(path: string): boolean {
+  return segmentsOf(path)[0] === KIT_STATE_COLLECTION;
 }
 
 export function parseFirestorePath(firestorePath: string | null | undefined): Readonly<Record<string, number>> {
@@ -21,6 +49,16 @@ export function parseFirestorePath(firestorePath: string | null | undefined): Re
     placeholders[varName] = index;
   });
   return placeholders;
+}
+
+export function parseCollectionPath(path: string): Result<CollectionPath, string> {
+  if (!isCollectionPath(path)) {
+    return err(segmentsOf(path).length === 0 ? "is empty" : "points to a document, not a collection. A collection path has an odd number of segments, such as users or users/{userId}/books");
+  }
+  const names = segmentsOf(path).flatMap((segment) => PLACEHOLDER.exec(segment)?.[1] ?? []);
+  const duplicate = names.find((name, index) => names.indexOf(name) !== index);
+  if (duplicate !== undefined) return err(`uses the placeholder {${duplicate}} more than once`);
+  return ok(path);
 }
 
 export function pathMatchesSelector(path: string | null | undefined, selector: string | null | undefined): PathParams | null {

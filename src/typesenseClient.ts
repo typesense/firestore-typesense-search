@@ -8,8 +8,8 @@ function getRandomInteger(min: number, max: number): number {
 
 export function createTypesenseClient(config: ConfigurationOptions): Client {
   return new Client({
-    ...config,
     connectionTimeoutSeconds: getRandomInteger(60, 90),
     retryIntervalSeconds: getRandomInteger(60, 120),
+    ...config,
   });
 }

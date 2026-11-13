@@ -1,7 +1,7 @@
 import {requiresRole} from "firebase-functions";
-import {assertNoRemovedParams} from "./config.js";
+import {assertConfigAtLoad} from "./config.js";
 
-assertNoRemovedParams();
+assertConfigAtLoad();
 
 requiresRole("roles/datastore.user");
 requiresRole("roles/eventarc.eventReceiver");

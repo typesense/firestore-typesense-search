@@ -1,17 +1,6 @@
-import type {CollectionConfig} from "./config.js";
 import type {PathParams} from "./paths.js";
 
 export type TypesenseFieldValue = string | number | boolean | null | TypesenseFieldValue[] | {[key: string]: TypesenseFieldValue};
-
-export interface TypesenseDocument {
-  id: string;
-  [field: string]: TypesenseFieldValue;
-}
-
-export interface DocumentSnapshotLike {
-  readonly id: string;
-  data(): unknown;
-}
 
 type MappedValue = string | number | boolean | null | undefined | MappedValue[] | MappedObject;
 interface MappedObject {
@@ -205,22 +194,20 @@ function toFieldObject(obj: MappedObject): Record<string, TypesenseFieldValue> {
   return result;
 }
 
-export function createTypesenseDocument(snapshot: DocumentSnapshotLike, collectionConfig: Pick<CollectionConfig, "fields" | "flattenNested">, contextParams: PathParams): TypesenseDocument {
-  const data = snapshot.data();
-  if (!isObjectLike(data)) {
-    throw new Error("Document data is null");
-  }
+export function projectFields(data: Readonly<Record<string, unknown>>, fields: readonly string[]): Readonly<Record<string, unknown>> {
+  return fields.length === 0 ? data : fields.reduce<Record<string, unknown>>((acc, field) => extractField(data, acc, field), {});
+}
 
-  const extracted = collectionConfig.fields.length === 0 ? data : collectionConfig.fields.reduce<Record<string, unknown>>((acc, field) => extractField(data, acc, field), {});
-  const mapped: MappedObject = Object.fromEntries(Object.entries(extracted).map(([key, value]) => [key, mapValue(value)]));
+export function buildFieldDocument(projection: Readonly<Record<string, unknown>>, flattenNested: boolean, contextParams: PathParams): Record<string, TypesenseFieldValue> {
+  const mapped: MappedObject = Object.fromEntries(Object.entries(projection).map(([key, value]) => [key, mapValue(value)]));
 
   // using flat to flatten nested objects for older versions of Typesense that did not support nested fields
   // https://typesense.org/docs/0.22.2/api/collections.html#indexing-nested-fields
-  const shaped = collectionConfig.flattenNested ? flattenDocument(mapped) : mapped;
+  const shaped = flattenNested ? flattenDocument(mapped) : mapped;
 
-  const typesenseDocument: TypesenseDocument = {...toFieldObject(shaped), id: snapshot.id};
+  const body = toFieldObject(shaped);
   for (const [key, value] of Object.entries(contextParams)) {
-    if (key !== "docId") typesenseDocument[key] = value;
+    if (key !== "docId") body[key] = value;
   }
-  return typesenseDocument;
+  return body;
 }

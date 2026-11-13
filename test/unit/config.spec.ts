@@ -1,5 +1,6 @@
 import {beforeEach, describe, expect, it} from "vitest";
-import {assertNoRemovedParams, createCollectionConfigMap, getTypesenseConnectionConfig, parseBooleanList, parseCommaSeparated, parsePipeSeparated} from "../../src/config.js";
+import {formatConfigProblems, parseBooleanList, parseCollectionConfigs, parseCommaSeparated, parseConnection, parsePipeSeparated, type CollectionConfig, type ConfigProblem} from "../../src/config.js";
+import type {Result} from "../../src/result.js";
 
 const COLLECTION_KEYS = [
   "FIRESTORE_COLLECTION_PATHS",
@@ -15,6 +16,16 @@ const COLLECTION_KEYS = [
   "TYPESENSE_PROTOCOL",
   "TYPESENSE_API_KEY",
 ];
+
+function problemsOf(result: Result<unknown, readonly ConfigProblem[]>): string[] {
+  return result.ok ? [] : formatConfigProblems(result.error);
+}
+
+function configs(): readonly CollectionConfig[] {
+  const parsed = parseCollectionConfigs(process.env);
+  if (!parsed.ok) throw new Error(formatConfigProblems(parsed.error).join("\n"));
+  return parsed.value;
+}
 
 describe("Multi-Collection Configuration", () => {
   beforeEach(() => {
@@ -52,16 +63,19 @@ describe("Multi-Collection Configuration", () => {
     });
   });
 
-  describe("createCollectionConfigMap", () => {
-    it("should create collection map from new multi-collection parameters", () => {
+  describe("parseCollectionConfigs", () => {
+    it("should create collection configs from the multi-collection parameters", () => {
       process.env["FIRESTORE_COLLECTION_PATHS"] = "users,products";
       process.env["TYPESENSE_COLLECTION_NAMES"] = "users,products";
       process.env["FIRESTORE_COLLECTION_FIELDS_LIST"] = "name,email|title,description";
       process.env["FLATTEN_NESTED_DOCUMENTS_LIST"] = "false,true";
 
-      expect(createCollectionConfigMap()).toEqual({
-        users: {firestorePath: "users", typesenseCollection: "users", fields: ["name", "email"], flattenNested: false},
-        products: {firestorePath: "products", typesenseCollection: "products", fields: ["title", "description"], flattenNested: true},
+      expect(parseCollectionConfigs(process.env)).toEqual({
+        ok: true,
+        value: [
+          {firestorePath: "users", typesenseCollection: "users", fields: ["name", "email"], flattenNested: false},
+          {firestorePath: "products", typesenseCollection: "products", fields: ["title", "description"], flattenNested: true},
+        ],
       });
     });
 
@@ -69,9 +83,12 @@ describe("Multi-Collection Configuration", () => {
       process.env["FIRESTORE_COLLECTION_PATHS"] = "users,products";
       process.env["TYPESENSE_COLLECTION_NAMES"] = "users,products";
 
-      expect(createCollectionConfigMap()).toEqual({
-        users: {firestorePath: "users", typesenseCollection: "users", fields: [], flattenNested: false},
-        products: {firestorePath: "products", typesenseCollection: "products", fields: [], flattenNested: false},
+      expect(parseCollectionConfigs(process.env)).toEqual({
+        ok: true,
+        value: [
+          {firestorePath: "users", typesenseCollection: "users", fields: [], flattenNested: false},
+          {firestorePath: "products", typesenseCollection: "products", fields: [], flattenNested: false},
+        ],
       });
     });
 
@@ -80,82 +97,73 @@ describe("Multi-Collection Configuration", () => {
       process.env["TYPESENSE_COLLECTION_NAMES"] = "users,products,customers";
       process.env["FIRESTORE_COLLECTION_FIELDS_LIST"] = "||name,email";
 
-      expect(Object.values(createCollectionConfigMap()).map((config) => config.fields)).toEqual([[], [], ["name", "email"]]);
+      expect(configs().map((config) => config.fields)).toEqual([[], [], ["name", "email"]]);
     });
 
-    it("should throw error for mismatched collection counts", () => {
+    it("should keep the configured order", () => {
+      process.env["FIRESTORE_COLLECTION_PATHS"] = "users,products";
+      process.env["TYPESENSE_COLLECTION_NAMES"] = "users,products";
+
+      expect(configs().map((config) => config.firestorePath)).toEqual(["users", "products"]);
+    });
+
+    it("should report mismatched collection counts", () => {
       process.env["FIRESTORE_COLLECTION_PATHS"] = "users,products";
       process.env["TYPESENSE_COLLECTION_NAMES"] = "users";
 
-      expect(() => createCollectionConfigMap()).toThrow("Mismatch in collection counts: 2 Firestore paths vs 1 Typesense names");
+      expect(problemsOf(parseCollectionConfigs(process.env))).toStrictEqual([
+        "FIRESTORE_COLLECTION_PATHS lists 2 paths but TYPESENSE_COLLECTION_NAMES lists 1 name. Give each path one Typesense collection name, in the same order.\n" +
+          "    FIRESTORE_COLLECTION_PATHS=users,products\n    TYPESENSE_COLLECTION_NAMES=users",
+      ]);
     });
 
-    it("should throw error when no collection config is provided", () => {
-      expect(() => createCollectionConfigMap()).toThrow("No Firestore collection config found. Set FIRESTORE_COLLECTION_PATHS and TYPESENSE_COLLECTION_NAMES.");
+    it("should report when no collection config is provided", () => {
+      expect(problemsOf(parseCollectionConfigs(process.env))).toStrictEqual(["No collections are configured. Set FIRESTORE_COLLECTION_PATHS and TYPESENSE_COLLECTION_NAMES."]);
     });
 
-    it("should throw error when only one of the collection params is set", () => {
+    it("should report when only one of the collection params is set", () => {
       process.env["FIRESTORE_COLLECTION_PATHS"] = "users,products";
 
-      expect(() => createCollectionConfigMap()).toThrow("Mismatch in collection counts: 2 Firestore paths vs 0 Typesense names");
+      expect(problemsOf(parseCollectionConfigs(process.env))[0]).toContain("FIRESTORE_COLLECTION_PATHS lists 2 paths but TYPESENSE_COLLECTION_NAMES lists 0 names.");
     });
-  });
 
-  describe("assertNoRemovedParams", () => {
     it("should explain how to replace the removed single-collection params", () => {
       process.env["FIRESTORE_COLLECTION_PATH"] = "books";
       process.env["TYPESENSE_COLLECTION_NAME"] = "books_firestore";
       process.env["FIRESTORE_COLLECTION_FIELDS"] = "title,author";
       process.env["FLATTEN_NESTED_DOCUMENTS"] = "";
 
-      expect(() => {
-        assertNoRemovedParams();
-      }).toThrow(
-        "were removed in 4.0.0. Replace them in your configuration with:\n" +
-          "FIRESTORE_COLLECTION_PATHS=books\nTYPESENSE_COLLECTION_NAMES=books_firestore\nFIRESTORE_COLLECTION_FIELDS_LIST=title,author\n" +
-          "See https://github.com/typesense/firestore-typesense-search/blob/master/UPGRADING.md",
-      );
+      expect(problemsOf(parseCollectionConfigs(process.env))).toStrictEqual([
+        "The single-collection params FIRESTORE_COLLECTION_PATH, TYPESENSE_COLLECTION_NAME, FIRESTORE_COLLECTION_FIELDS and FLATTEN_NESTED_DOCUMENTS were removed in 4.0.0 " +
+          "(see https://github.com/typesense/firestore-typesense-search/blob/master/UPGRADING.md). Replace them in your configuration with:\n" +
+          "    FIRESTORE_COLLECTION_PATHS=books\n    TYPESENSE_COLLECTION_NAMES=books_firestore\n    FIRESTORE_COLLECTION_FIELDS_LIST=title,author",
+      ]);
     });
 
-    it("should pass when the collection params are set, even if removed params remain", () => {
+    it("should use the collection params when they are set, even if removed params remain", () => {
       process.env["FIRESTORE_COLLECTION_PATH"] = "books";
       process.env["TYPESENSE_COLLECTION_NAME"] = "books";
       process.env["FIRESTORE_COLLECTION_PATHS"] = "users";
       process.env["TYPESENSE_COLLECTION_NAMES"] = "users";
 
-      expect(() => {
-        assertNoRemovedParams();
-      }).not.toThrow();
-      expect(Object.keys(createCollectionConfigMap())).toEqual(["users"]);
-    });
-
-    it("should pass when nothing is configured yet, so a first deploy can prompt for the params", () => {
-      expect(() => {
-        assertNoRemovedParams();
-      }).not.toThrow();
+      expect(configs().map((config) => config.firestorePath)).toEqual(["users"]);
     });
   });
 
-  describe("collections", () => {
-    it("should key collections by Firestore path in configured order", () => {
-      process.env["FIRESTORE_COLLECTION_PATHS"] = "users,products";
-      process.env["TYPESENSE_COLLECTION_NAMES"] = "users,products";
-
-      expect(Object.keys(createCollectionConfigMap())).toEqual(["users", "products"]);
-    });
-  });
-
-  describe("getTypesenseConnectionConfig", () => {
+  describe("parseConnection", () => {
     it("should default to https on port 443", () => {
       process.env["TYPESENSE_HOSTS"] = "a.typesense.net, b.typesense.net";
       process.env["TYPESENSE_API_KEY"] = "secret";
 
-      expect(getTypesenseConnectionConfig()).toEqual({
-        nodes: [
-          {host: "a.typesense.net", port: 443, protocol: "https"},
-          {host: "b.typesense.net", port: 443, protocol: "https"},
-        ],
-        apiKey: "secret",
+      expect(parseConnection(process.env)).toEqual({
+        ok: true,
+        value: {
+          nodes: [
+            {host: "a.typesense.net", port: 443, protocol: "https"},
+            {host: "b.typesense.net", port: 443, protocol: "https"},
+          ],
+          apiKey: "secret",
+        },
       });
     });
 
@@ -165,17 +173,18 @@ describe("Multi-Collection Configuration", () => {
       process.env["TYPESENSE_PROTOCOL"] = "http";
       process.env["TYPESENSE_API_KEY"] = "xyz";
 
-      expect(getTypesenseConnectionConfig()).toEqual({nodes: [{host: "localhost", port: 8108, protocol: "http"}], apiKey: "xyz"});
+      expect(parseConnection(process.env)).toEqual({ok: true, value: {nodes: [{host: "localhost", port: 8108, protocol: "http"}], apiKey: "xyz"}});
     });
 
     it("should reject an invalid port or protocol", () => {
       process.env["TYPESENSE_HOSTS"] = "localhost";
       process.env["TYPESENSE_PORT"] = "abc";
-      expect(() => getTypesenseConnectionConfig()).toThrow('Invalid TYPESENSE_PORT "abc"');
+      process.env["TYPESENSE_API_KEY"] = "xyz";
+      expect(problemsOf(parseConnection(process.env))).toStrictEqual(['TYPESENSE_PORT is "abc". Use a positive integer such as 443.\n    TYPESENSE_PORT=abc']);
 
       process.env["TYPESENSE_PORT"] = "8108";
       process.env["TYPESENSE_PROTOCOL"] = "ftp";
-      expect(() => getTypesenseConnectionConfig()).toThrow('Invalid TYPESENSE_PROTOCOL "ftp"');
+      expect(problemsOf(parseConnection(process.env))).toStrictEqual(['TYPESENSE_PROTOCOL is "ftp". Use http or https.\n    TYPESENSE_PROTOCOL=ftp']);
     });
   });
 });

@@ -7,8 +7,14 @@ export interface RecordedRequest {
   readonly body: string;
 }
 
+export interface StubResponse {
+  readonly status: number;
+  readonly body?: string;
+}
+
 function defaultResponseBody(request: RecordedRequest, status: number): string {
   if (status === 404) return JSON.stringify({message: "Could not find a document with id: doc1"});
+  if (status >= 400) return JSON.stringify({message: `Stub error ${status}`});
   if (request.url.includes("/documents/import")) {
     return request.body
       .split("\n")
@@ -22,6 +28,7 @@ function defaultResponseBody(request: RecordedRequest, status: number): string {
 export class StubTypesense {
   readonly requests: RecordedRequest[] = [];
   status = 200;
+  respond: ((request: RecordedRequest) => StubResponse | undefined) | undefined;
   readonly #server: Server = createServer((request: IncomingMessage, response) => {
     let body = "";
     request.on("data", (chunk: Buffer) => {
@@ -30,11 +37,19 @@ export class StubTypesense {
     request.on("end", () => {
       const recorded = {method: request.method ?? "", url: request.url ?? "", body};
       this.requests.push(recorded);
-      const contentType = recorded.url.includes("/documents/import") ? "text/plain" : "application/json";
-      response.writeHead(this.status, {"Content-Type": contentType});
-      response.end(defaultResponseBody(recorded, this.status));
+      const custom = this.respond?.(recorded);
+      const status = custom?.status ?? this.status;
+      const contentType = recorded.url.includes("/documents/import") && status < 400 ? "text/plain" : "application/json";
+      response.writeHead(status, {"Content-Type": contentType});
+      response.end(custom?.body ?? defaultResponseBody(recorded, status));
     });
   });
+
+  reset(): void {
+    this.requests.length = 0;
+    this.status = 200;
+    this.respond = undefined;
+  }
 
   async start(): Promise<number> {
     await new Promise<void>((resolve) => {

@@ -18,7 +18,11 @@ kit next to the extension and only uninstalls the extension once you confirm, so
 | Function names | `ext-<instance-id>-indexOnWrite`, `ext-<instance-id>-backfill` | `kit-<kit-instance-id>-indexOnWrite`, `kit-<kit-instance-id>-backfill` |
 | Typesense API key | Extension secret | The same Secret Manager secret, referenced from the `.env` file |
 | Permissions | Granted by Firebase Extensions | A service account created for the kit, granted `roles/datastore.user`, `roles/eventarc.eventReceiver` and `roles/run.invoker` at deploy time |
-| Backfill | Write `trigger: true` to `typesense_sync/backfill` | Unchanged |
+| Backfill | Write `trigger: true` to `typesense_sync/backfill` | Unchanged, and the backfill writes its progress and failures to `typesense_sync/backfill_status` |
+| Writes that change no indexed field | Upserted again | Skipped, with no Firestore read and no Typesense request |
+| Documents Typesense rejects | Logged, and the invocation fails | Recorded in `typesense_sync/issues/typesense_issues`, and the invocation succeeds |
+| Typesense unreachable or failing (5xx, 408, 429) | Logged, and the invocation fails | Recorded in `typesense_sync/issues/typesense_issues`, and the invocation still fails |
+| Mistakes in the collection params | Each invocation fails | `firebase deploy` fails with the lines to change |
 
 ## Before you start
 
