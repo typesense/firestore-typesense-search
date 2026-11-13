@@ -6,7 +6,7 @@ import {fileURLToPath} from "node:url";
 import {deleteApp, initializeApp, type App} from "firebase-admin/app";
 import {getFirestore, type DocumentData, type Firestore} from "firebase-admin/firestore";
 import type {Client} from "typesense";
-import {BACKFILL_TRIGGER_DOCUMENT, createCollectionConfigMap, getTypesenseConnectionConfig, type CollectionConfig, type CollectionConfigMap} from "../../../src/config.js";
+import {BACKFILL_TRIGGER_DOCUMENT, formatConfigProblems, parseCollectionConfigs, parseConnection, type CollectionConfig} from "../../../src/config.js";
 import {createTypesenseClient} from "../../../src/typesenseClient.js";
 
 export type TypesenseRecord = Readonly<Record<string, unknown>>;
@@ -114,8 +114,10 @@ export class TestEnvironment {
     return this.#typesense;
   }
 
-  get collections(): CollectionConfigMap {
-    return createCollectionConfigMap();
+  get collections(): Readonly<Record<string, CollectionConfig>> {
+    const parsed = parseCollectionConfigs(process.env);
+    if (!parsed.ok) throw new Error(formatConfigProblems(parsed.error).join("\n"));
+    return Object.fromEntries(parsed.value.map((config) => [config.firestorePath, config]));
   }
 
   get firstCollection(): CollectionConfig {
@@ -143,7 +145,9 @@ export class TestEnvironment {
 
     this.#app = initializeApp({projectId}, `test-${Date.now()}`);
     this.#firestore = getFirestore(this.#app, this.#env.get("DATABASE") ?? "(default)");
-    this.#typesense = createTypesenseClient(getTypesenseConnectionConfig());
+    const connection = parseConnection(process.env);
+    if (!connection.ok) throw new Error(formatConfigProblems(connection.error).join("\n"));
+    this.#typesense = createTypesenseClient(connection.value);
     this.#shouldCaptureLogs = true;
     console.log("Test environment ready");
   }

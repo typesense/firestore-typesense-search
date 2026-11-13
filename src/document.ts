@@ -1,17 +1,6 @@
-import type {CollectionConfig} from "./config.js";
 import type {PathParams} from "./paths.js";
 
 export type TypesenseFieldValue = string | number | boolean | null | TypesenseFieldValue[] | {[key: string]: TypesenseFieldValue};
-
-export interface TypesenseDocument {
-  id: string;
-  [field: string]: TypesenseFieldValue;
-}
-
-export interface DocumentSnapshotLike {
-  readonly id: string;
-  data(): unknown;
-}
 
 type MappedValue = string | number | boolean | null | undefined | MappedValue[] | MappedObject;
 interface MappedObject {
@@ -221,17 +210,4 @@ export function buildFieldDocument(projection: Readonly<Record<string, unknown>>
     if (key !== "docId") body[key] = value;
   }
   return body;
-}
-
-export function createTypesenseDocument(snapshot: DocumentSnapshotLike, collectionConfig: Pick<CollectionConfig, "fields" | "flattenNested">, contextParams: PathParams): TypesenseDocument {
-  const data = snapshot.data();
-  if (!isObjectLike(data)) {
-    throw new Error("Document data is null");
-  }
-
-  const typesenseDocument: TypesenseDocument = {...buildFieldDocument(projectFields(data, collectionConfig.fields), collectionConfig.flattenNested, {}), id: snapshot.id};
-  for (const [key, value] of Object.entries(contextParams)) {
-    if (key !== "docId") typesenseDocument[key] = value;
-  }
-  return typesenseDocument;
 }

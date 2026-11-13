@@ -1,7 +1,20 @@
 import {describe, expect, it} from "vitest";
 import {GeoPoint, getFirestore, Timestamp} from "firebase-admin/firestore";
 import {initializeApp} from "firebase-admin/app";
-import {createTypesenseDocument} from "../../src/document.js";
+import {isFirestoreData} from "../../src/collection.js";
+import {buildFieldDocument, projectFields} from "../../src/document.js";
+import type {PathParams} from "../../src/paths.js";
+
+interface SnapshotLike {
+  readonly id: string;
+  data(): unknown;
+}
+
+function createTypesenseDocument(snapshot: SnapshotLike, config: {readonly fields: readonly string[]; readonly flattenNested: boolean}, params: PathParams): Record<string, unknown> {
+  const data = snapshot.data();
+  if (!isFirestoreData(data)) throw new Error("Test snapshot has no data");
+  return {...buildFieldDocument(projectFields(data, config.fields), config.flattenNested, params), id: snapshot.id};
+}
 
 describe("Utils", () => {
   describe("createTypesenseDocument", () => {
@@ -118,21 +131,6 @@ describe("Utils", () => {
           userId: "user123",
         });
         expect(result).not.toHaveProperty("docId");
-      });
-
-      it("throws error when document data is null", () => {
-        const documentSnapshot = {
-          data: () => null,
-          id: "doc123",
-        };
-
-        const collectionConfig = {
-          fields: ["title", "author"],
-          flattenNested: false,
-          typesenseCollection: "books",
-        };
-
-        expect(() => createTypesenseDocument(documentSnapshot, collectionConfig, {})).toThrow("Document data is null");
       });
     });
 
@@ -718,11 +716,11 @@ describe("Utils", () => {
       expect(JSON.stringify(result)).toBe('{"title":"Book","id":"doc123","rating":5}');
     });
 
-    it("appends the document id and path params after the document fields", () => {
+    it("appends the path params and then the document id after the document fields", () => {
       const documentSnapshot = {id: "doc123", data: () => ({author: "A", title: "T"})};
 
       const result = createTypesenseDocument(documentSnapshot, {fields: ["author", "title"], flattenNested: false}, {userId: "u1"});
-      expect(JSON.stringify(result)).toBe('{"author":"A","title":"T","id":"doc123","userId":"u1"}');
+      expect(JSON.stringify(result)).toBe('{"author":"A","title":"T","userId":"u1","id":"doc123"}');
     });
 
     it("keeps a key that is missing from the first array element when flattening", () => {
