@@ -37,7 +37,7 @@ Before installing the kit, make sure that you have:
 4. Installed firebase-tools 15.32.0 or later (`npm install -g firebase-tools@latest`).
 
 > [!IMPORTANT]
-> ☝️ #3 above is a commonly missed step. The kit **does not create the Typesense Collection for you**. Instead it syncs data to a Typesense collection you've already created. If you see an HTTP 404 in the function logs, it's most likely because of missing this step. 
+> ☝️ #3 above is a commonly missed step. The kit **does not create the Typesense Collection for you**. Instead it syncs data to a Typesense collection you've already created. If you see an HTTP 404 issue in [`typesense_sync/issues/typesense_issues`](#-sync-problems), it's most likely because of missing this step. 
 
 ### Step 2️⃣ : Install the Kit 
 
@@ -80,7 +80,7 @@ synced only into the collection it is directly in: with `FIRESTORE_COLLECTION_PA
 | `DATABASE`                         | The Firestore database to sync from. Defaults to `(default)`.                                                                                                                                                                                                                                  |
 | `FIRESTORE_COLLECTION_PATHS`       | Comma-separated list of Firestore collection paths to index, e.g. `users,users/{userId}/books`.                                                                                                                                                                                               |
 | `TYPESENSE_COLLECTION_NAMES`       | Comma-separated list of Typesense collection names, in the same order as the Firestore collection paths (you need to create these collections in Typesense yourself).                                                                                                                          |
-| `FIRESTORE_COLLECTION_FIELDS_LIST` | Pipe-separated list of comma-separated field lists, one per collection, e.g. `name,email|title`. Leave a list empty to index all fields of that collection.                                                                                                                                    |
+| `FIRESTORE_COLLECTION_FIELDS_LIST` | Pipe-separated list of comma-separated field lists, one per collection, e.g. `name,email|title`. Leave a list empty to index all fields of that collection. A write that changes none of a collection's listed fields is not sent to Typesense.                                                                                                                                    |
 | `FLATTEN_NESTED_DOCUMENTS_LIST`    | Comma-separated list of `true`/`false`, one per collection. Set `true` for Typesense Server v0.23.1 and below, since indexing nested objects is natively supported only in v0.24 and above.                                                                                                    |
 | `TYPESENSE_HOSTS`                  | A comma-separated list of Typesense Hosts (only domain without https or port number). For single node clusters, a single hostname is sufficient. For multi-node Highly Available or (Search Delivery Network) SDN Clusters, please be sure to mention all hostnames in a comma-separated list. |
 | `TYPESENSE_API_KEY`                | A Typesense API key with admin permissions. Click on "Generate API Key" in cluster dashboard in Typesense Cloud. Stored in Secret Manager.                                                                                                                                                      |
@@ -123,8 +123,23 @@ The kit only syncs data that was created or changed in Firestore after it was de
 
 This will trigger the backfill background Cloud function, which will read data from your Firestore collection(s) and create equivalent documents in your Typesense collection.
 
+The backfill reports its progress in the `typesense_sync/backfill_status` document. It sets `state` to `running` when it starts and to `completed` when it ends, with the number of documents read, indexed, excluded and failed for each collection, and the path and reason of the first 20 failures. If it rejects the request, for example because `firestore_collections` names no configured collection, `state` is `rejected` and `message` says why. If an import request fails with a network error, a timeout, or a Typesense 5xx, 408 or 429 response, the backfill stops that collection, finishes the others and writes the report, then fails the invocation. Trigger it again once Typesense is back. If `state` is still `running` after the function timeout described below has passed since `startedAt`, the run was cut off before it finished.
+
 > [!NOTE]
 > The `backfill` function is deployed with the Cloud Functions default timeout of 540 seconds (9 minutes). If you're backfilling a large collection (e.g. hundreds of thousands of documents or more) and the function times out before finishing, you can increase the timeout up to 3600 seconds (1 hour) from the Google Cloud Console by editing the `backfill` Cloud Run service and bumping the request timeout.
+
+## 🩺 Sync problems
+
+You shouldn't need Cloud Logging to find out why a document is missing from Typesense.
+
+- `firebase deploy` stops on mistakes in the collection params, such as a different number of Firestore paths and Typesense collection names, and prints the `.env` lines to change.
+- When a document fails to index, for example because it doesn't match the Typesense collection schema, the kit records it in the `typesense_sync/issues/typesense_issues` collection, one issue document per failing Firestore document. Each issue has the Typesense `collection`, the `documentPath`, the `stage` that failed, a `message`, the Typesense response under `detail`, `lastSeenAt` and a `count`.
+- The backfill writes its failures to `typesense_sync/backfill_status`, described in [the backfill step](#step-3%EF%B8%8F⃣--optional-backfill-existing-data).
+- If a config mistake still reaches the deployed functions, for example through a value typed at a deploy prompt, they skip every write and record the problem in `typesense_sync/issues/typesense_issues/config`. Delete that document after you fix the config and deploy again.
+
+Issue documents stay until a backfill indexes the document again, so check `lastSeenAt` to tell current problems from old ones. Each one also has an `expireAt` field set 30 days after it was last written. To have Firestore delete old issues, add a [TTL policy](https://firebase.google.com/docs/firestore/ttl) on the `expireAt` field of the `typesense_issues` collection group.
+
+Recording an issue costs one Firestore write. When Typesense rejects a document, which covers most 4xx responses, the kit records the issue and the invocation succeeds. When Typesense can't be reached or fails temporarily (timeouts, network errors, 5xx, 408 and 429), the kit records the issue and also fails the invocation, so it shows up in the function's error metrics. The kit's functions don't retry. Once Typesense is back, run a backfill to index the documents those issues name. A delete that failed this way leaves the document in Typesense, because a backfill doesn't remove documents, so delete it there yourself.
 
 ## ☁️ Cloud Functions
 
@@ -228,7 +243,11 @@ Please read through the FAQ below, search through [past GitHub issues](https://g
 - **My Typesense collection is missing some records. What could be wrong?**
 
   This almost always is because the collection schema in Typesense does not match the structure of the documents in Firebase, and so Typesense is rejecting the documents due to validation failure.
-  All validation errors returned by Typesense are logged in detail in the Cloud Functions logs, which are accessible via the Firebase web console. You want to search the logs for both the backfill function and also the indexOnWrite function.
+  Look in the `typesense_sync/issues/typesense_issues` collection in Firestore. Each failing document has an issue document with the error Typesense returned. For a backfill, `typesense_sync/backfill_status` lists the failure counts and the first 20 failures. See [Sync problems](#-sync-problems).
+
+- **I updated a document but Typesense didn't change. What could be wrong?**
+
+  If you set `FIRESTORE_COLLECTION_FIELDS_LIST` for the collection, the kit only syncs writes that change one of the listed fields. Writing a document without changing a listed field doesn't resync it. To force a resync, change a listed field or run a [backfill](#step-3%EF%B8%8F⃣--optional-backfill-existing-data).
 
 - **The backfill function is not getting triggered. What could be wrong?**
 
